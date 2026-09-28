@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use these course materials, please cite them as below."
+title: "Artificial Intelligence Applications in Engineering: open course materials"
+type: software
+authors:
+  - family-names: Kose
+    given-names: Utku
+    orcid: "https://orcid.org/0000-0002-9652-6415"
+    affiliation: "Süleyman Demirel University"
+    email: utkukose@sdu.edu.tr
+repository-code: "https://github.com/utkukose/ai-applications-in-engineering-NB-lecture"
+url: "https://utkukose.github.io/ai-applications-in-engineering-NB-lecture/"
+license: CC-BY-4.0
+version: "1.0.0"
+date-released: "2026-09-28"
+keywords:
+  - artificial intelligence
+  - engineering education
+  - machine learning
+  - fuzzy logic
+  - swarm intelligence
+  - deep learning

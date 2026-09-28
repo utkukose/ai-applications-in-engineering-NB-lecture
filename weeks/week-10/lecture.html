@@ -1,0 +1,523 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neural Networks: From the Perceptron to Deep Learning | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 10 of 14</p><h1>Neural Networks: From the Perceptron to Deep Learning</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="lab.html">Interactive lab</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-10/NB10_neural_networks.ipynb">Colab notebook</a><a href="Week10_Lecture_Notes.pdf">PDF notes</a><a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/tree/main/weeks/week-10">Week folder on GitHub</a></nav></header>
+<div class="lec-tools"><div class="lec-prog"><span class="lec-bar"><i></i></span><span class="lec-txt" aria-live="polite"></span></div></div>
+<article class="lecture"><h2>Overview</h2>
+<p>Neural networks connect many simple units whose weights are learned from data. The idea goes back to the logical neuron of McCulloch and Pitts and to Rosenblatt's perceptron <span class="cite" tabindex="0" data-refs="4,5">[4, 5]</span>; its revival came with backpropagation, which trains networks with hidden layers <span class="cite" tabindex="0" data-refs="2">[2]</span>, and its present dominance with deep architectures, large datasets and fast hardware <span class="cite" tabindex="0" data-refs="15,16">[15, 16]</span>. This week builds a perceptron and a multilayer network from scratch with NumPy, derives backpropagation for a small network, and then uses PyTorch to train a network that predicts the electrical output of a combined cycle power plant <span class="cite" tabindex="0" data-refs="9,17">[9, 17]</span>.</p>
+<p><strong>Estimated study time:</strong> 10 to 12 hours.</p>
+<h2>Learning outcomes</h2>
+<p>By the end of the week, students are expected to explain the perceptron learning rule and its limitation on non-separable data, to compute the forward pass and the gradients of a small multilayer network by hand, to choose activation functions, losses and optimisers, to train a network in PyTorch with a validation set and early stopping, to diagnose underfitting and overfitting from learning curves, and to compare a network fairly with the models of Weeks 7 and 8.</p>
+<h2>Python in this week</h2>
+<p>The lecture ends with Python step 10: Matrices, shapes and tensors. It covers matrix products and shapes with NumPy, activation functions on arrays, and PyTorch tensors with automatic differentiation, applied to the XOR network and a one-weight loss <span class="cite" tabindex="0" data-refs="9,18">[9, 18]</span>. The hands-on part of the notebook opens with the same step as runnable cells and short exercises with immediate feedback, and its later sections mark further constructs as Python moves.</p><h2>Study path</h2><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Activity</th>
+<th>Suggested time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Read the lecture with its animations on the <a href="lecture.html">lecture page</a>, or read the <a href="Week10_Lecture_Notes.pdf">PDF version</a></td>
+<td>2 hours</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Explore the <a href="lab.html">interactive lab</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Study the Python step at the end of the lecture, then run the same step at the start of the hands-on part of the <a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-10/NB10_neural_networks.ipynb">Colab notebook</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Work through the rest of the notebook, including its Python moves and exercises</td>
+<td>3 hours</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Solve the discipline challenge of your department</td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Take the self-assessment in the lab (tab: Check yourself)</td>
+<td>20 minutes</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Write the reflection, export the learning log and complete the weekly task</td>
+<td>1 hour</td>
+</tr>
+</tbody>
+</table><h2>Week at a glance</h2><pre class="mermaid">flowchart LR
+  N[&quot;Artificial neuron: weighted sum and activation&quot;] --&gt; P[&quot;Perceptron learning rule&quot;]
+  P --&gt; X[&quot;XOR: limits of one layer&quot;]
+  X --&gt; M[&quot;Multilayer perceptron&quot;]
+  M --&gt; B[&quot;Backpropagation: chain rule&quot;]
+  B --&gt; O[&quot;Optimisers: SGD, momentum, Adam&quot;]
+  O --&gt; R[&quot;Regularisation: early stopping, weight decay, dropout&quot;]
+  R --&gt; T[&quot;PyTorch model for a power plant&quot;]</pre>
+<h2>From neurons to perceptrons</h2>
+<p>McCulloch and Pitts described an idealised neuron that sums weighted binary inputs and fires when the sum exceeds a threshold, and showed that networks of such units can compute logical functions <span class="cite" tabindex="0" data-refs="4">[4]</span>. Rosenblatt's perceptron added learning: After each example, the weights move in the direction that corrects a wrong output, w = w + eta (y - y_hat) x <span class="cite" tabindex="0" data-refs="5">[5]</span>. If the two classes can be separated by a straight line, or a hyperplane in more dimensions, the rule finds a separating line in a finite number of steps.</p>
+<p>Minsky and Papert analysed what single-layer perceptrons cannot do <span class="cite" tabindex="0" data-refs="1">[1]</span>. The exclusive or, XOR, is the classic example: The points (0, 0) and (1, 1) belong to one class and (0, 1) and (1, 0) to the other, and no straight line separates them. Engineering data are full of such interactions, for example when a fault appears only if temperature is high and speed is low. The remedy is a hidden layer that transforms the inputs into a space where the classes become separable.</p>
+<div class="kc" data-answer="1" data-why="A single threshold unit draws one linear boundary, and XOR needs at least two [1]."><p class="q">Check your understanding. Why can a single perceptron not learn XOR?</p><label><input type="radio" name="PH0" value="0"> The learning rate is always too large</label><label><input type="radio" name="PH0" value="1"> The two classes of XOR cannot be separated by a single straight line</label><label><input type="radio" name="PH0" value="2"> XOR has too many inputs</label><label><input type="radio" name="PH0" value="3"> The perceptron has no bias term</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Multilayer networks and backpropagation</h2>
+<p>A multilayer perceptron stacks layers of units. Each unit computes a weighted sum of the outputs of the previous layer and applies a nonlinear activation function: the logistic sigmoid, the hyperbolic tangent, or the rectified linear unit, ReLU, which returns max(0, z) and eases the training of deep networks <span class="cite" tabindex="0" data-refs="6">[6]</span>. Without nonlinear activations, any stack of layers collapses into one linear map. With them, a network with one sufficiently wide hidden layer can approximate any continuous function on a bounded domain to any accuracy <span class="cite" tabindex="0" data-refs="7,8">[7, 8]</span>, although the theorem says nothing about how many units are needed or whether training finds them.</p>
+<p>Training minimises a loss, such as the mean squared error for regression or the cross-entropy for classification, by gradient descent. Backpropagation computes the gradient of the loss with respect to every weight efficiently by applying the chain rule layer by layer from the output back to the input <span class="cite" tabindex="0" data-refs="2">[2]</span>. Each weight then moves a small step against its gradient. Modern frameworks such as PyTorch record the operations of the forward pass and compute these gradients automatically <span class="cite" tabindex="0" data-refs="9">[9]</span>.</p>
+<div class="anim" id="anim-mlp"><h4>Animation: A small network learns a curved boundary</h4><p class="small">A network with one hidden layer is trained by gradient descent on points from two classes. Change the number of hidden units and the learning rate, and watch the boundary bend while the loss falls.</p><div class="row" id="nn-sl"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><canvas class="paper" id="nn-cv"></canvas><canvas class="paper" id="nn-loss"></canvas></div>
+<div id="nn-ro"></div><div class="row"><button class="btn" id="nn-play" type="button">Train</button><button class="btn ghost" id="nn-reset" type="button">Reset weights</button></div></div>
+<div class="kc" data-answer="1" data-why="Backpropagation is an efficient application of the chain rule that yields all partial derivatives in one backward pass [2]."><p class="q">Check your understanding. What does backpropagation compute?</p><label><input type="radio" name="PH2" value="0"> The optimal number of hidden units</label><label><input type="radio" name="PH2" value="1"> The gradient of the loss with respect to all weights, using the chain rule</label><label><input type="radio" name="PH2" value="2"> The training data for the next epoch</label><label><input type="radio" name="PH2" value="3"> The activation function</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Optimisation in practice</h2>
+<p>Plain gradient descent uses the whole training set for every step. Stochastic gradient descent uses small random mini-batches, which is faster and adds noise that can help to escape poor regions. Momentum accumulates a moving average of gradients and damps oscillation across narrow valleys. Adam adapts the step size of every weight from running estimates of the first and second moments of its gradient and is a robust default <span class="cite" tabindex="0" data-refs="10">[10]</span>. The learning rate remains the most important setting: Too small and training crawls, too large and the loss oscillates or diverges.</p>
+<p>Initialisation matters because signals must neither vanish nor explode as they pass through many layers. Glorot and Bengio proposed scaling the initial weights with the number of inputs and outputs of a layer <span class="cite" tabindex="0" data-refs="11">[11]</span>. Batch normalisation standardises the inputs of a layer over each mini-batch and often allows larger learning rates <span class="cite" tabindex="0" data-refs="12">[12]</span>. Inputs of different units, such as temperatures in degrees and pressures in millibars, should be standardised before training, as for k-means and support vector machines.</p>
+<h2>Generalisation and regularisation</h2>
+<p>Networks with many weights can memorise their training data. The standard defences are a validation set with early stopping, which keeps the weights from the epoch with the lowest validation loss; weight decay, which penalises large weights like ridge regression; and dropout, which randomly switches off units during training so that the network cannot rely on any single unit <span class="cite" tabindex="0" data-refs="3">[3]</span>. Learning curves of training and validation loss over epochs show whether a network underfits, with both losses high, or overfits, with a growing gap.</p>
+<p>On tabular data of moderate size, the tree ensembles of Weeks 7 and 8 are often as accurate as networks and easier to tune, so a network must earn its place by a fair comparison. Networks have long been applied in engineering: Yeh modelled concrete strength with them <span class="cite" tabindex="0" data-refs="13">[13]</span>, and metaheuristics such as the ant lion optimiser have been used to train them where gradient methods struggle <span class="cite" tabindex="0" data-refs="14">[14]</span>. Their decisive advantages appear with images, signals, sequences and text, where they learn features that would otherwise have to be designed by hand <span class="cite" tabindex="0" data-refs="15">[15]</span>. Weeks 11 to 13 follow this path.</p>
+<div class="kc" data-answer="1" data-why="A rising validation loss with falling training loss signals overfitting; early stopping and regularisation address it [3]."><p class="q">Check your understanding. Training loss keeps falling, while validation loss has been rising for 30 epochs. What should be done?</p><label><input type="radio" name="PH3" value="0"> Train longer with the same settings</label><label><input type="radio" name="PH3" value="1"> Use the weights from the epoch with the lowest validation loss and consider more regularisation</label><label><input type="radio" name="PH3" value="2"> Remove the validation set</label><label><input type="radio" name="PH3" value="3"> Increase the learning rate</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- python-step -->
+
+<h2>Python step 10: Matrices, shapes and tensors</h2>
+<h3>Vectors, matrices and the @ operator</h3>
+<p>A layer of a neural network multiplies its inputs by a weight matrix and adds a bias. When a batch of inputs is stored as a matrix X with one example per row, the whole layer is <code>X @ W + b</code>, where <code>@</code> is the matrix product. The shapes must match: A matrix of shape (4, 2) times one of shape (2, 2) gives shape (4, 2). NumPy adds the bias vector to every row automatically, a rule called broadcasting. The network below solves XOR with hand-set weights: One hidden unit acts as OR, the other as AND, and the output fires for OR but not for AND.</p>
+<pre><code class="language-python">import numpy as np
+
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])   # four input examples
+W1 = np.array([[1, 1], [1, 1]])                   # column 0: OR unit, column 1: AND unit
+b1 = np.array([-0.5, -1.5])
+H = (X @ W1 + b1 &gt; 0).astype(int)                 # step activation
+w2, b2 = np.array([1, -1]), -0.5
+y = (H @ w2 + b2 &gt; 0).astype(int)
+print(X.shape, W1.shape, H.shape)
+print(H)
+print(y)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">(4, 2) (2, 2) (4, 2)
+[[0 0]
+ [1 0]
+ [1 0]
+ [1 1]]
+[0 1 1 0]
+</code></pre>
+<h3>Activation functions</h3>
+<p>Smooth activation functions replace the step so that gradients exist. The sigmoid squashes any number into the range 0 to 1, the hyperbolic tangent into -1 to 1, and the rectified linear unit keeps positive values and sets negative ones to zero. Written with NumPy, each of them works on whole arrays.</p>
+<pre><code class="language-python">def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+
+def relu(z):
+    return np.maximum(z, 0)
+
+
+z = np.array([-2.0, 0.0, 2.0])
+print(sigmoid(z).round(3), np.tanh(z).round(3), relu(z))
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">[0.119 0.5   0.881] [-0.964  0.     0.964] [0. 0. 2.]
+</code></pre>
+<h3>Tensors</h3>
+<p>PyTorch stores data in tensors, which behave much like NumPy arrays but can also run on graphics processors and record the operations applied to them <span class="cite" tabindex="0" data-refs="9">[9]</span>. Neural network code usually works with 32-bit floats, so conversions from NumPy name the type explicitly. <code>.shape</code> works as in NumPy, <code>.item()</code> extracts a single number, and <code>.numpy()</code> converts back to an array.</p>
+<pre><code class="language-python">import torch
+
+Xt = torch.tensor(X, dtype=torch.float32)
+W1t = torch.tensor(W1, dtype=torch.float32)
+print(Xt.shape, Xt.dtype)
+print((Xt @ W1t).sum().item(), (Xt @ W1t).numpy().tolist())
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">torch.Size([4, 2]) torch.float32
+8.0 [[0.0, 0.0], [1.0, 1.0], [1.0, 1.0], [2.0, 2.0]]
+</code></pre>
+<h3>Gradients with automatic differentiation</h3>
+<p>Training needs the derivative of the loss with respect to every weight. When a tensor is created with <code>requires_grad=True</code>, PyTorch records every operation on it, and <code>backward</code> computes the derivatives with the chain rule. For the loss L = (w x - y)^2 with w = 0.5, x = 2 and y = 3, the derivative is 2 (w x - y) x = -8. A gradient descent step then moves w against the gradient, and <code>torch.no_grad()</code> stops the recording while the weight is updated.</p>
+<pre><code class="language-python">w = torch.tensor(0.5, requires_grad=True)
+x_in, target = torch.tensor(2.0), torch.tensor(3.0)
+loss = (w * x_in - target) ** 2
+loss.backward()
+print(loss.item(), w.grad.item())
+with torch.no_grad():
+    w -= 0.1 * w.grad                  # one gradient descent step with learning rate 0.1
+print(round(w.item(), 4), round(((w * x_in - target) ** 2).item(), 4))
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">4.0 -8.0
+1.3 0.16
+</code></pre>
+<p>The loss falls from 4.0 to about 0.16 in one step. The training loops of this week repeat exactly this pattern for thousands of weights at once.</p>
+<div class="kc" data-answer="2" data-why="The inner dimensions must agree, and the result keeps the outer ones: 32 rows and 4 columns."><p class="q">Check your understanding. A has shape (32, 10) and B has shape (10, 4). What is the shape of A @ B?</p><label><input type="radio" name="PH4" value="0"> (32, 10)</label><label><input type="radio" name="PH4" value="1"> (10, 4)</label><label><input type="radio" name="PH4" value="2"> (32, 4)</label><label><input type="radio" name="PH4" value="3"> The product is not defined</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- /python-step --><h2>Discipline challenges</h2><p>Networks shine when relations are nonlinear and data are plentiful. Choose a row and compare a network with the best model of Weeks 7 and 8 under identical splits.</p>
+<table class="disc">
+<thead>
+<tr>
+<th>Department</th>
+<th>Challenge</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Electrical and Electronics Engineering and Mechanical Engineering</td>
+<td>Power plant output from ambient conditions, UCI 294, as in the notebook <span class="cite" tabindex="0" data-refs="17">[17]</span>.</td>
+</tr>
+<tr>
+<td>Civil Engineering</td>
+<td>Concrete strength with a network, following Yeh's study <span class="cite" tabindex="0" data-refs="13">[13]</span>, compared with gradient boosting.</td>
+</tr>
+<tr>
+<td>Civil Engineering and Physics</td>
+<td>Heating and cooling loads of buildings as a two-output network, UCI 242 <span class="cite" tabindex="0" data-refs="19">[19]</span>.</td>
+</tr>
+<tr>
+<td>Environmental Engineering and Chemical Engineering</td>
+<td>Gas turbine NOx emissions, UCI 551, with a network and a physics-motivated feature <span class="cite" tabindex="0" data-refs="20">[20]</span>.</td>
+</tr>
+<tr>
+<td>Physics and Chemistry</td>
+<td>Critical temperature of superconductors, UCI 464 <span class="cite" tabindex="0" data-refs="21">[21]</span>.</td>
+</tr>
+<tr>
+<td>Mechanical Engineering and Industrial Engineering</td>
+<td>Failure classification on AI4I with a network and class weights <span class="cite" tabindex="0" data-refs="22">[22]</span>.</td>
+</tr>
+<tr>
+<td>Computer Engineering and Mathematics</td>
+<td>Implement the backward pass of a two-hidden-layer network in NumPy and verify it with numerical gradients.</td>
+</tr>
+<tr>
+<td>Food Engineering and Biology</td>
+<td>Dry bean classification with a network compared with the random forest of Week 8 <span class="cite" tabindex="0" data-refs="23">[23]</span>.</td>
+</tr>
+<tr>
+<td>Statistics</td>
+<td>Compare early stopping, weight decay and dropout over ten seeds and report the variability of the test error.</td>
+</tr>
+<tr>
+<td>Mining Engineering, Geology and Earth Sciences Engineering</td>
+<td>Facies classification from well logs with a network and a well-wise split <span class="cite" tabindex="0" data-refs="24">[24]</span>.</td>
+</tr>
+</tbody>
+</table><h2>Review cards</h2><p class="small">Select a card to turn it over.</p><div class="cards"><div class="card" tabindex="0" role="button"><div class="f">Perceptron</div><div class="b">A threshold unit with learned weights; converges on linearly separable data <span class="cite" tabindex="0" data-refs="5">[5]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Backpropagation</div><div class="b">Chain-rule computation of all weight gradients in one backward pass <span class="cite" tabindex="0" data-refs="2">[2]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">ReLU</div><div class="b">max(0, z); a simple activation that eases training of deep networks <span class="cite" tabindex="0" data-refs="6">[6]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Adam</div><div class="b">Adaptive moment estimation; per-weight step sizes from running gradient moments <span class="cite" tabindex="0" data-refs="10">[10]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Early stopping</div><div class="b">Keep the weights from the epoch with the lowest validation loss.</div></div><div class="card" tabindex="0" role="button"><div class="f">nn.Module</div><div class="b">PyTorch base class for networks: layers in __init__, computation in forward.</div></div></div>
+<h2>References</h2><div class="small"><p>[1] Minsky, M., &amp; Papert, S. (1969). <i>Perceptrons: An Introduction to Computational Geometry</i>. MIT Press.</p><p>[2] Rumelhart, D. E., Hinton, G. E., &amp; Williams, R. J. (1986). Learning representations by back-propagating errors. <i>Nature</i>, <i>323</i>(6088), 533-536. <a href="https://doi.org/10.1038/323533a0">https://doi.org/10.1038/323533a0</a></p><p>[3] Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., &amp; Salakhutdinov, R. (2014). Dropout: A simple way to prevent neural networks from overfitting. <i>Journal of Machine Learning Research</i>, <i>15</i>(56), 1929-1958.</p><p>[4] McCulloch, W. S., &amp; Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. <i>The Bulletin of Mathematical Biophysics</i>, <i>5</i>(4), 115-133. <a href="https://doi.org/10.1007/BF02478259">https://doi.org/10.1007/BF02478259</a></p><p>[5] Rosenblatt, F. (1958). The perceptron: A probabilistic model for information storage and organization in the brain. <i>Psychological Review</i>, <i>65</i>(6), 386-408. <a href="https://doi.org/10.1037/h0042519">https://doi.org/10.1037/h0042519</a></p><p>[6] Nair, V., &amp; Hinton, G. E. (2010). Rectified linear units improve restricted Boltzmann machines. In <i>Proceedings of the 27th International Conference on Machine Learning</i> (pp. 807-814).</p><p>[7] Cybenko, G. (1989). Approximation by superpositions of a sigmoidal function. <i>Mathematics of Control, Signals and Systems</i>, <i>2</i>(4), 303-314. <a href="https://doi.org/10.1007/BF02551274">https://doi.org/10.1007/BF02551274</a></p><p>[8] Hornik, K., Stinchcombe, M., &amp; White, H. (1989). Multilayer feedforward networks are universal approximators. <i>Neural Networks</i>, <i>2</i>(5), 359-366. <a href="https://doi.org/10.1016/0893-6080(89)90020-8">https://doi.org/10.1016/0893-6080(89)90020-8</a></p><p>[9] Paszke, A., Gross, S., Massa, F., et al. (2019). PyTorch: An imperative style, high-performance deep learning library. In <i>Advances in Neural Information Processing Systems 32</i> (pp. 8024-8035). <a href="https://arxiv.org/abs/1912.01703">https://arxiv.org/abs/1912.01703</a></p><p>[10] Kingma, D. P., &amp; Ba, J. (2015). Adam: A method for stochastic optimization. In <i>3rd International Conference on Learning Representations (ICLR 2015)</i>. <a href="https://arxiv.org/abs/1412.6980">https://arxiv.org/abs/1412.6980</a></p><p>[11] Glorot, X., &amp; Bengio, Y. (2010). Understanding the difficulty of training deep feedforward neural networks. In <i>Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics, PMLR 9</i> (pp. 249-256).</p><p>[12] Ioffe, S., &amp; Szegedy, C. (2015). Batch normalization: Accelerating deep network training by reducing internal covariate shift. In <i>Proceedings of the 32nd International Conference on Machine Learning, PMLR 37</i> (pp. 448-456). <a href="https://arxiv.org/abs/1502.03167">https://arxiv.org/abs/1502.03167</a></p><p>[13] Yeh, I.-C. (1998). Modeling of strength of high-performance concrete using artificial neural networks. <i>Cement and Concrete Research</i>, <i>28</i>(12), 1797-1808. <a href="https://doi.org/10.1016/S0008-8846(98)00165-3">https://doi.org/10.1016/S0008-8846(98)00165-3</a></p><p>[14] Kose, U. (2018). An ant-lion optimizer-trained artificial neural network system for chaotic electroencephalogram (EEG) prediction. <i>Applied Sciences</i>, <i>8</i>(9), 1613. <a href="https://doi.org/10.3390/app8091613">https://doi.org/10.3390/app8091613</a></p><p>[15] LeCun, Y., Bengio, Y., &amp; Hinton, G. (2015). Deep learning. <i>Nature</i>, <i>521</i>(7553), 436-444. <a href="https://doi.org/10.1038/nature14539">https://doi.org/10.1038/nature14539</a></p><p>[16] Goodfellow, I., Bengio, Y., &amp; Courville, A. (2016). <i>Deep Learning</i>. MIT Press.</p><p>[17] Tüfekci, P. (2014). Prediction of full load electrical power output of a base load operated combined cycle power plant using machine learning methods. <i>International Journal of Electrical Power &amp; Energy Systems</i>, <i>60</i>, 126-140. <a href="https://doi.org/10.1016/j.ijepes.2014.02.027">https://doi.org/10.1016/j.ijepes.2014.02.027</a></p><p>[18] Harris, C. R., Millman, K. J., van der Walt, S. J., et al. (2020). Array programming with NumPy. <i>Nature</i>, <i>585</i>(7825), 357-362. <a href="https://doi.org/10.1038/s41586-020-2649-2">https://doi.org/10.1038/s41586-020-2649-2</a></p><p>[19] Tsanas, A., &amp; Xifara, A. (2012). Accurate quantitative estimation of energy performance of residential buildings using statistical machine learning tools. <i>Energy and Buildings</i>, <i>49</i>, 560-567. <a href="https://doi.org/10.1016/j.enbuild.2012.03.003">https://doi.org/10.1016/j.enbuild.2012.03.003</a></p><p>[20] Kaya, H., Tüfekci, P., &amp; Uzun, E. (2019). Predicting CO and NOx emissions from gas turbines: Novel data and a benchmark PEMS. <i>Turkish Journal of Electrical Engineering and Computer Sciences</i>, <i>27</i>(6), 4783-4796. <a href="https://doi.org/10.3906/elk-1807-87">https://doi.org/10.3906/elk-1807-87</a></p><p>[21] Hamidieh, K. (2018). A data-driven statistical model for predicting the critical temperature of a superconductor. <i>Computational Materials Science</i>, <i>154</i>, 346-354. <a href="https://doi.org/10.1016/j.commatsci.2018.07.052">https://doi.org/10.1016/j.commatsci.2018.07.052</a></p><p>[22] Matzka, S. (2020). Explainable artificial intelligence for predictive maintenance applications. In <i>2020 Third International Conference on Artificial Intelligence for Industries (AI4I)</i> (pp. 69-74). IEEE. <a href="https://doi.org/10.1109/AI4I49448.2020.00023">https://doi.org/10.1109/AI4I49448.2020.00023</a></p><p>[23] Koklu, M., &amp; Ozkan, I. A. (2020). Multiclass classification of dry beans using computer vision and machine learning techniques. <i>Computers and Electronics in Agriculture</i>, <i>174</i>, 105507. <a href="https://doi.org/10.1016/j.compag.2020.105507">https://doi.org/10.1016/j.compag.2020.105507</a></p><p>[24] Hall, B. (2016). Facies classification using machine learning. <i>The Leading Edge</i>, <i>35</i>(10), 906-909. <a href="https://doi.org/10.1190/tle35100906.1">https://doi.org/10.1190/tle35100906.1</a></p></div></article>
+<script type="application/json" id="refdata">{"1": "Minsky, M., &amp; Papert, S. (1969). <i>Perceptrons: An Introduction to Computational Geometry</i>. MIT Press.", "2": "Rumelhart, D. E., Hinton, G. E., &amp; Williams, R. J. (1986). Learning representations by back-propagating errors. <i>Nature</i>, <i>323</i>(6088), 533-536. <a href=\"https://doi.org/10.1038/323533a0\">https://doi.org/10.1038/323533a0</a>", "3": "Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., &amp; Salakhutdinov, R. (2014). Dropout: A simple way to prevent neural networks from overfitting. <i>Journal of Machine Learning Research</i>, <i>15</i>(56), 1929-1958.", "4": "McCulloch, W. S., &amp; Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. <i>The Bulletin of Mathematical Biophysics</i>, <i>5</i>(4), 115-133. <a href=\"https://doi.org/10.1007/BF02478259\">https://doi.org/10.1007/BF02478259</a>", "5": "Rosenblatt, F. (1958). The perceptron: A probabilistic model for information storage and organization in the brain. <i>Psychological Review</i>, <i>65</i>(6), 386-408. <a href=\"https://doi.org/10.1037/h0042519\">https://doi.org/10.1037/h0042519</a>", "6": "Nair, V., &amp; Hinton, G. E. (2010). Rectified linear units improve restricted Boltzmann machines. In <i>Proceedings of the 27th International Conference on Machine Learning</i> (pp. 807-814).", "7": "Cybenko, G. (1989). Approximation by superpositions of a sigmoidal function. <i>Mathematics of Control, Signals and Systems</i>, <i>2</i>(4), 303-314. <a href=\"https://doi.org/10.1007/BF02551274\">https://doi.org/10.1007/BF02551274</a>", "8": "Hornik, K., Stinchcombe, M., &amp; White, H. (1989). Multilayer feedforward networks are universal approximators. <i>Neural Networks</i>, <i>2</i>(5), 359-366. <a href=\"https://doi.org/10.1016/0893-6080(89)90020-8\">https://doi.org/10.1016/0893-6080(89)90020-8</a>", "9": "Paszke, A., Gross, S., Massa, F., et al. (2019). PyTorch: An imperative style, high-performance deep learning library. In <i>Advances in Neural Information Processing Systems 32</i> (pp. 8024-8035). <a href=\"https://arxiv.org/abs/1912.01703\">https://arxiv.org/abs/1912.01703</a>", "10": "Kingma, D. P., &amp; Ba, J. (2015). Adam: A method for stochastic optimization. In <i>3rd International Conference on Learning Representations (ICLR 2015)</i>. <a href=\"https://arxiv.org/abs/1412.6980\">https://arxiv.org/abs/1412.6980</a>", "11": "Glorot, X., &amp; Bengio, Y. (2010). Understanding the difficulty of training deep feedforward neural networks. In <i>Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics, PMLR 9</i> (pp. 249-256).", "12": "Ioffe, S., &amp; Szegedy, C. (2015). Batch normalization: Accelerating deep network training by reducing internal covariate shift. In <i>Proceedings of the 32nd International Conference on Machine Learning, PMLR 37</i> (pp. 448-456). <a href=\"https://arxiv.org/abs/1502.03167\">https://arxiv.org/abs/1502.03167</a>", "13": "Yeh, I.-C. (1998). Modeling of strength of high-performance concrete using artificial neural networks. <i>Cement and Concrete Research</i>, <i>28</i>(12), 1797-1808. <a href=\"https://doi.org/10.1016/S0008-8846(98)00165-3\">https://doi.org/10.1016/S0008-8846(98)00165-3</a>", "14": "Kose, U. (2018). An ant-lion optimizer-trained artificial neural network system for chaotic electroencephalogram (EEG) prediction. <i>Applied Sciences</i>, <i>8</i>(9), 1613. <a href=\"https://doi.org/10.3390/app8091613\">https://doi.org/10.3390/app8091613</a>", "15": "LeCun, Y., Bengio, Y., &amp; Hinton, G. (2015). Deep learning. <i>Nature</i>, <i>521</i>(7553), 436-444. <a href=\"https://doi.org/10.1038/nature14539\">https://doi.org/10.1038/nature14539</a>", "16": "Goodfellow, I., Bengio, Y., &amp; Courville, A. (2016). <i>Deep Learning</i>. MIT Press.", "17": "T\u00fcfekci, P. (2014). Prediction of full load electrical power output of a base load operated combined cycle power plant using machine learning methods. <i>International Journal of Electrical Power &amp; Energy Systems</i>, <i>60</i>, 126-140. <a href=\"https://doi.org/10.1016/j.ijepes.2014.02.027\">https://doi.org/10.1016/j.ijepes.2014.02.027</a>", "18": "Harris, C. R., Millman, K. J., van der Walt, S. J., et al. (2020). Array programming with NumPy. <i>Nature</i>, <i>585</i>(7825), 357-362. <a href=\"https://doi.org/10.1038/s41586-020-2649-2\">https://doi.org/10.1038/s41586-020-2649-2</a>", "19": "Tsanas, A., &amp; Xifara, A. (2012). Accurate quantitative estimation of energy performance of residential buildings using statistical machine learning tools. <i>Energy and Buildings</i>, <i>49</i>, 560-567. <a href=\"https://doi.org/10.1016/j.enbuild.2012.03.003\">https://doi.org/10.1016/j.enbuild.2012.03.003</a>", "20": "Kaya, H., T\u00fcfekci, P., &amp; Uzun, E. (2019). Predicting CO and NOx emissions from gas turbines: Novel data and a benchmark PEMS. <i>Turkish Journal of Electrical Engineering and Computer Sciences</i>, <i>27</i>(6), 4783-4796. <a href=\"https://doi.org/10.3906/elk-1807-87\">https://doi.org/10.3906/elk-1807-87</a>", "21": "Hamidieh, K. (2018). A data-driven statistical model for predicting the critical temperature of a superconductor. <i>Computational Materials Science</i>, <i>154</i>, 346-354. <a href=\"https://doi.org/10.1016/j.commatsci.2018.07.052\">https://doi.org/10.1016/j.commatsci.2018.07.052</a>", "22": "Matzka, S. (2020). Explainable artificial intelligence for predictive maintenance applications. In <i>2020 Third International Conference on Artificial Intelligence for Industries (AI4I)</i> (pp. 69-74). IEEE. <a href=\"https://doi.org/10.1109/AI4I49448.2020.00023\">https://doi.org/10.1109/AI4I49448.2020.00023</a>", "23": "Koklu, M., &amp; Ozkan, I. A. (2020). Multiclass classification of dry beans using computer vision and machine learning techniques. <i>Computers and Electronics in Agriculture</i>, <i>174</i>, 105507. <a href=\"https://doi.org/10.1016/j.compag.2020.105507\">https://doi.org/10.1016/j.compag.2020.105507</a>", "24": "Hall, B. (2016). Facies classification using machine learning. <i>The Leading Edge</i>, <i>35</i>(10), 906-909. <a href=\"https://doi.org/10.1190/tle35100906.1\">https://doi.org/10.1190/tle35100906.1</a>"}</script>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: September 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.values(st).filter(Boolean).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLecture(10);
+(function(root){
+let H=6, lr=0.3, net, pts=[], hist=[], ep=0; const r0=RNG(4);
+for(let i=0;i<200;i++){ const a=r0.uniform(-1,1), b=r0.uniform(-1,1); pts.push([a,b,(a*a+b*b<0.45)?1:0]); }
+const sl=root.querySelector('#nn-sl');
+slider(sl,{label:'Hidden units',min:1,max:16,step:1,value:H},v=>{H=v;reset();});
+slider(sl,{label:'Learning rate',min:0.01,max:2,step:0.01,value:lr},v=>{lr=v;});
+const ro=readout(root.querySelector('#nn-ro'),['epoch','loss','accuracy']);
+function reset(){ const r=RNG(Math.floor(Math.random()*1e6)); net={W1:Array.from({length:H},()=>[r.normal(),r.normal()]),b1:Array(H).fill(0).map(()=>0.1*r.normal()),W2:Array.from({length:H},()=>r.normal()/Math.sqrt(H)),b2:0}; hist=[]; ep=0; draw(); }
+function fwd(x){ const h=net.W1.map((w,j)=>Math.tanh(w[0]*x[0]+w[1]*x[1]+net.b1[j])); const z=h.reduce((s,v,j)=>s+v*net.W2[j],net.b2); return [h,1/(1+Math.exp(-z))]; }
+function epoch(){ let L=0; const g={W1:net.W1.map(()=>[0,0]),b1:Array(H).fill(0),W2:Array(H).fill(0),b2:0};
+  pts.forEach(([a,b,y])=>{ const [h,p]=fwd([a,b]); L+=-(y*Math.log(p+1e-9)+(1-y)*Math.log(1-p+1e-9)); const d=p-y; g.b2+=d; h.forEach((hv,j)=>{ g.W2[j]+=d*hv; const dh=d*net.W2[j]*(1-hv*hv); g.W1[j][0]+=dh*a; g.W1[j][1]+=dh*b; g.b1[j]+=dh; }); });
+  const n=pts.length; net.b2-=lr*g.b2/n; for(let j=0;j<H;j++){ net.W2[j]-=lr*g.W2[j]/n; net.b1[j]-=lr*g.b1[j]/n; net.W1[j][0]-=lr*g.W1[j][0]/n; net.W1[j][1]-=lr*g.W1[j][1]/n; }
+  ep++; hist.push(L/n); }
+function draw(){ const acc=pts.reduce((s,[a,b,y])=>s+((fwd([a,b])[1]>=0.5?1:0)===y),0)/pts.length; ro('epoch',ep); ro('loss',hist.length?hist.at(-1).toFixed(4):'-'); ro('accuracy',acc.toFixed(3)); s1.redraw(); s2.redraw(); }
+const s1=stage(root.querySelector('#nn-cv'),1,(c,w,h)=>{ c.clearRect(0,0,w,h); if(!net) return; const C=COL(); const n=40;
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++){ const p=fwd([-1+2*(i+0.5)/n,1-2*(j+0.5)/n])[1]; c.fillStyle= p>=0.5?`rgba(201,133,16,${0.1+0.4*(p-0.5)})`:`rgba(31,95,139,${0.1+0.4*(0.5-p)})`; c.fillRect(i*w/n,j*h/n,w/n+1,h/n+1); }
+  pts.forEach(([a,b,y])=>dot(c,(a+1)/2*w,(1-b)/2*h,3,y?C.c[1]:C.c[0],C.ink)); });
+const s2=stage(root.querySelector('#nn-loss'),1,(c,w,h)=>{ c.clearRect(0,0,w,h); const C=COL(); const mx=Math.max(0.8,...hist.slice(0,5)); const f=frame(c,w,h,{x0:0,x1:Math.max(50,ep),y0:0,y1:mx,xlabel:'epoch',ylabel:'cross-entropy',ticks:4}); polyline(c,hist.map((v,i)=>[f.X(i+1),f.Y(v)]),C.c[0],2); });
+const lp=loop(()=>{ for(let k=0;k<5;k++) epoch(); draw(); if(ep>=3000){lp.stop();pb.textContent='Train';} }); const pb=root.querySelector('#nn-play');
+pb.onclick=()=>{ if(lp.running){lp.stop();pb.textContent='Train';} else {lp.start();pb.textContent='Pause';} }; root.querySelector('#nn-reset').onclick=()=>{ lp.stop(); pb.textContent='Train'; reset(); }; reset();
+if(reduced()){ for(let k=0;k<400;k++) epoch(); draw(); }
+})(document.getElementById('anim-mlp'));</script><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script><script>try{mermaid.initialize({startOnLoad:true,theme:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral"})}catch(e){}</script></body></html>

@@ -1,0 +1,553 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patterns without Labels: Clustering, Signals and Anomaly Detection | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 9 of 14</p><h1>Patterns without Labels: Clustering, Signals and Anomaly Detection</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="lab.html">Interactive lab</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-09/NB09_unsupervised_signals_anomalies.ipynb">Colab notebook</a><a href="Week09_Lecture_Notes.pdf">PDF notes</a><a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/tree/main/weeks/week-09">Week folder on GitHub</a></nav></header>
+<div class="lec-tools"><div class="lec-prog"><span class="lec-bar"><i></i></span><span class="lec-txt" aria-live="polite"></span></div></div>
+<article class="lecture"><h2>Overview</h2>
+<p>Sensors, logs and catalogues produce far more data than anyone can label. Unsupervised learning finds structure in such data: groups of similar records, a few directions that carry most of the variation, and points that do not fit <span class="cite" tabindex="0" data-refs="2,3">[2, 3]</span>. This week clusters well logs into rock types without using the geologists' labels <span class="cite" tabindex="0" data-refs="15">[15]</span>, groups earthquakes by density in the catalogue of the U.S. Geological Survey <span class="cite" tabindex="0" data-refs="1,16">[1, 16]</span>, and moves to signals: The Fourier transform and envelope analysis reveal bearing faults in vibration data, and an isolation forest learns what normal vibration looks like <span class="cite" tabindex="0" data-refs="10,11,13">[10, 11, 13]</span>.</p>
+<p><strong>Estimated study time:</strong> 9 to 11 hours.</p>
+<h2>Learning outcomes</h2>
+<p>By the end of the week, students are expected to apply k-means with proper scaling and choose the number of clusters with the silhouette score, to interpret principal components and their explained variance, to use DBSCAN for clusters of arbitrary shape and noise, to compute and read the spectrum of a sampled signal, to compute bearing fault frequencies and condition indicators such as RMS, kurtosis and crest factor, and to train and judge an anomaly detector on data from normal operation.</p>
+<h2>Python in this week</h2>
+<p>The lecture ends with Python step 9: Signals, features and clustering with NumPy. It covers time vectors and sampled signals, signal statistics, windows and the axis argument, spectra with the fast Fourier transform, and k-means clustering and a z-score anomaly flag written with broadcasting, applied to machine vibration <span class="cite" tabindex="0" data-refs="17">[17]</span>. The hands-on part of the notebook opens with the same step as runnable cells and short exercises with immediate feedback, and its later sections mark further constructs as Python moves.</p><h2>Study path</h2><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Activity</th>
+<th>Suggested time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Read the lecture with its animations on the <a href="lecture.html">lecture page</a>, or read the <a href="Week09_Lecture_Notes.pdf">PDF version</a></td>
+<td>2 hours</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Explore the <a href="lab.html">interactive lab</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Study the Python step at the end of the lecture, then run the same step at the start of the hands-on part of the <a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-09/NB09_unsupervised_signals_anomalies.ipynb">Colab notebook</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Work through the rest of the notebook, including its Python moves and exercises</td>
+<td>3 hours</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Solve the discipline challenge of your department</td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Take the self-assessment in the lab (tab: Check yourself)</td>
+<td>20 minutes</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Write the reflection, export the learning log and complete the weekly task</td>
+<td>1 hour</td>
+</tr>
+</tbody>
+</table><h2>Week at a glance</h2><pre class="mermaid">flowchart LR
+  U[&quot;Unlabelled data&quot;] --&gt; K[&quot;k-means and the silhouette&quot;]
+  U --&gt; P[&quot;PCA: directions of variance&quot;]
+  U --&gt; D[&quot;DBSCAN: density and noise&quot;]
+  K --&gt; F[&quot;Rock types from well logs&quot;]
+  D --&gt; Q[&quot;Earthquake clusters&quot;]
+  S[&quot;Vibration signals&quot;] --&gt; FFT[&quot;Spectrum and envelope&quot;]
+  FFT --&gt; B[&quot;Bearing fault frequencies&quot;]
+  FFT --&gt; A[&quot;Anomaly detection: isolation forest&quot;]</pre>
+<h2>Learning without labels</h2>
+<p>Supervised learning needs a label for every example. In engineering, labels are expensive: A geologist must interpret each metre of a well, a technician must confirm each fault, and many rare events have never been observed. Unsupervised learning works with the inputs alone. Clustering groups similar records, dimensionality reduction summarises many correlated variables with a few, and anomaly detection flags records that differ from the bulk of the data <span class="cite" tabindex="0" data-refs="2,3">[2, 3]</span>. The results are hypotheses that domain experts must interpret: A cluster is not a rock type, and an anomaly is not a fault, until someone checks.</p>
+<h2>k-means and the choice of k</h2>
+<p>k-means represents each cluster by a centre and alternates two steps: assign every point to its nearest centre, then move every centre to the mean of its points. Each step lowers the sum of squared distances, so the procedure converges, although only to a local optimum <span class="cite" tabindex="0" data-refs="4,5">[4, 5]</span>. The k-means++ initialisation spreads the initial centres out and improves both speed and quality <span class="cite" tabindex="0" data-refs="6">[6]</span>. Because k-means uses Euclidean distance, inputs with large numerical ranges dominate unless they are scaled; gamma-ray counts in API units would otherwise swamp a photoelectric factor.</p>
+<p>The number of clusters is a modelling choice. The within-cluster sum of squares always falls as k grows, so the elbow of its curve is only a rough guide. The silhouette of a point compares its mean distance to its own cluster with that to the nearest other cluster, and the average silhouette over all points is highest for well-separated, compact clusters <span class="cite" tabindex="0" data-refs="7">[7]</span>. Neither criterion knows the physics; well logs may form five clear clusters although geologists distinguish nine facies.</p>
+<div class="anim" id="anim-kmeans"><h4>Animation: The two steps of k-means</h4><p class="small">Press Step to alternate between assigning points to the nearest centre and moving each centre to the mean of its points. Try several restarts: Different initial centres can end in different solutions.</p><div class="row" id="km-sl"></div><canvas class="paper" id="km-cv" aria-label="k-means iterations"></canvas><div id="km-ro"></div>
+<div class="row"><button class="btn" id="km-step" type="button">Step</button><button class="btn ghost" id="km-run" type="button">Run to convergence</button><button class="btn ghost" id="km-restart" type="button">Restart with new centres</button></div></div>
+<div class="kc" data-answer="1" data-why="Without scaling, a variable measured in large units decides the distances and hence the clusters."><p class="q">Check your understanding. Why must the inputs usually be standardised before k-means?</p><label><input type="radio" name="PH1" value="0"> k-means cannot handle negative numbers</label><label><input type="radio" name="PH1" value="1"> Euclidean distances are dominated by variables with large numerical ranges</label><label><input type="radio" name="PH1" value="2"> Standardisation fixes the number of clusters</label><label><input type="radio" name="PH1" value="3"> k-means only works with values between 0 and 1</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Principal component analysis</h2>
+<p>Principal component analysis finds orthogonal directions along which the data vary most <span class="cite" tabindex="0" data-refs="8,9">[8, 9]</span>. The first component is the direction of largest variance, the second the largest remaining variance orthogonal to the first, and so on. The explained variance ratio of each component shows how much information a projection keeps, and the loadings show how each original variable contributes. In well logging, the first components often combine porosity and density logs, which respond to the same rock properties. PCA serves visualisation, compression, noise reduction and the detection of anomalies as points that the leading components reconstruct poorly.</p>
+<h2>Density-based clustering</h2>
+<p>Clusters in engineering data are not always round. Earthquakes line up along faults, defects form streaks on a web of fabric, and traffic accidents gather along roads. DBSCAN defines clusters as regions of high density: A point with at least a minimum number of neighbours within a radius eps is a core point, clusters grow by connecting core points that are neighbours, and points that belong to no cluster are labelled noise <span class="cite" tabindex="0" data-refs="1">[1]</span>. DBSCAN finds clusters of arbitrary shape and does not need the number of clusters, but eps and the minimum number of points must fit the density of the data. For epicentres, distances should be measured on the sphere, for example with the haversine formula, rather than in degrees.</p>
+<div class="kc" data-answer="1" data-why="DBSCAN follows dense regions of any shape and labels sparse background events as noise [1]."><p class="q">Check your understanding. Aftershocks form an elongated band along a fault, surrounded by scattered background events. Which method suits this pattern best?</p><label><input type="radio" name="PH2" value="0"> k-means with k = 2</label><label><input type="radio" name="PH2" value="1"> DBSCAN</label><label><input type="radio" name="PH2" value="2"> PCA with one component</label><label><input type="radio" name="PH2" value="3"> Linear regression</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Signals in the frequency domain</h2>
+<p>Many engineering sensors produce time series sampled at a fixed rate: accelerometers on machines, microphones, current transducers, seismometers. The discrete Fourier transform expresses a sampled signal as a sum of sinusoids, and the fast Fourier transform computes it efficiently <span class="cite" tabindex="0" data-refs="10">[10]</span>. The sampling rate fs limits the highest frequency that can be represented to fs / 2, the Nyquist frequency, and a record of duration T resolves frequencies that differ by 1 / T. Rotating machines produce peaks at the shaft frequency and its harmonics, and faults add their own frequencies.</p>
+<p>A rolling-element bearing with a damaged outer race produces an impact every time a rolling element passes the damage. The ball pass frequency of the outer race is BPFO = (n / 2) fr (1 - (d / D) cos phi), with n rolling elements of diameter d, pitch diameter D, contact angle phi and shaft frequency fr. The impacts excite structural resonances at high frequency, so the fault frequency often appears not in the raw spectrum but in the spectrum of the signal's envelope, obtained after demodulation. Envelope analysis is the benchmark technique of bearing diagnostics <span class="cite" tabindex="0" data-refs="11">[11]</span>, and the Case Western Reserve University data are the standard test set for it <span class="cite" tabindex="0" data-refs="12">[12]</span>. Simple condition indicators complement spectra: the root mean square (RMS) measures vibration energy, kurtosis measures impulsiveness, and the crest factor compares the peak with the RMS.</p>
+<div class="kc" data-answer="1" data-why="BPFO = 4.5 x 30 x (1 - 0.2034), which is about 107.5 Hz."><p class="q">Check your understanding. A bearing has 9 balls, d / D = 0.2034, contact angle zero, and the shaft turns at 30 Hz. What is the BPFO?</p><label><input type="radio" name="PH3" value="0"> 30 Hz</label><label><input type="radio" name="PH3" value="1"> About 107.5 Hz</label><label><input type="radio" name="PH3" value="2"> About 135 Hz</label><label><input type="radio" name="PH3" value="3"> About 162.5 Hz</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Anomaly detection</h2>
+<p>An anomaly detector learns what normal data look like and scores how unusual a new record is <span class="cite" tabindex="0" data-refs="3">[3]</span>. Statistical rules flag values far from the mean in units of standard deviation. Reconstruction-based methods flag records that a PCA model or an autoencoder reconstructs poorly. Isolation forests grow random trees that split the data at random thresholds; anomalies are isolated after few splits, so the average path length to isolate a point becomes its score <span class="cite" tabindex="0" data-refs="13">[13]</span>. In condition monitoring, detectors are usually trained on data from normal operation, because faults are rare and diverse. The alarm threshold, as in Week 8, depends on the costs of false alarms and missed faults, and a detector must be re-examined when operating conditions change, since a new load or speed can look like an anomaly <span class="cite" tabindex="0" data-refs="14">[14]</span>.</p>
+<figure><img src="figures/w09_fig2.png" alt="Spectrum and envelope spectrum of a synthetic vibration signal from a bearing with an outer-race defect. The fault frequency and its harmonics stand out only in the envelope spectrum ." loading="lazy"><figcaption>Figure 9.1. Spectrum and envelope spectrum of a synthetic vibration signal from a bearing with an outer-race defect. The fault frequency and its harmonics stand out only in the envelope spectrum <span class="cite" tabindex="0" data-refs="11">[11]</span>.</figcaption></figure>
+
+<div class="kc" data-answer="1" data-why="The detector has learned normal behaviour for one condition; data from other conditions look unusual even without a fault."><p class="q">Check your understanding. An isolation forest was trained on vibration features from a pump at 50 percent load. After the load is raised to 90 percent, alarms rise sharply although the pump is healthy. What is the most likely explanation?</p><label><input type="radio" name="PH4" value="0"> Isolation forests cannot handle more than one feature</label><label><input type="radio" name="PH4" value="1"> The new operating condition lies outside the normal data used for training</label><label><input type="radio" name="PH4" value="2"> The FFT is wrong at high load</label><label><input type="radio" name="PH4" value="3"> Kurtosis cannot be computed at high load</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- python-step -->
+
+<h2>Python step 9: Signals, features and clustering with NumPy</h2>
+<h3>Sampling a signal</h3>
+<p>A vibration sensor records values at a fixed sampling rate, for example 2000 samples per second. The time stamps follow from <code>np.arange(n) / rate</code>, and a sinusoid of frequency f is <code>np.sin(2 * np.pi * f * t)</code>. The practice signal below adds a component at the running speed of a shaft, a weaker component near a bearing defect frequency and random noise.</p>
+<pre><code class="language-python">import numpy as np
+
+rate_hz = 2000                                    # samples per second
+time_s = np.arange(2000) / rate_hz                # one second of time stamps
+shaft = 0.8 * np.sin(2 * np.pi * 25 * time_s)     # 25 Hz running speed
+fault = 0.3 * np.sin(2 * np.pi * 107 * time_s)    # component near a defect frequency
+noise = 0.2 * np.random.default_rng(3).normal(size=time_s.size)
+vib = shaft + fault + noise
+print(time_s.size, time_s[:3], round(float(vib.std()), 3))
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">2000 [0.     0.0005 0.001 ] 0.644
+</code></pre>
+<h3>Statistics of a signal</h3>
+<p>Condition monitoring starts with simple statistics. The root mean square (RMS) measures the energy of a signal, the peak is its largest absolute value, and the crest factor, the peak divided by the RMS, rises when short impacts appear, which is typical of developing bearing damage.</p>
+<pre><code class="language-python">rms = np.sqrt(np.mean(vib ** 2))
+peak = np.max(np.abs(vib))
+print(f&quot;RMS {rms:.3f}, peak {peak:.3f}, crest factor {peak / rms:.2f}&quot;)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">RMS 0.644, peak 1.525, crest factor 2.37
+</code></pre>
+<h3>Windows and the axis argument</h3>
+<p>Monitoring systems compute features for short windows of a signal. <code>reshape</code> rearranges the 2000 samples into a table of 10 windows with 200 samples each; the value -1 lets NumPy work out that length. Functions such as <code>np.mean</code> accept an <code>axis</code> argument: <code>axis=1</code> works along each row and returns one value per window, and <code>axis=0</code> works down the columns.</p>
+<pre><code class="language-python">windows = vib.reshape(10, -1)                   # 10 windows of 0.1 s each
+rms_per_window = np.sqrt(np.mean(windows ** 2, axis=1))
+print(windows.shape, rms_per_window.shape)
+print(rms_per_window.round(3))
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">(10, 200) (10,)
+[0.653 0.655 0.646 0.642 0.655 0.636 0.639 0.627 0.647 0.639]
+</code></pre>
+<h3>Spectra</h3>
+<p>The fast Fourier transform decomposes a signal into sinusoids and shows at which frequencies its energy lies. For real signals, <code>np.fft.rfft</code> returns the non-negative frequencies, and <code>np.fft.rfftfreq</code> gives the frequency of each value. Dividing the magnitudes by half the number of samples turns them into amplitudes. A boolean mask restricts the search to a frequency band, and <code>np.isclose</code> compares floats with a tolerance instead of exact equality.</p>
+<pre><code class="language-python">spectrum = np.abs(np.fft.rfft(vib)) / (vib.size / 2)
+freqs = np.fft.rfftfreq(vib.size, d=1 / rate_hz)
+print(freqs[np.argmax(spectrum)], &quot;Hz is the strongest component&quot;)
+band = (freqs &gt; 80) &amp; (freqs &lt; 150)
+print(freqs[band][np.argmax(spectrum[band])], &quot;Hz is the strongest component between 80 and 150 Hz&quot;)
+print(f&quot;amplitude at 107 Hz: {spectrum[np.isclose(freqs, 107)][0]:.3f}&quot;)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">25.0 Hz is the strongest component
+107.0 Hz is the strongest component between 80 and 150 Hz
+amplitude at 107 Hz: 0.300
+</code></pre>
+<p>The envelope analysis of this week adds one step for bearing faults, whose short impacts spread their energy over many frequencies and appear clearly only after demodulation.</p>
+<h3>Features for many windows at once</h3>
+<p>Unsupervised methods work on feature tables with one row per example. The code below simulates 20 windows of a healthy machine and 20 windows of a damaged one whose bearing produces short impacts. Broadcasting does most of the work: The sine wave of shape (200,) is added to noise of shape (20, 200), and NumPy repeats the sine for every row. Features computed along <code>axis=1</code> give one value per window, and <code>np.column_stack</code> joins them into a table.</p>
+<pre><code class="language-python">gen9 = np.random.default_rng(9)
+t_w = np.arange(200) / rate_hz                              # windows of 0.1 s
+healthy = 0.5 * np.sin(2 * np.pi * 25 * t_w) + 0.1 * gen9.normal(size=(20, 200))
+damaged = 0.5 * np.sin(2 * np.pi * 25 * t_w) + 0.1 * gen9.normal(size=(20, 200))
+damaged[:, ::40] += 1.5                                     # an impact every 20 ms
+win = np.vstack([healthy, damaged])                         # 40 windows
+rms_w = np.sqrt(np.mean(win ** 2, axis=1))
+crest_w = np.max(np.abs(win), axis=1) / rms_w
+F = np.column_stack([rms_w, crest_w])                       # feature table, one row per window
+print(win.shape, F.shape)
+print(F[[0, 1, 38, 39]].round(2))
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">(40, 200) (40, 2)
+[[0.37 1.93]
+ [0.37 1.97]
+ [0.44 3.71]
+ [0.44 3.76]]
+</code></pre>
+<h3>k-means with broadcasting</h3>
+<p>k-means alternates two steps: Every point joins its nearest centre, and every centre moves to the mean of its points. The features are first standardised column by column, so that RMS and crest factor count equally. The distances from all 40 points to both centres come from a single broadcast: <code>Z[:, None, :]</code> has shape (40, 1, 2), <code>centres[None, :, :]</code> has shape (1, 2, 2), and their difference has shape (40, 2, 2). Summing over the last axis gives a (40, 2) table of squared distances, and <code>argmin(axis=1)</code> picks the nearest centre for every point.</p>
+<pre><code class="language-python">Z = (F - F.mean(axis=0)) / F.std(axis=0)                    # standardise each column
+centres = Z[[0, -1]].copy()                                 # start from the first and the last window
+for _ in range(10):
+    d = ((Z[:, None, :] - centres[None, :, :]) ** 2).sum(axis=2)
+    cluster = d.argmin(axis=1)
+    centres = np.array([Z[cluster == j].mean(axis=0) for j in range(2)])
+print(d.shape, np.bincount(cluster))
+print(&quot;clusters of the healthy windows:&quot;, cluster[:20])
+print(&quot;clusters of the damaged windows:&quot;, cluster[20:])
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">(40, 2) [20 20]
+clusters of the healthy windows: [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+clusters of the damaged windows: [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
+</code></pre>
+<h3>A simple anomaly flag</h3>
+<p>When examples of normal behaviour are available, a z-score flags values that lie far from them: z = (x - mean) / standard deviation, with the mean and the standard deviation taken from the healthy windows only. Windows with an absolute z above 3 are reported. The anomaly detection methods of this week extend the same idea to several features at once.</p>
+<pre><code class="language-python">mu, sd = rms_w[:20].mean(), rms_w[:20].std()
+z = (rms_w - mu) / sd
+print(&quot;flagged windows:&quot;, np.flatnonzero(np.abs(z) &gt; 3))
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">flagged windows: [20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39]
+</code></pre>
+<div class="kc" data-answer="1" data-why="axis=0 sums down the rows, which leaves one value per column, and the array has four columns."><p class="q">Check your understanding. For a = np.arange(12).reshape(3, 4), what is the shape of a.sum(axis=0)?</p><label><input type="radio" name="PH5" value="0"> (3,)</label><label><input type="radio" name="PH5" value="1"> (4,)</label><label><input type="radio" name="PH5" value="2"> (12,)</label><label><input type="radio" name="PH5" value="3"> (3, 4)</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- /python-step --><h2>Discipline challenges</h2><p>Unlabelled data are everywhere. Choose a row, apply the method named there, and ask an expert, or the literature, whether the structure found makes sense.</p>
+<table class="disc">
+<thead>
+<tr>
+<th>Department</th>
+<th>Challenge</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Geological Engineering and Earth Sciences Engineering</td>
+<td>Cluster the SEG well logs with and without the PE log and compare the clusters with the facies <span class="cite" tabindex="0" data-refs="15">[15]</span>.</td>
+</tr>
+<tr>
+<td>Geophysical Engineering</td>
+<td>DBSCAN on the USGS catalogue for a region and period of your choice; compare clusters with known fault zones <span class="cite" tabindex="0" data-refs="16,18">[16, 18]</span>.</td>
+</tr>
+<tr>
+<td>Mechanical Engineering and Automotive Engineering</td>
+<td>Envelope analysis and kurtosis for bearing signals; test the detector at a new shaft speed <span class="cite" tabindex="0" data-refs="11">[11]</span>.</td>
+</tr>
+<tr>
+<td>Electrical and Electronics Engineering</td>
+<td>Load profiles of buildings or feeders clustered into daily patterns with k-means.</td>
+</tr>
+<tr>
+<td>Civil Engineering</td>
+<td>Anomaly detection on strain or acceleration records of a structure after removing temperature effects.</td>
+</tr>
+<tr>
+<td>Environmental Engineering</td>
+<td>Clusters of air-quality stations by their pollutant time profiles; anomalies as sensor faults or pollution events.</td>
+</tr>
+<tr>
+<td>Mining Engineering</td>
+<td>Clusters of seismic events in a mine and their relation to excavation fronts, with the seismic-bumps data as a start <span class="cite" tabindex="0" data-refs="19">[19]</span>.</td>
+</tr>
+<tr>
+<td>Food Engineering and Biology</td>
+<td>PCA of spectroscopic or compositional measurements to separate product origins.</td>
+</tr>
+<tr>
+<td>Chemistry and Chemical Engineering</td>
+<td>PCA-based monitoring of a batch process: reconstruction error as an alarm.</td>
+</tr>
+<tr>
+<td>Physics and Statistics</td>
+<td>Compare k-means, a Gaussian mixture and DBSCAN on simulated data with known structure; discuss what each assumes.</td>
+</tr>
+</tbody>
+</table><h2>Review cards</h2><p class="small">Select a card to turn it over.</p><div class="cards"><div class="card" tabindex="0" role="button"><div class="f">k-means</div><div class="b">Alternate assignment to the nearest centre and centre update; minimises within-cluster squared distances <span class="cite" tabindex="0" data-refs="4">[4]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Silhouette</div><div class="b">Compares a point&#x27;s distance to its own cluster with that to the nearest other cluster; ranges from -1 to 1 <span class="cite" tabindex="0" data-refs="7">[7]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Principal component</div><div class="b">Orthogonal direction of maximal remaining variance in the data <span class="cite" tabindex="0" data-refs="9">[9]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">DBSCAN</div><div class="b">Density-based clustering with core points, reachability and noise; parameters eps and min_samples <span class="cite" tabindex="0" data-refs="1">[1]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">BPFO</div><div class="b">(n / 2) fr (1 - (d / D) cos phi): the outer-race fault frequency of a rolling bearing.</div></div><div class="card" tabindex="0" role="button"><div class="f">Isolation forest</div><div class="b">Random trees isolate anomalies in few splits; the path length is the anomaly score <span class="cite" tabindex="0" data-refs="13">[13]</span>.</div></div></div>
+<h2>References</h2><div class="small"><p>[1] Ester, M., Kriegel, H.-P., Sander, J., &amp; Xu, X. (1996). A density-based algorithm for discovering clusters in large spatial databases with noise. In <i>Proceedings of the Second International Conference on Knowledge Discovery and Data Mining (KDD-96)</i> (pp. 226-231). AAAI Press.</p><p>[2] Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</i> (2nd ed.). Springer. <a href="https://doi.org/10.1007/978-0-387-84858-7">https://doi.org/10.1007/978-0-387-84858-7</a></p><p>[3] Chandola, V., Banerjee, A., &amp; Kumar, V. (2009). Anomaly detection: A survey. <i>ACM Computing Surveys</i>, <i>41</i>(3), 15. <a href="https://doi.org/10.1145/1541880.1541882">https://doi.org/10.1145/1541880.1541882</a></p><p>[4] Lloyd, S. (1982). Least squares quantization in PCM. <i>IEEE Transactions on Information Theory</i>, <i>28</i>(2), 129-137. <a href="https://doi.org/10.1109/TIT.1982.1056489">https://doi.org/10.1109/TIT.1982.1056489</a></p><p>[5] MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. In <i>Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability</i>, Vol. 1 (pp. 281-297). University of California Press.</p><p>[6] Arthur, D., &amp; Vassilvitskii, S. (2007). k-means++: The advantages of careful seeding. In <i>Proceedings of the Eighteenth Annual ACM-SIAM Symposium on Discrete Algorithms</i> (pp. 1027-1035). SIAM.</p><p>[7] Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i>, <i>20</i>, 53-65. <a href="https://doi.org/10.1016/0377-0427(87)90125-7">https://doi.org/10.1016/0377-0427(87)90125-7</a></p><p>[8] Pearson, K. (1901). On lines and planes of closest fit to systems of points in space. <i>The London, Edinburgh, and Dublin Philosophical Magazine and Journal of Science</i>, <i>2</i>(11), 559-572. <a href="https://doi.org/10.1080/14786440109462720">https://doi.org/10.1080/14786440109462720</a></p><p>[9] Jolliffe, I. T., &amp; Cadima, J. (2016). Principal component analysis: A review and recent developments. <i>Philosophical Transactions of the Royal Society A</i>, <i>374</i>(2065), 20150202. <a href="https://doi.org/10.1098/rsta.2015.0202">https://doi.org/10.1098/rsta.2015.0202</a></p><p>[10] Cooley, J. W., &amp; Tukey, J. W. (1965). An algorithm for the machine calculation of complex Fourier series. <i>Mathematics of Computation</i>, <i>19</i>(90), 297-301. <a href="https://doi.org/10.1090/S0025-5718-1965-0178586-1">https://doi.org/10.1090/S0025-5718-1965-0178586-1</a></p><p>[11] Randall, R. B., &amp; Antoni, J. (2011). Rolling element bearing diagnostics: A tutorial. <i>Mechanical Systems and Signal Processing</i>, <i>25</i>(2), 485-520. <a href="https://doi.org/10.1016/j.ymssp.2010.07.017">https://doi.org/10.1016/j.ymssp.2010.07.017</a></p><p>[12] Smith, W. A., &amp; Randall, R. B. (2015). Rolling element bearing diagnostics using the Case Western Reserve University data: A benchmark study. <i>Mechanical Systems and Signal Processing</i>, <i>64-65</i>, 100-131. <a href="https://doi.org/10.1016/j.ymssp.2015.04.021">https://doi.org/10.1016/j.ymssp.2015.04.021</a></p><p>[13] Liu, F. T., Ting, K. M., &amp; Zhou, Z.-H. (2008). Isolation forest. In <i>2008 Eighth IEEE International Conference on Data Mining</i> (pp. 413-422). <a href="https://doi.org/10.1109/ICDM.2008.17">https://doi.org/10.1109/ICDM.2008.17</a></p><p>[14] Lei, Y., Yang, B., Jiang, X., Jia, F., Li, N., &amp; Nandi, A. K. (2020). Applications of machine learning to machine fault diagnosis: A review and roadmap. <i>Mechanical Systems and Signal Processing</i>, <i>138</i>, 106587. <a href="https://doi.org/10.1016/j.ymssp.2019.106587">https://doi.org/10.1016/j.ymssp.2019.106587</a></p><p>[15] Hall, B. (2016). Facies classification using machine learning. <i>The Leading Edge</i>, <i>35</i>(10), 906-909. <a href="https://doi.org/10.1190/tle35100906.1">https://doi.org/10.1190/tle35100906.1</a></p><p>[16] U.S. Geological Survey (2026). <i>Earthquake Catalog API (FDSN Event Web Service)</i>. <a href="https://earthquake.usgs.gov/fdsnws/event/1/">https://earthquake.usgs.gov/fdsnws/event/1/</a></p><p>[17] Harris, C. R., Millman, K. J., van der Walt, S. J., et al. (2020). Array programming with NumPy. <i>Nature</i>, <i>585</i>(7825), 357-362. <a href="https://doi.org/10.1038/s41586-020-2649-2">https://doi.org/10.1038/s41586-020-2649-2</a></p><p>[18] Kong, Q., Trugman, D. T., Ross, Z. E., Bianco, M. J., Meade, B. J., &amp; Gerstoft, P. (2019). Machine learning in seismology: Turning data into insights. <i>Seismological Research Letters</i>, <i>90</i>(1), 3-14. <a href="https://doi.org/10.1785/0220180259">https://doi.org/10.1785/0220180259</a></p><p>[19] Sikora, M., &amp; Wróbel, Ł. (2010). Application of rule induction algorithms for analysis of data collected by seismic hazard monitoring systems in coal mines. <i>Archives of Mining Sciences</i>, <i>55</i>(1), 91-114.</p></div></article>
+<script type="application/json" id="refdata">{"1": "Ester, M., Kriegel, H.-P., Sander, J., &amp; Xu, X. (1996). A density-based algorithm for discovering clusters in large spatial databases with noise. In <i>Proceedings of the Second International Conference on Knowledge Discovery and Data Mining (KDD-96)</i> (pp. 226-231). AAAI Press.", "2": "Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</i> (2nd ed.). Springer. <a href=\"https://doi.org/10.1007/978-0-387-84858-7\">https://doi.org/10.1007/978-0-387-84858-7</a>", "3": "Chandola, V., Banerjee, A., &amp; Kumar, V. (2009). Anomaly detection: A survey. <i>ACM Computing Surveys</i>, <i>41</i>(3), 15. <a href=\"https://doi.org/10.1145/1541880.1541882\">https://doi.org/10.1145/1541880.1541882</a>", "4": "Lloyd, S. (1982). Least squares quantization in PCM. <i>IEEE Transactions on Information Theory</i>, <i>28</i>(2), 129-137. <a href=\"https://doi.org/10.1109/TIT.1982.1056489\">https://doi.org/10.1109/TIT.1982.1056489</a>", "5": "MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. In <i>Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability</i>, Vol. 1 (pp. 281-297). University of California Press.", "6": "Arthur, D., &amp; Vassilvitskii, S. (2007). k-means++: The advantages of careful seeding. In <i>Proceedings of the Eighteenth Annual ACM-SIAM Symposium on Discrete Algorithms</i> (pp. 1027-1035). SIAM.", "7": "Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i>, <i>20</i>, 53-65. <a href=\"https://doi.org/10.1016/0377-0427(87)90125-7\">https://doi.org/10.1016/0377-0427(87)90125-7</a>", "8": "Pearson, K. (1901). On lines and planes of closest fit to systems of points in space. <i>The London, Edinburgh, and Dublin Philosophical Magazine and Journal of Science</i>, <i>2</i>(11), 559-572. <a href=\"https://doi.org/10.1080/14786440109462720\">https://doi.org/10.1080/14786440109462720</a>", "9": "Jolliffe, I. T., &amp; Cadima, J. (2016). Principal component analysis: A review and recent developments. <i>Philosophical Transactions of the Royal Society A</i>, <i>374</i>(2065), 20150202. <a href=\"https://doi.org/10.1098/rsta.2015.0202\">https://doi.org/10.1098/rsta.2015.0202</a>", "10": "Cooley, J. W., &amp; Tukey, J. W. (1965). An algorithm for the machine calculation of complex Fourier series. <i>Mathematics of Computation</i>, <i>19</i>(90), 297-301. <a href=\"https://doi.org/10.1090/S0025-5718-1965-0178586-1\">https://doi.org/10.1090/S0025-5718-1965-0178586-1</a>", "11": "Randall, R. B., &amp; Antoni, J. (2011). Rolling element bearing diagnostics: A tutorial. <i>Mechanical Systems and Signal Processing</i>, <i>25</i>(2), 485-520. <a href=\"https://doi.org/10.1016/j.ymssp.2010.07.017\">https://doi.org/10.1016/j.ymssp.2010.07.017</a>", "12": "Smith, W. A., &amp; Randall, R. B. (2015). Rolling element bearing diagnostics using the Case Western Reserve University data: A benchmark study. <i>Mechanical Systems and Signal Processing</i>, <i>64-65</i>, 100-131. <a href=\"https://doi.org/10.1016/j.ymssp.2015.04.021\">https://doi.org/10.1016/j.ymssp.2015.04.021</a>", "13": "Liu, F. T., Ting, K. M., &amp; Zhou, Z.-H. (2008). Isolation forest. In <i>2008 Eighth IEEE International Conference on Data Mining</i> (pp. 413-422). <a href=\"https://doi.org/10.1109/ICDM.2008.17\">https://doi.org/10.1109/ICDM.2008.17</a>", "14": "Lei, Y., Yang, B., Jiang, X., Jia, F., Li, N., &amp; Nandi, A. K. (2020). Applications of machine learning to machine fault diagnosis: A review and roadmap. <i>Mechanical Systems and Signal Processing</i>, <i>138</i>, 106587. <a href=\"https://doi.org/10.1016/j.ymssp.2019.106587\">https://doi.org/10.1016/j.ymssp.2019.106587</a>", "15": "Hall, B. (2016). Facies classification using machine learning. <i>The Leading Edge</i>, <i>35</i>(10), 906-909. <a href=\"https://doi.org/10.1190/tle35100906.1\">https://doi.org/10.1190/tle35100906.1</a>", "16": "U.S. Geological Survey (2026). <i>Earthquake Catalog API (FDSN Event Web Service)</i>. <a href=\"https://earthquake.usgs.gov/fdsnws/event/1/\">https://earthquake.usgs.gov/fdsnws/event/1/</a>", "17": "Harris, C. R., Millman, K. J., van der Walt, S. J., et al. (2020). Array programming with NumPy. <i>Nature</i>, <i>585</i>(7825), 357-362. <a href=\"https://doi.org/10.1038/s41586-020-2649-2\">https://doi.org/10.1038/s41586-020-2649-2</a>", "18": "Kong, Q., Trugman, D. T., Ross, Z. E., Bianco, M. J., Meade, B. J., &amp; Gerstoft, P. (2019). Machine learning in seismology: Turning data into insights. <i>Seismological Research Letters</i>, <i>90</i>(1), 3-14. <a href=\"https://doi.org/10.1785/0220180259\">https://doi.org/10.1785/0220180259</a>", "19": "Sikora, M., &amp; Wr\u00f3bel, \u0141. (2010). Application of rule induction algorithms for analysis of data collected by seismic hazard monitoring systems in coal mines. <i>Archives of Mining Sciences</i>, <i>55</i>(1), 91-114."}</script>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: September 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.values(st).filter(Boolean).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLecture(9);
+(function(root){
+let K=4, pts=[], cen=[], lab=[], phase=0, it=0; const r0=RNG(21);
+for(const [cx,cy,n] of [[0.25,0.3,60],[0.7,0.25,50],[0.5,0.7,70],[0.82,0.72,40],[0.2,0.75,40]]) for(let i=0;i<n;i++) pts.push([clamp(cx+0.07*r0.normal(),0.02,0.98),clamp(cy+0.07*r0.normal(),0.02,0.98)]);
+const ro=readout(root.querySelector('#km-ro'),['iteration','next step','within-cluster sum of squares']);
+slider(root.querySelector('#km-sl'),{label:'k',min:2,max:8,step:1,value:K},v=>{K=v;restart();});
+function restart(){ const r=RNG(Math.floor(Math.random()*1e6)); cen=Array.from({length:K},()=>pts[r.int(pts.length)].slice()); lab=pts.map(()=>-1); phase=0; it=0; show(); }
+function wcss(){ return pts.reduce((s,p,i)=>lab[i]<0?s:s+(p[0]-cen[lab[i]][0])**2+(p[1]-cen[lab[i]][1])**2,0); }
+function step(){ let moved=false; if(phase===0){ pts.forEach((p,i)=>{ let b=0,bd=1e9; cen.forEach((c,j)=>{ const d=(p[0]-c[0])**2+(p[1]-c[1])**2; if(d<bd){bd=d;b=j;} }); if(lab[i]!==b){lab[i]=b;moved=true;} }); phase=1; it++; }
+  else { cen=cen.map((c,j)=>{ const m=pts.filter((_,i)=>lab[i]===j); if(!m.length) return c; const nc=[m.reduce((s,p)=>s+p[0],0)/m.length,m.reduce((s,p)=>s+p[1],0)/m.length]; if(Math.hypot(nc[0]-c[0],nc[1]-c[1])>1e-9) moved=true; return nc; }); phase=0; }
+  show(); return moved; }
+function show(){ ro('iteration',it); ro('next step',phase===0?'assign points':'move centres'); ro('within-cluster sum of squares',lab[0]<0?'-':wcss().toFixed(3)); st.redraw(); }
+const st=stage(root.querySelector('#km-cv'),0.6,(c,w,h)=>{ c.clearRect(0,0,w,h); const C=COL(); const pal=[...C.c,C.steel,C.ink,C.ok];
+  pts.forEach((p,i)=>dot(c,p[0]*w,p[1]*h,3.5,lab[i]<0?C.steel+'99':pal[lab[i]%pal.length]+'cc'));
+  cen.forEach((q,j)=>{ c.save(); c.translate(q[0]*w,q[1]*h); c.strokeStyle=C.ink; c.lineWidth=3; c.beginPath(); c.moveTo(-8,-8); c.lineTo(8,8); c.moveTo(8,-8); c.lineTo(-8,8); c.stroke(); c.strokeStyle=pal[j%pal.length]; c.lineWidth=1.5; c.stroke(); c.restore(); }); });
+root.querySelector('#km-step').onclick=step; root.querySelector('#km-run').onclick=()=>{ let n=0; while(step()&&n<100) n++; }; root.querySelector('#km-restart').onclick=restart; restart();
+})(document.getElementById('anim-kmeans'));</script><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script><script>try{mermaid.initialize({startOnLoad:true,theme:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral"})}catch(e){}</script></body></html>

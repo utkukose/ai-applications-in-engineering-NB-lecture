@@ -3,6 +3,7 @@
 # Artificial Intelligence Applications in Engineering
 
 **MUH-920 Mühendislikte Yapay Zeka Uygulamaları.** 
+
 **Undergraduate faculty-wide common elective course, Süleyman Demirel University**
 
 *A 14-week undergraduate course with lecture notes, animations, interactive labs, Colab notebooks and a Python track for beginners, for all engineering and science departments*

@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+data/
+*.pt
+.DS_Store
+references/VERIFICATION_REPORT.md

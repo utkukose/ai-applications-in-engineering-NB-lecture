@@ -1,0 +1,704 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artificial Intelligence in Engineering: Agents and First Steps in Python | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 1 of 14</p><h1>Artificial Intelligence in Engineering: Agents and First Steps in Python</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="lab.html">Interactive lab</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-01/NB01_first_agent.ipynb">Colab notebook</a><a href="Week01_Lecture_Notes.pdf">PDF notes</a><a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/tree/main/weeks/week-01">Week folder on GitHub</a></nav></header>
+<div class="lec-tools"><div class="lec-prog"><span class="lec-bar"><i></i></span><span class="lec-txt" aria-live="polite"></span></div></div>
+<article class="lecture"><h2>Overview</h2>
+<p>Engineering has always delegated decisions to machines: A governor regulates the speed of a steam engine, a thermostat switches a boiler and an autopilot holds an altitude. Artificial intelligence extends this delegation to decisions that need perception, reasoning, search, learning or language <span class="cite" tabindex="0" data-refs="3,4">[3, 4]</span>. The week defines artificial intelligence through the idea of a rational agent, introduces the vocabulary used for the rest of the semester, and places the families of techniques covered in the course on one map. The practical work builds a first agent in Python: a heating controller that keeps a room in Isparta comfortable during a real January, driven by reanalysis weather data <span class="cite" tabindex="0" data-refs="51,52">[51, 52]</span>.</p>
+<p><strong>Estimated study time:</strong> 8 to 10 hours.</p>
+<h2>Learning outcomes</h2>
+<p>By the end of the week, students are expected to define artificial intelligence from the rational-agent perspective, to outline its history, to place machine learning, deep learning and intelligent optimisation within its family and relate it to neighbouring fields, to describe an engineering system with the PEAS scheme and classify its environment, to distinguish reflex, model-based, goal-based, utility-based and learning agents, to explain why hysteresis turns a simple reflex into an agent with memory, to name the main environments for Python programming, and to run, modify and evaluate a short Python simulation in Google Colab.</p>
+<h2>Python in this week</h2>
+<p>The lecture ends with Python step 1: Values, variables and decisions. It covers values, variables and types, arithmetic, f-strings, comparisons and if statements, applied to the heating rule of the week's agent <span class="cite" tabindex="0" data-refs="48">[48]</span>. The hands-on part of the notebook opens with the same step as runnable cells and short exercises with immediate feedback, and its later sections mark further constructs as Python moves.</p><h2>Study path</h2><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Activity</th>
+<th>Suggested time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Read the lecture with its animations on the <a href="lecture.html">lecture page</a>, or read the <a href="Week01_Lecture_Notes.pdf">PDF version</a></td>
+<td>2 hours</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Explore the <a href="lab.html">interactive lab</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Study the Python step at the end of the lecture, then run the same step at the start of the hands-on part of the <a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-01/NB01_first_agent.ipynb">Colab notebook</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Work through the rest of the notebook, including its Python moves and exercises</td>
+<td>3 hours</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Solve the discipline challenge of your department</td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Take the self-assessment in the lab (tab: Check yourself)</td>
+<td>20 minutes</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Write the reflection, export the learning log and complete the weekly task</td>
+<td>1 hour</td>
+</tr>
+</tbody>
+</table><h2>Week at a glance</h2><pre class="mermaid">flowchart LR
+  A[&quot;What counts as AI in engineering?&quot;] --&gt; B[&quot;Rational agents&quot;]
+  B --&gt; C[&quot;PEAS and environment types&quot;]
+  B --&gt; D[&quot;Agent architectures: reflex to learning&quot;]
+  D --&gt; E[&quot;Thermostat agent with hysteresis&quot;]
+  C --&gt; F[&quot;Course map: seven technique families&quot;]
+  E --&gt; G[&quot;Python: variables, lists, loops, if, def, plots&quot;]
+  F --&gt; H[&quot;AI across the engineering disciplines&quot;]</pre>
+<h2>What engineers mean by artificial intelligence</h2>
+<p>In 1950, Alan Turing replaced the question of whether machines can think with a behavioural test: Can a machine answer questions in a way that an interrogator cannot tell apart from a person <span class="cite" tabindex="0" data-refs="1">[1]</span>? Five years later, the proposal for the Dartmouth summer project used the phrase artificial intelligence and stated the working conjecture of the new field: Every aspect of learning or any other feature of intelligence can in principle be described so precisely that a machine can be made to simulate it <span class="cite" tabindex="0" data-refs="2">[2]</span>. Both documents still shape the field, but neither gives an engineer a design criterion.</p>
+<p>Russell and Norvig organise definitions of artificial intelligence along two axes: Whether the aim is to think or to act, and whether the standard is human performance or rationality <span class="cite" tabindex="0" data-refs="3">[3]</span>. Engineering practice mostly adopts the fourth combination, acting rationally. A rational agent selects, for every sequence of perceptions, the action that is expected to maximise a performance measure, given what it knows. This definition is useful because it can be tested. It asks what the system perceives, which actions it can take, and how success is measured, and these are questions that every engineering specification already answers.</p>
+<p>Machine learning is one route to rational behaviour, not a synonym for artificial intelligence. Jordan and Mitchell describe machine learning as the study of systems that improve their performance on a task through experience <span class="cite" tabindex="0" data-refs="4">[4]</span>. A route planner that uses a hand-written heuristic, a fuzzy controller written from operator knowledge and a genetic algorithm that designs a truss are all artificial intelligence techniques without being learning systems in this sense. The course treats the whole toolbox, because engineering problems differ in how much data, knowledge and computing time they offer.</p>
+<div class="kc" data-answer="2" data-why="The rational-agent view turns intelligence into a testable design criterion: percepts, actions and a performance measure."><p class="q">Check your understanding. Which definition does engineering practice mostly adopt?</p><label><input type="radio" name="PH0" value="0"> Thinking humanly: The system must reproduce human thought processes</label><label><input type="radio" name="PH0" value="1"> Acting humanly: The system must pass a Turing-style test</label><label><input type="radio" name="PH0" value="2"> Acting rationally: The system selects actions expected to maximise a performance measure</label><label><input type="radio" name="PH0" value="3"> Any system that contains a neural network</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>A short history of artificial intelligence</h2>
+<p>The field took shape between 1943 and 1956. McCulloch and Pitts described the neuron as a logical switching element <span class="cite" tabindex="0" data-refs="5">[5]</span>, Turing proposed his behavioural test <span class="cite" tabindex="0" data-refs="1">[1]</span>, and the Dartmouth proposal of 1955 gave the field its name and a research programme for a summer workshop held in 1956 <span class="cite" tabindex="0" data-refs="2">[2]</span>. Samuel's checkers program, which improved by playing games against itself, introduced the term machine learning <span class="cite" tabindex="0" data-refs="6">[6]</span>, and Rosenblatt's perceptron learned to classify patterns from examples <span class="cite" tabindex="0" data-refs="7">[7]</span>.</p>
+<p>Symbolic methods dominated the following two decades: Search guided by heuristics, such as the A* algorithm <span class="cite" tabindex="0" data-refs="8">[8]</span>, logical reasoning and, from the 1970s, expert systems that stored the knowledge of specialists as rules <span class="cite" tabindex="0" data-refs="9">[9]</span>. Zadeh introduced fuzzy sets in 1965 <span class="cite" tabindex="0" data-refs="10">[10]</span>, and Holland developed genetic algorithms <span class="cite" tabindex="0" data-refs="11">[11]</span>. Minsky and Papert showed what single-layer perceptrons cannot compute <span class="cite" tabindex="0" data-refs="12">[12]</span>. Expectations repeatedly ran ahead of results, and funding and interest fell sharply in the 1970s and again in the late 1980s, after the commercial boom of expert systems. These periods are known as AI winters <span class="cite" tabindex="0" data-refs="3">[3]</span>.</p>
+<p>From the mid-1980s, learning from data moved to the centre. Backpropagation made multilayer networks trainable <span class="cite" tabindex="0" data-refs="13">[13]</span>, support vector machines offered learning with strong theoretical guarantees <span class="cite" tabindex="0" data-refs="14">[14]</span>, and statistical learning matured into a coherent discipline <span class="cite" tabindex="0" data-refs="15">[15]</span>. Nature-inspired optimisation grew with particle swarms <span class="cite" tabindex="0" data-refs="16">[16]</span> and ant colonies <span class="cite" tabindex="0" data-refs="17">[17]</span>. In 1997 the chess computer Deep Blue defeated the world champion Garry Kasparov <span class="cite" tabindex="0" data-refs="18">[18]</span>, and the long short-term memory network appeared, later a standard model for sequences <span class="cite" tabindex="0" data-refs="19">[19]</span>.</p>
+<p>Since 2012, deep learning has dominated the field. A deep convolutional network won the ImageNet recognition challenge of 2012 by a wide margin <span class="cite" tabindex="0" data-refs="20">[20]</span>, made possible by large labelled datasets, graphics processors and better training methods <span class="cite" tabindex="0" data-refs="21">[21]</span>. AlphaGo, published in 2016, combined deep networks, tree search and reinforcement learning and became the first program to defeat a professional player at the full game of Go <span class="cite" tabindex="0" data-refs="22">[22]</span>. The transformer architecture of 2017 <span class="cite" tabindex="0" data-refs="23">[23]</span> led to large language models <span class="cite" tabindex="0" data-refs="24">[24]</span> and to language models trained to follow instructions with human feedback, the approach behind the chat assistants that spread from late 2022 <span class="cite" tabindex="0" data-refs="25">[25]</span>. Scientific and engineering applications followed, among them protein structure prediction <span class="cite" tabindex="0" data-refs="26">[26]</span> and medium-range weather forecasting <span class="cite" tabindex="0" data-refs="27">[27]</span>. The timeline below places these milestones side by side.</p>
+<figure><img src="figures/w01_fig1.png" alt="Selected milestones of artificial intelligence that recur in this course ." loading="lazy"><figcaption>Figure 1.1. Selected milestones of artificial intelligence that recur in this course <span class="cite" tabindex="0" data-refs="1,2,5,8,10,11,13,16,19,20,23,26,27">[1, 2, 5, 8, 10, 11, 13, 16, 19, 20, 23, 26, 27]</span>.</figcaption></figure>
+
+<p>The history carries a lesson for engineers. Neural networks, search, fuzzy logic and evolutionary methods are all decades old; what changed over time was the availability of data, computing power and reliable software. A method that fails today for lack of data may succeed later, and a fashionable method may be the wrong tool for a problem with little data and much physical knowledge.</p>
+<div class="kc" data-answer="1" data-why="The core ideas were old. What changed was the availability of data, computing power and training techniques."><p class="q">Check your understanding. Neural networks were proposed in the 1940s and 1950s. Why did deep networks come to dominate only after 2012?</p><label><input type="radio" name="PH1" value="0"> Their mathematical basis was discovered only in 2012</label><label><input type="radio" name="PH1" value="1"> Large labelled datasets, graphics processors and better training methods made deep networks practical</label><label><input type="radio" name="PH1" value="2"> Symbolic methods were abandoned after the AI winters</label><label><input type="radio" name="PH1" value="3"> Fuzzy logic removed the need for data</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>The family of artificial intelligence</h2>
+<p>Artificial intelligence is an umbrella term for a family of methods, and the relations between its members are easiest to see as sets. Machine learning is a subset of artificial intelligence: It covers systems that improve their performance on a task through experience <span class="cite" tabindex="0" data-refs="4">[4]</span>. Deep learning is a subset of machine learning that uses neural networks with many layers to learn representations directly from raw data such as images, signals and text <span class="cite" tabindex="0" data-refs="21,28">[21, 28]</span>. Generative models and large language models form a further subset of deep learning <span class="cite" tabindex="0" data-refs="23,24">[23, 24]</span>. Reinforcement learning, which learns to act from rewards, belongs to machine learning and overlaps with deep learning wherever deep networks represent the policy or the value function <span class="cite" tabindex="0" data-refs="22,29">[22, 29]</span>.</p>
+<figure><img src="figures/w01_fig3.png" alt="The family of artificial intelligence drawn as sets. Every deep learning method is a machine learning method, and every machine learning method is an artificial intelligence method, but the reverse does not hold ." loading="lazy"><figcaption>Figure 1.2. The family of artificial intelligence drawn as sets. Every deep learning method is a machine learning method, and every machine learning method is an artificial intelligence method, but the reverse does not hold <span class="cite" tabindex="0" data-refs="3,21,30">[3, 21, 30]</span>.</figcaption></figure>
+
+<p>Several members of the family do not learn from data in this sense. Search and planning compute sequences of actions from a model of the problem <span class="cite" tabindex="0" data-refs="8">[8]</span>, knowledge-based systems reason with rules written by experts <span class="cite" tabindex="0" data-refs="9">[9]</span>, and fuzzy systems turn vague linguistic knowledge into numbers <span class="cite" tabindex="0" data-refs="10">[10]</span>. Intelligent optimisation, also called nature-inspired optimisation, searches large design spaces with populations of candidate solutions that are varied and selected. Evolutionary algorithms and swarm intelligence are its two main branches <span class="cite" tabindex="0" data-refs="11,16,17">[11, 16, 17]</span>. Together with neural networks and fuzzy systems, these methods are often grouped as computational intelligence <span class="cite" tabindex="0" data-refs="30">[30]</span>. The sets overlap where methods combine: Evolutionary algorithms tune the settings of learning models or evolve neural networks, neuro-fuzzy systems learn fuzzy rules from data, and fuzzy rule bases are themselves a kind of knowledge-based system.</p>
+<p>The figure also corrects two common misreadings. Artificial intelligence is neither the same as deep learning nor the same as chat assistants, which occupy a small corner of the family. The weeks of this course move through the whole family, as the map of the course below shows.</p>
+<div class="kc" data-answer="1" data-why="Deep learning is a subset of machine learning, which is a subset of artificial intelligence. Many methods of the family, such as search, rules and swarms, do not learn from data."><p class="q">Check your understanding. Which statement about the family of artificial intelligence is correct?</p><label><input type="radio" name="PH2" value="0"> Every artificial intelligence method learns from data</label><label><input type="radio" name="PH2" value="1"> Every deep learning method is also a machine learning method</label><label><input type="radio" name="PH2" value="2"> Particle swarm optimisation is a kind of deep learning</label><label><input type="radio" name="PH2" value="3"> Machine learning and artificial intelligence are two names for the same field</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Artificial intelligence and neighbouring fields</h2>
+<p>Artificial intelligence is a field of computer science, but its methods grew from, and feed back into, many other disciplines <span class="cite" tabindex="0" data-refs="3">[3]</span>. Statistics shares the problem of learning from data, and the two meet in statistical learning <span class="cite" tabindex="0" data-refs="15">[15]</span>. Mathematical optimisation and operations research formulate the design and scheduling problems that search and nature-inspired methods solve. Control engineering shares the question of how to act on a dynamic system, and reinforcement learning and fuzzy control lie in the overlap <span class="cite" tabindex="0" data-refs="29">[29]</span>. Neuroscience and psychology inspired neural networks from the first neuron model onwards <span class="cite" tabindex="0" data-refs="5,7">[5, 7]</span>. Linguistics meets artificial intelligence in natural language processing, signal and image processing meets it in speech recognition and computer vision, robotics in perception and motion planning, and data science in the handling of large and messy datasets.</p>
+<figure><img src="figures/w01_fig4.png" alt="Artificial intelligence and its neighbouring fields. Each circle names a field and, below the name, the topics that it shares with artificial intelligence ." loading="lazy"><figcaption>Figure 1.3. Artificial intelligence and its neighbouring fields. Each circle names a field and, below the name, the topics that it shares with artificial intelligence <span class="cite" tabindex="0" data-refs="3">[3]</span>.</figcaption></figure>
+
+<p>For an engineer these overlaps are practical. A problem often has a well-tested solution in a neighbouring field, such as a classical controller, a regression model with confidence intervals or a linear program. A new artificial intelligence method is justified only when it does better on the performance measure that matters.</p>
+<div class="kc" data-answer="1" data-why="Learning a predictive model from data and quantifying its uncertainty is the shared ground of machine learning and statistics."><p class="q">Check your understanding. A team predicts the compressive strength of concrete from the mix proportions and reports confidence intervals for its predictions. In which overlap does this work lie?</p><label><input type="radio" name="PH3" value="0"> Artificial intelligence and linguistics</label><label><input type="radio" name="PH3" value="1"> Artificial intelligence and statistics</label><label><input type="radio" name="PH3" value="2"> Artificial intelligence and robotics</label><label><input type="radio" name="PH3" value="3"> Artificial intelligence and neuroscience</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Agents, environments and performance measures</h2>
+<p>An agent perceives its environment through sensors and acts on it through actuators <span class="cite" tabindex="0" data-refs="3,31">[3, 31]</span>. The mapping from percept histories to actions is the agent function, and the program that implements it runs on some physical architecture. The PEAS scheme makes the design task explicit by listing the performance measure, the environment, the actuators and the sensors. The table below applies the scheme to four systems from different departments.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>System</th>
+<th>Performance measure</th>
+<th>Environment</th>
+<th>Actuators</th>
+<th>Sensors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Heating controller of a building</td>
+<td>Comfort band held, energy used, number of switching cycles</td>
+<td>Rooms, walls, outdoor weather, occupants</td>
+<td>Boiler relay, valves</td>
+<td>Room and outdoor thermometers</td>
+</tr>
+<tr>
+<td>Autonomous haul truck in an open-pit mine</td>
+<td>Tonnes moved per hour, zero collisions, fuel use</td>
+<td>Haul roads, loaders, other vehicles, dust</td>
+<td>Steering, throttle, brakes, dump bed</td>
+<td>GNSS, lidar, radar, payload scale</td>
+</tr>
+<tr>
+<td>Fabric inspection camera in a weaving mill</td>
+<td>Defects found, false alarms, line speed kept</td>
+<td>Moving fabric, lighting, loom vibration</td>
+<td>Alarm, marking device, line stop</td>
+<td>Line-scan camera, encoder</td>
+</tr>
+<tr>
+<td>Earthquake early-warning agent</td>
+<td>Warning time, missed events, false alerts</td>
+<td>Seismic network, communication links</td>
+<td>Alerts to trains, factories, phones</td>
+<td>Seismometers, accelerometers</td>
+</tr>
+</tbody>
+</table></div>
+<p>The environment decides which techniques are feasible. It is fully observable when the sensors reveal the complete relevant state, and partially observable otherwise. It is deterministic when the next state follows from the current state and action, and stochastic when chance intervenes. It is episodic when each decision stands alone, as in inspecting one fabric image, and sequential when decisions affect the future, as in heating a building. It is static or dynamic, discrete or continuous, and it contains one agent or several <span class="cite" tabindex="0" data-refs="3">[3]</span>. A heating controller works in a partially observable, stochastic, sequential, dynamic and continuous environment: It cannot measure the heat stored in the walls, the weather is uncertain, and every switching decision changes the temperatures it will face later.</p>
+<div class="kc" data-answer="0" data-why="Each inspection is a separate episode. Heating a building is sequential, because each action changes future states."><p class="q">Check your understanding. A camera classifies each fabric image as defective or not, and one decision does not influence the next image. How is this task environment best described?</p><label><input type="radio" name="PH4" value="0"> Episodic</label><label><input type="radio" name="PH4" value="1"> Sequential</label><label><input type="radio" name="PH4" value="2"> Multi-agent</label><label><input type="radio" name="PH4" value="3"> Fully deterministic and continuous by definition</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Agent architectures: From reflexes to learning</h2>
+<p>Russell and Norvig describe five agent designs of increasing capability <span class="cite" tabindex="0" data-refs="3">[3]</span>. A simple reflex agent maps the current percept to an action through condition-action rules, such as switching the heater on when the room is below the set point. A model-based reflex agent keeps an internal state that summarises what it cannot currently see. A goal-based agent considers future consequences of actions and chooses those that achieve a goal, which is the topic of search in Week 2. A utility-based agent compares outcomes with a numerical utility, for example trading comfort against energy cost. A learning agent improves any of these components from experience, which is the subject of Weeks 7 to 14.</p>
+<p>Control engineering developed many of the same ideas under different names. Wiener's cybernetics treated the animal and the machine as feedback systems <span class="cite" tabindex="0" data-refs="32">[32]</span>, and feedback control remains the most widespread form of automated decision making in engineering <span class="cite" tabindex="0" data-refs="33">[33]</span>. The thermostat illustrates the connection. A pure reflex rule switches the heater whenever the temperature crosses the set point, so noise and delays make the relay chatter on and off many times per hour. Adding a dead band, in which the heater turns on below the lower threshold and off above the upper threshold and otherwise keeps its previous state, gives the controller one bit of memory. The agent is no longer a function of the current percept alone: It is a model-based reflex agent, and the price for fewer switching cycles is a wider temperature swing.</p>
+<div class="anim" id="anim-thermo"><h4>Animation: Hysteresis in a heating agent</h4><p class="small">The animation simulates one winter day. Narrow the dead band to zero and watch the number of switching cycles rise, then widen it and watch the temperature swing grow.</p><div class="row"><div class="ctl" id="t-sp"></div><div class="ctl" id="t-db"></div><div class="ctl" id="t-ins"></div></div>
+<canvas class="paper" id="t-cv" aria-label="Room temperature over one day"></canvas>
+<div class="legend" id="t-leg"></div><div id="t-ro"></div>
+<div class="row"><button class="btn" id="t-play" type="button">Play</button><button class="btn ghost" id="t-reset" type="button">Restart day</button></div></div>
+<div class="kc" data-answer="1" data-why="Inside the dead band the action is whatever it was before, so one bit of memory enters the decision."><p class="q">Check your understanding. Why is a thermostat with a dead band a model-based reflex agent rather than a simple reflex agent?</p><label><input type="radio" name="PH6" value="0"> It learns the thermal model of the room from data</label><label><input type="radio" name="PH6" value="1"> Its action depends on an internal state, the previous heater state, as well as on the current temperature</label><label><input type="radio" name="PH6" value="2"> It plans a sequence of future actions with search</label><label><input type="radio" name="PH6" value="3"> It uses a neural network to predict the weather</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>A map of the course: Families of techniques</h2>
+<p>The course is organised around the kinds of engineering questions that artificial intelligence techniques answer. Search and planning answer the question of which sequence of actions reaches a goal at least cost <span class="cite" tabindex="0" data-refs="8">[8]</span>. Knowledge-based systems encode expert rules and explain their conclusions <span class="cite" tabindex="0" data-refs="9">[9]</span>. Fuzzy logic represents vague linguistic knowledge, such as a slightly high temperature, and turns it into smooth control actions <span class="cite" tabindex="0" data-refs="10,34">[10, 34]</span>. Evolutionary and swarm algorithms search large design spaces when gradients are unavailable <span class="cite" tabindex="0" data-refs="11,16">[11, 16]</span>. Machine learning builds models from data for prediction, classification and anomaly detection <span class="cite" tabindex="0" data-refs="4">[4]</span>. Deep learning learns representations from raw signals and images <span class="cite" tabindex="0" data-refs="21">[21]</span>. Generative models and large language models produce text, code and designs <span class="cite" tabindex="0" data-refs="23">[23]</span>, and reinforcement learning learns control policies by interaction <span class="cite" tabindex="0" data-refs="29">[29]</span>.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Weeks</th>
+<th>Technique family</th>
+<th>Typical engineering question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 to 2</td>
+<td>Agents, search and planning</td>
+<td>Which route, sequence or plan reaches the goal at least cost?</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Knowledge-based systems</td>
+<td>Which diagnosis or class follows from expert rules and standards?</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Fuzzy logic and fuzzy control</td>
+<td>How can operator knowledge in words become a controller?</td>
+</tr>
+<tr>
+<td>5 to 6</td>
+<td>Evolutionary and swarm optimisation</td>
+<td>Which design or tuning is best when the objective is a black box?</td>
+</tr>
+<tr>
+<td>7 to 9</td>
+<td>Machine learning</td>
+<td>What will this material, machine or process do, and is it abnormal?</td>
+</tr>
+<tr>
+<td>10 to 12</td>
+<td>Deep learning for tables, images and sequences</td>
+<td>What does this image, signal or time series show?</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Language models and generative AI</td>
+<td>How can text, code and knowledge bases support engineering work?</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Learning to act, physics-informed learning, responsible AI</td>
+<td>How can a system learn control, respect physics and remain accountable?</td>
+</tr>
+</tbody>
+</table></div>
+<div class="kc" data-answer="1" data-why="The question asks for a best sequence, which is a search or combinatorial optimisation problem, treated in Weeks 2, 5 and 6."><p class="q">Check your understanding. A team must choose the order in which a drilling machine visits 200 holes on a circuit board. Which technique family fits the question best?</p><label><input type="radio" name="PH7" value="0"> Fuzzy logic</label><label><input type="radio" name="PH7" value="1"> Search and optimisation</label><label><input type="radio" name="PH7" value="2"> Image classification with deep learning</label><label><input type="radio" name="PH7" value="3"> Knowledge-based diagnosis</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Artificial intelligence across the engineering disciplines</h2>
+<p>Recent results show how far the techniques of this course reach. AlphaFold predicts protein structures with accuracy close to experiment, a result that changed structural biology and drug design <span class="cite" tabindex="0" data-refs="26">[26]</span>. GraphCast, a graph neural network trained on reanalysis data, produces ten-day global weather forecasts that compete with the leading numerical models <span class="cite" tabindex="0" data-refs="27">[27]</span>. Deep reinforcement learning has controlled the magnetic coils that shape plasma in a tokamak <span class="cite" tabindex="0" data-refs="35">[35]</span>, and graph networks have proposed hundreds of thousands of new stable inorganic crystals <span class="cite" tabindex="0" data-refs="36">[36]</span>. These systems combine the same building blocks that students meet here: data, models, optimisation, evaluation and domain knowledge.</p>
+<p>Most engineering applications are less spectacular and more common. Mechanical engineers predict failures from vibration and temperature, civil engineers estimate concrete strength from mix proportions, food engineers grade grains from images, environmental engineers forecast emissions, and mining engineers anticipate seismic hazards in underground workings. The course uses public datasets from these fields, several of them produced in Türkiye, so that every department meets its own problems. Türkiye's National Artificial Intelligence Strategy names the training of a workforce able to apply artificial intelligence in all sectors as a strategic priority <span class="cite" tabindex="0" data-refs="37">[37]</span>, which is the aim of an engineering course of this kind.</p>
+<h2>How to study this course</h2>
+<p>Every week follows the same cycle of reading, exploring, building, checking and reflecting. The lecture page contains animations and knowledge checks, the lab turns one idea into a simulation, and the Colab notebook rebuilds the idea in Python with real or realistic data. Earlier work on intelligent support for self-learning in computer engineering courses showed the value of matching materials and pacing to the learner when face-to-face time is limited <span class="cite" tabindex="0" data-refs="38">[38]</span>. The course therefore teaches Python in fourteen steps, one at the end of every lecture, and marks every further piece of Python in the notebooks, so that students without programming experience can learn the language while solving engineering problems, and students with experience can move quickly to the challenges.</p>
+<h2>Engineering judgement: When not to use artificial intelligence</h2>
+<p>A well-validated physical model, a standard or a simple rule often beats a learned model, because it extrapolates, it is explainable and it needs no data. Artificial intelligence earns its place when the physics is unknown or too expensive to simulate, when expert knowledge is vague, when the search space is too large for enumeration, or when perception from images, signals or text is required. Even then, the system must be tested against the performance measure, its failure modes must be understood, and a person must remain accountable for its use <span class="cite" tabindex="0" data-refs="39,40">[39, 40]</span>. Training large models also has an energy cost that belongs in the engineering trade-off <span class="cite" tabindex="0" data-refs="41">[41]</span>. Week 14 returns to these questions with safety, standards and regulation.</p>
+<div class="kc" data-answer="0" data-why="When a validated physical model already works, a data-driven model adds cost and risk without a clear benefit."><p class="q">Check your understanding. In which situation is a learned model least justified?</p><label><input type="radio" name="PH8" value="0"> A validated closed-form model predicts the quantity accurately across the operating range</label><label><input type="radio" name="PH8" value="1"> Defects must be recognised in camera images</label><label><input type="radio" name="PH8" value="2"> The design space has millions of combinations and no gradient</label><label><input type="radio" name="PH8" value="3"> Operators describe a control strategy only in vague words</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Python, programming environments and Google Colab</h2>
+<p>Python is a general-purpose, high-level programming language created by Guido van Rossum in the early 1990s and developed today as open source software under the Python Software Foundation <span class="cite" tabindex="0" data-refs="42">[42]</span>. Its syntax is compact and readable, blocks are marked by indentation, and programs run without a separate compilation step. The main reason for its role in artificial intelligence is its ecosystem: The libraries used in this course, NumPy for arrays <span class="cite" tabindex="0" data-refs="43">[43]</span>, pandas for tables <span class="cite" tabindex="0" data-refs="44">[44]</span>, Matplotlib for figures <span class="cite" tabindex="0" data-refs="45">[45]</span>, scikit-learn for machine learning <span class="cite" tabindex="0" data-refs="46">[46]</span> and PyTorch for deep learning <span class="cite" tabindex="0" data-refs="47">[47]</span>, are all Python libraries. The official tutorial is the reference for the language itself <span class="cite" tabindex="0" data-refs="48">[48]</span>.</p>
+<p>Python code can be written and run in several environments. The interactive interpreter executes one line at a time and suits quick calculations. Scripts are text files with the extension .py that run from a terminal, which suits programs that run repeatedly or on servers. Integrated development environments such as Visual Studio Code, PyCharm and Spyder combine an editor, a debugger and project tools. Notebooks, such as Jupyter Notebook and JupyterLab, mix explanatory text, code, results and figures in one document, which makes them well suited to learning, exploration and reproducible reports <span class="cite" tabindex="0" data-refs="49">[49]</span>. Distributions such as Anaconda install Python together with the scientific libraries on a personal computer.</p>
+<p>Google Colaboratory, Colab for short, is the environment of this course. It is a hosted Jupyter notebook service that runs in a web browser, needs no installation and gives free access to computing resources, including graphics processors, within usage limits <span class="cite" tabindex="0" data-refs="50">[50]</span>. The Open in Colab badge of every week opens the notebook directly from the course repository on GitHub. A notebook runs on a virtual machine in the cloud, the runtime, which comes with Python and the common libraries installed; further packages can be added with a cell such as <code>!pip install ucimlrepo</code>. The runtime is temporary: It stops after a period of inactivity or when it reaches a maximum lifetime <span class="cite" tabindex="0" data-refs="50">[50]</span>, and files written to it disappear with it. Work is therefore kept with File &gt; Save a copy in Drive, and a graphics processor is selected with Runtime &gt; Change runtime type when a notebook trains larger networks.</p>
+<figure><img src="figures/w01_fig5.png" alt="Working with the course notebooks in Google Colab ." loading="lazy"><figcaption>Figure 1.4. Working with the course notebooks in Google Colab <span class="cite" tabindex="0" data-refs="50">[50]</span>.</figcaption></figure>
+
+<p>A first session takes about fifteen minutes. Open the notebook of this week with its badge, sign in with a Google account and save a copy in Drive, so that changes are kept. Run the cells from the top with Shift+Enter and read each output before moving on. When a notebook stops behaving as expected, restarting the runtime from the Runtime menu and running all cells again from the top returns it to a clean state. The Python step at the end of this lecture starts the Python strand of the course, one step per week.</p>
+<div class="kc" data-answer="1" data-why="Files on the runtime disappear with the virtual machine. Lasting work belongs in Google Drive or in a repository."><p class="q">Check your understanding. A student saves a results file in a Colab notebook, closes the browser and returns the next day. The file is gone. Why?</p><label><input type="radio" name="PH9" value="0"> Colab deletes files that contain errors</label><label><input type="radio" name="PH9" value="1"> The runtime is a temporary virtual machine, and its files are lost when the session ends</label><label><input type="radio" name="PH9" value="2"> Colab can only save files in PDF format</label><label><input type="radio" name="PH9" value="3"> The cells were not run with Shift+Enter</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- python-step -->
+
+<h2>Python step 1: Values, variables and decisions</h2>
+<h3>Cells, values and variables</h3>
+<p>A notebook is a sequence of cells. Text cells explain, and code cells hold Python instructions that run when the cell is executed with Shift+Enter; the output appears directly below the cell <span class="cite" tabindex="0" data-refs="49">[49]</span>. The first building block of every program is the variable, a name that refers to a value. The equals sign assigns: <code>room_C = 18.4</code> stores the value 18.4 under the name <code>room_C</code>. It does not state an equation, so <code>count = count + 1</code> is a valid instruction that increases a counter. Names may contain letters, digits and underscores, cannot start with a digit and are case sensitive. Writing the unit into the name, as in <code>room_C</code> or <code>dt_min</code>, prevents many engineering mistakes, because Python itself does not track units.</p>
+<pre><code class="language-python">setpoint_C = 21.0        # desired room temperature in degrees Celsius
+room_C = 18.4            # measured room temperature
+outside_C = -3.5         # outside air temperature
+heater_on = False        # state of the heater
+print(type(setpoint_C), type(heater_on))
+print(&quot;room:&quot;, room_C, &quot;outside:&quot;, outside_C)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">&lt;class 'float'&gt; &lt;class 'bool'&gt;
+room: 18.4 outside: -3.5
+</code></pre>
+<p>Every value has a type. Numbers with a decimal point are floats, whole numbers are integers, text in quotation marks is a string, and <code>True</code> and <code>False</code> are booleans. The function <code>type</code> reports the type, and <code>print</code> shows its arguments separated by spaces. Text after a hash sign is a comment for human readers and is ignored by Python.</p>
+<h3>Arithmetic and one step of the room model</h3>
+<p>Python uses the usual operators <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code>, with <code>**</code> for powers, <code>//</code> for division rounded down and <code>%</code> for the remainder. Multiplication and division bind more strongly than addition and subtraction, and parentheses override the order. The room of this week loses heat to the outside in proportion to the temperature difference and gains heat while the heater runs. With a time constant tau, a heating rate r and a time step dt, one step of the model reads T_next = T + (T_out - T) dt / tau + r dt u, where u is 1 when the heater is on and 0 otherwise.</p>
+<pre><code class="language-python">tau_min = 240            # time constant of the room in minutes
+rate_C_per_min = 0.12    # warming rate while the heater runs
+dt_min = 5               # length of one time step in minutes
+u = 1                    # heater command: 1 for on, 0 for off
+room_next = room_C + (outside_C - room_C) * dt_min / tau_min + rate_C_per_min * dt_min * u
+print(room_next)
+minutes = 290
+print(minutes // 60, &quot;hours and&quot;, minutes % 60, &quot;minutes&quot;)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">18.54375
+4 hours and 50 minutes
+</code></pre>
+<p>The printed temperature may carry a small rounding residue in its last digits. Computers store decimal fractions in binary, so values such as 0.1 are close approximations. The differences lie far below any measurement precision, but they are the reason why floats should not be compared with <code>==</code>.</p>
+<h3>Text and f-strings</h3>
+<p>Results need clear labels and units. An f-string, a string with the letter f before the opening quotation mark, inserts the value of any expression written in braces. A format specification after a colon controls the display: <code>:.2f</code> shows two decimals, <code>:+.2f</code> also shows the sign, and <code>:.0%</code> shows a fraction as a percentage.</p>
+<pre><code class="language-python">print(f&quot;Next temperature: {room_next:.2f} °C&quot;)
+print(f&quot;Change in one step: {room_next - room_C:+.2f} K&quot;)
+print(f&quot;Share of the hour with heating: {0.37:.0%}&quot;)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">Next temperature: 18.54 °C
+Change in one step: +0.14 K
+Share of the hour with heating: 37%
+</code></pre>
+<h3>Comparisons and decisions</h3>
+<p>Comparisons such as <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>==</code> (equal) and <code>!=</code> (not equal) produce booleans, and <code>and</code>, <code>or</code> and <code>not</code> combine them. Python also accepts chained comparisons such as <code>low_C &lt;= room_C &lt;= high_C</code>, which read like mathematical notation. An <code>if</code> statement runs its indented block only when its condition is true; <code>elif</code> adds further conditions, and <code>else</code> covers all remaining cases. The colon at the end of each header line and the indentation of four spaces are part of the syntax: Indentation decides which lines belong to a block. The thermostat rule of this week, with a band from 20.5 to 21.5 °C, becomes the following code.</p>
+<pre><code class="language-python">low_C, high_C = 20.5, 21.5
+comfortable = low_C &lt;= room_C &lt;= high_C
+print(&quot;comfortable:&quot;, comfortable)
+
+if room_C &lt; low_C:
+    heater_on = True
+elif room_C &gt; high_C:
+    heater_on = False
+else:
+    pass                 # inside the band: keep the previous state
+print(&quot;heater on:&quot;, heater_on)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">comfortable: False
+heater on: True
+</code></pre>
+<p>The line <code>low_C, high_C = 20.5, 21.5</code> assigns two values at once. The statement <code>pass</code> does nothing. It marks the place where the previous state is deliberately kept, which is the hysteresis of the agent.</p>
+<h3>Repeating a step</h3>
+<p>A <code>for</code> loop repeats its indented block once for every value of a sequence. <code>range(12)</code> produces the integers 0 to 11, so the loop below simulates one hour in twelve steps of five minutes. Each pass first applies the rule and then updates the temperature, and the conditional expression <code>1 if heater_on else 0</code> turns the boolean into the heater command u. Week 2 treats loops in more depth.</p>
+<pre><code class="language-python">room = 18.4
+heater_on = False
+for step in range(12):   # 12 steps of 5 minutes: one hour
+    if room &lt; low_C:
+        heater_on = True
+    elif room &gt; high_C:
+        heater_on = False
+    u = 1 if heater_on else 0
+    room = room + (outside_C - room) * dt_min / tau_min + rate_C_per_min * dt_min * u
+print(f&quot;after one hour: {room:.2f} °C, heater on: {heater_on}&quot;)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">after one hour: 19.94 °C, heater on: True
+</code></pre>
+<p>When Python cannot run a line, it stops and prints an error message whose last line names the problem. A <code>NameError</code> usually means that a variable is used before the cell that defines it has been run, and an <code>IndentationError</code> points to a block whose lines are not aligned. Reading the last line first saves a lot of time.</p>
+<div class="kc" data-answer="1" data-why="Floor division gives the whole number of times 5 fits into 17, which is 3, and the remainder is 2."><p class="q">Check your understanding. What does print(17 // 5, 17 % 5) display?</p><label><input type="radio" name="PH10" value="0"> 3.4 0</label><label><input type="radio" name="PH10" value="1"> 3 2</label><label><input type="radio" name="PH10" value="2"> 2 3</label><label><input type="radio" name="PH10" value="3"> 3.4 2</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- /python-step --><h2>Discipline challenges</h2><p>Every department of the Faculty of Engineering and Natural Sciences meets agents in its own form. Choose the row of your department, or the closest one, and write the PEAS description and the environment properties of the system named there. Students from other programmes worldwide can use the closest discipline.</p>
+<table class="disc">
+<thead>
+<tr>
+<th>Department</th>
+<th>Challenge</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Computer Engineering</td>
+<td>A network intrusion detection agent that watches traffic and blocks suspicious connections.</td>
+</tr>
+<tr>
+<td>Biology</td>
+<td>An automated microscope that finds and counts dividing cells in time-lapse images.</td>
+</tr>
+<tr>
+<td>Environmental Engineering</td>
+<td>An aeration controller in a wastewater treatment plant that keeps dissolved oxygen in range.</td>
+</tr>
+<tr>
+<td>Electrical and Electronics Engineering</td>
+<td>A battery management system that balances cells and limits charging current.</td>
+</tr>
+<tr>
+<td>Industrial Engineering</td>
+<td>A scheduling agent that reassigns jobs when a machine breaks down.</td>
+</tr>
+<tr>
+<td>Physics</td>
+<td>An autonomous telescope scheduler that selects targets as clouds move across the sky.</td>
+</tr>
+<tr>
+<td>Food Engineering</td>
+<td>A fruit-drying controller that adjusts air temperature from product moisture.</td>
+</tr>
+<tr>
+<td>Civil Engineering</td>
+<td>A structural health monitoring system on a bridge that raises alarms from strain gauges.</td>
+</tr>
+<tr>
+<td>Statistics</td>
+<td>An automated quality-control agent that flags anomalous values in incoming survey data.</td>
+</tr>
+<tr>
+<td>Geophysical Engineering</td>
+<td>An earthquake early-warning agent that issues alerts from the first seconds of shaking.</td>
+</tr>
+<tr>
+<td>Geological Engineering</td>
+<td>A core-logging camera that labels rock types along drill cores.</td>
+</tr>
+<tr>
+<td>Chemistry</td>
+<td>A self-driving laboratory robot that chooses the next experiment from previous results.</td>
+</tr>
+<tr>
+<td>Chemical Engineering</td>
+<td>A distillation column controller that holds product purity during feed changes.</td>
+</tr>
+<tr>
+<td>Mining Engineering</td>
+<td>An autonomous haul truck operating on open-pit roads with loaders and other trucks.</td>
+</tr>
+<tr>
+<td>Mechanical Engineering</td>
+<td>A condition monitoring agent for a pump that schedules maintenance from vibration.</td>
+</tr>
+<tr>
+<td>Mathematics</td>
+<td>A solver-selection agent that picks a numerical method for each differential equation it receives.</td>
+</tr>
+<tr>
+<td>Automotive Engineering</td>
+<td>An adaptive cruise control that keeps a safe gap to the vehicle ahead.</td>
+</tr>
+<tr>
+<td>Textile Engineering</td>
+<td>A fabric inspection camera that marks defects on a running loom.</td>
+</tr>
+<tr>
+<td>Earth Sciences Engineering</td>
+<td>A landslide monitoring network that raises warnings from displacement and rainfall sensors.</td>
+</tr>
+</tbody>
+</table><h2>Review cards</h2><p class="small">Select a card to turn it over.</p><div class="cards"><div class="card" tabindex="0" role="button"><div class="f">Machine learning</div><div class="b">The study of systems that improve their performance on a task through experience <span class="cite" tabindex="0" data-refs="4">[4]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Deep learning</div><div class="b">Machine learning with neural networks of many layers that learn representations from raw data <span class="cite" tabindex="0" data-refs="21">[21]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Intelligent optimisation</div><div class="b">Nature-inspired search, such as evolutionary algorithms and particle swarms, that finds good designs without gradients <span class="cite" tabindex="0" data-refs="30">[30]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Google Colab</div><div class="b">A hosted Jupyter notebook service that runs Python in the browser on a temporary virtual machine, the runtime <span class="cite" tabindex="0" data-refs="50">[50]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Rational agent</div><div class="b">An agent that selects the action expected to maximise its performance measure, given its percepts and knowledge <span class="cite" tabindex="0" data-refs="3">[3]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">PEAS</div><div class="b">Performance measure, Environment, Actuators, Sensors: a checklist for specifying an agent.</div></div><div class="card" tabindex="0" role="button"><div class="f">Partially observable</div><div class="b">The sensors do not reveal the complete relevant state, so the agent must infer or remember part of it.</div></div><div class="card" tabindex="0" role="button"><div class="f">Sequential environment</div><div class="b">Current decisions change future situations, as in heating a building or driving a truck.</div></div><div class="card" tabindex="0" role="button"><div class="f">Hysteresis</div><div class="b">Switching thresholds that differ for turning on and off, which gives a controller one bit of memory.</div></div><div class="card" tabindex="0" role="button"><div class="f">f-string</div><div class="b">A Python string prefixed with f in which expressions in braces are evaluated and formatted, such as f&quot;{x:.2f}&quot;.</div></div></div>
+<h2>References</h2><div class="small"><p>[1] Turing, A. M. (1950). Computing machinery and intelligence. <i>Mind</i>, <i>59</i>(236), 433-460. <a href="https://doi.org/10.1093/mind/LIX.236.433">https://doi.org/10.1093/mind/LIX.236.433</a></p><p>[2] McCarthy, J., Minsky, M. L., Rochester, N., &amp; Shannon, C. E. (2006). A proposal for the Dartmouth summer research project on artificial intelligence, August 31, 1955. <i>AI Magazine</i>, <i>27</i>(4), 12-14. <a href="https://doi.org/10.1609/aimag.v27i4.1904">https://doi.org/10.1609/aimag.v27i4.1904</a></p><p>[3] Russell, S., &amp; Norvig, P. (2021). <i>Artificial Intelligence: A Modern Approach</i> (4th ed.). Pearson.</p><p>[4] Jordan, M. I., &amp; Mitchell, T. M. (2015). Machine learning: Trends, perspectives, and prospects. <i>Science</i>, <i>349</i>(6245), 255-260. <a href="https://doi.org/10.1126/science.aaa8415">https://doi.org/10.1126/science.aaa8415</a></p><p>[5] McCulloch, W. S., &amp; Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. <i>The Bulletin of Mathematical Biophysics</i>, <i>5</i>(4), 115-133. <a href="https://doi.org/10.1007/BF02478259">https://doi.org/10.1007/BF02478259</a></p><p>[6] Samuel, A. L. (1959). Some studies in machine learning using the game of checkers. <i>IBM Journal of Research and Development</i>, <i>3</i>(3), 210-229. <a href="https://doi.org/10.1147/rd.33.0210">https://doi.org/10.1147/rd.33.0210</a></p><p>[7] Rosenblatt, F. (1958). The perceptron: A probabilistic model for information storage and organization in the brain. <i>Psychological Review</i>, <i>65</i>(6), 386-408. <a href="https://doi.org/10.1037/h0042519">https://doi.org/10.1037/h0042519</a></p><p>[8] Hart, P. E., Nilsson, N. J., &amp; Raphael, B. (1968). A formal basis for the heuristic determination of minimum cost paths. <i>IEEE Transactions on Systems Science and Cybernetics</i>, <i>4</i>(2), 100-107. <a href="https://doi.org/10.1109/TSSC.1968.300136">https://doi.org/10.1109/TSSC.1968.300136</a></p><p>[9] Buchanan, B. G., &amp; Shortliffe, E. H. (Eds.) (1984). <i>Rule-Based Expert Systems: The MYCIN Experiments of the Stanford Heuristic Programming Project</i>. Addison-Wesley.</p><p>[10] Zadeh, L. A. (1965). Fuzzy sets. <i>Information and Control</i>, <i>8</i>(3), 338-353. <a href="https://doi.org/10.1016/S0019-9958(65)90241-X">https://doi.org/10.1016/S0019-9958(65)90241-X</a></p><p>[11] Holland, J. H. (1992). <i>Adaptation in Natural and Artificial Systems</i> (2nd ed.). MIT Press. First edition 1975, University of Michigan Press.</p><p>[12] Minsky, M., &amp; Papert, S. (1969). <i>Perceptrons: An Introduction to Computational Geometry</i>. MIT Press.</p><p>[13] Rumelhart, D. E., Hinton, G. E., &amp; Williams, R. J. (1986). Learning representations by back-propagating errors. <i>Nature</i>, <i>323</i>(6088), 533-536. <a href="https://doi.org/10.1038/323533a0">https://doi.org/10.1038/323533a0</a></p><p>[14] Cortes, C., &amp; Vapnik, V. (1995). Support-vector networks. <i>Machine Learning</i>, <i>20</i>(3), 273-297. <a href="https://doi.org/10.1007/BF00994018">https://doi.org/10.1007/BF00994018</a></p><p>[15] Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</i> (2nd ed.). Springer. <a href="https://doi.org/10.1007/978-0-387-84858-7">https://doi.org/10.1007/978-0-387-84858-7</a></p><p>[16] Kennedy, J., &amp; Eberhart, R. (1995). Particle swarm optimization. In <i>Proceedings of ICNN&#x27;95, International Conference on Neural Networks</i>, Vol. 4 (pp. 1942-1948). IEEE. <a href="https://doi.org/10.1109/ICNN.1995.488968">https://doi.org/10.1109/ICNN.1995.488968</a></p><p>[17] Dorigo, M., Maniezzo, V., &amp; Colorni, A. (1996). Ant system: Optimization by a colony of cooperating agents. <i>IEEE Transactions on Systems, Man, and Cybernetics, Part B</i>, <i>26</i>(1), 29-41. <a href="https://doi.org/10.1109/3477.484436">https://doi.org/10.1109/3477.484436</a></p><p>[18] Campbell, M., Hoane, A. J., &amp; Hsu, F.-h. (2002). Deep Blue. <i>Artificial Intelligence</i>, <i>134</i>(1-2), 57-83. <a href="https://doi.org/10.1016/S0004-3702(01)00129-1">https://doi.org/10.1016/S0004-3702(01)00129-1</a></p><p>[19] Hochreiter, S., &amp; Schmidhuber, J. (1997). Long short-term memory. <i>Neural Computation</i>, <i>9</i>(8), 1735-1780. <a href="https://doi.org/10.1162/neco.1997.9.8.1735">https://doi.org/10.1162/neco.1997.9.8.1735</a></p><p>[20] Krizhevsky, A., Sutskever, I., &amp; Hinton, G. E. (2017). ImageNet classification with deep convolutional neural networks. <i>Communications of the ACM</i>, <i>60</i>(6), 84-90. <a href="https://doi.org/10.1145/3065386">https://doi.org/10.1145/3065386</a></p><p>[21] LeCun, Y., Bengio, Y., &amp; Hinton, G. (2015). Deep learning. <i>Nature</i>, <i>521</i>(7553), 436-444. <a href="https://doi.org/10.1038/nature14539">https://doi.org/10.1038/nature14539</a></p><p>[22] Silver, D., Huang, A., Maddison, C. J., et al. (2016). Mastering the game of Go with deep neural networks and tree search. <i>Nature</i>, <i>529</i>(7587), 484-489. <a href="https://doi.org/10.1038/nature16961">https://doi.org/10.1038/nature16961</a></p><p>[23] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., &amp; Polosukhin, I. (2017). Attention is all you need. In <i>Advances in Neural Information Processing Systems 30</i> (pp. 5998-6008). <a href="https://arxiv.org/abs/1706.03762">https://arxiv.org/abs/1706.03762</a></p><p>[24] Brown, T. B., Mann, B., Ryder, N., et al. (2020). Language models are few-shot learners. In <i>Advances in Neural Information Processing Systems 33</i> (pp. 1877-1901). <a href="https://arxiv.org/abs/2005.14165">https://arxiv.org/abs/2005.14165</a></p><p>[25] Ouyang, L., Wu, J., Jiang, X., et al. (2022). Training language models to follow instructions with human feedback. In <i>Advances in Neural Information Processing Systems 35</i> (pp. 27730-27744). <a href="https://arxiv.org/abs/2203.02155">https://arxiv.org/abs/2203.02155</a></p><p>[26] Jumper, J., Evans, R., Pritzel, A., et al. (2021). Highly accurate protein structure prediction with AlphaFold. <i>Nature</i>, <i>596</i>(7873), 583-589. <a href="https://doi.org/10.1038/s41586-021-03819-2">https://doi.org/10.1038/s41586-021-03819-2</a></p><p>[27] Lam, R., Sanchez-Gonzalez, A., Willson, M., et al. (2023). Learning skillful medium-range global weather forecasting. <i>Science</i>, <i>382</i>(6677), 1416-1421. <a href="https://doi.org/10.1126/science.adi2336">https://doi.org/10.1126/science.adi2336</a></p><p>[28] Goodfellow, I., Bengio, Y., &amp; Courville, A. (2016). <i>Deep Learning</i>. MIT Press.</p><p>[29] Sutton, R. S., &amp; Barto, A. G. (2018). <i>Reinforcement Learning: An Introduction</i> (2nd ed.). MIT Press.</p><p>[30] Engelbrecht, A. P. (2007). <i>Computational Intelligence: An Introduction</i> (2nd ed.). Wiley. <a href="https://doi.org/10.1002/9780470512517">https://doi.org/10.1002/9780470512517</a></p><p>[31] Wooldridge, M., &amp; Jennings, N. R. (1995). Intelligent agents: Theory and practice. <i>The Knowledge Engineering Review</i>, <i>10</i>(2), 115-152. <a href="https://doi.org/10.1017/S0269888900008122">https://doi.org/10.1017/S0269888900008122</a></p><p>[32] Wiener, N. (1961). <i>Cybernetics: Or Control and Communication in the Animal and the Machine</i> (2nd ed.). MIT Press.</p><p>[33] Åström, K. J., &amp; Murray, R. M. (2021). <i>Feedback Systems: An Introduction for Scientists and Engineers</i> (2nd ed.). Princeton University Press.</p><p>[34] Mamdani, E. H., &amp; Assilian, S. (1975). An experiment in linguistic synthesis with a fuzzy logic controller. <i>International Journal of Man-Machine Studies</i>, <i>7</i>(1), 1-13. <a href="https://doi.org/10.1016/S0020-7373(75)80002-2">https://doi.org/10.1016/S0020-7373(75)80002-2</a></p><p>[35] Degrave, J., Felici, F., Buchli, J., et al. (2022). Magnetic control of tokamak plasmas through deep reinforcement learning. <i>Nature</i>, <i>602</i>(7897), 414-419. <a href="https://doi.org/10.1038/s41586-021-04301-9">https://doi.org/10.1038/s41586-021-04301-9</a></p><p>[36] Merchant, A., Batzner, S., Schoenholz, S. S., et al. (2023). Scaling deep learning for materials discovery. <i>Nature</i>, <i>624</i>(7990), 80-85. <a href="https://doi.org/10.1038/s41586-023-06735-9">https://doi.org/10.1038/s41586-023-06735-9</a></p><p>[37] Presidency of the Republic of Türkiye Digital Transformation Office, &amp; Ministry of Industry and Technology (2021). <i>National Artificial Intelligence Strategy 2021-2025 (Ulusal Yapay Zekâ Stratejisi 2021-2025)</i>. Ankara. Action plan updated for 2024-2025. <a href="https://www.cbddo.gov.tr/UYZS">https://www.cbddo.gov.tr/UYZS</a></p><p>[38] Kose, U., &amp; Arslan, A. (2017). Optimization of self-learning in computer engineering courses: An intelligent software system supported by artificial neural network and vortex optimization algorithm. <i>Computer Applications in Engineering Education</i>, <i>25</i>(1), 142-156. <a href="https://doi.org/10.1002/cae.21787">https://doi.org/10.1002/cae.21787</a></p><p>[39] Amodei, D., Olah, C., Steinhardt, J., Christiano, P., Schulman, J., &amp; Mané, D. (2016). Concrete problems in AI safety. arXiv preprint arXiv:1606.06565. <a href="https://arxiv.org/abs/1606.06565">https://arxiv.org/abs/1606.06565</a></p><p>[40] Kose, U. (2018). Are we safe enough in the future of artificial intelligence? A discussion on machine ethics and artificial intelligence safety. <i>BRAIN. Broad Research in Artificial Intelligence and Neuroscience</i>, <i>9</i>(2), 184-197.</p><p>[41] Strubell, E., Ganesh, A., &amp; McCallum, A. (2019). Energy and policy considerations for deep learning in NLP. In <i>Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics</i> (pp. 3645-3650). <a href="https://doi.org/10.18653/v1/P19-1355">https://doi.org/10.18653/v1/P19-1355</a></p><p>[42] Python Software Foundation (2026). <i>History and license (Python 3 documentation)</i>. <a href="https://docs.python.org/3/license.html">https://docs.python.org/3/license.html</a></p><p>[43] Harris, C. R., Millman, K. J., van der Walt, S. J., et al. (2020). Array programming with NumPy. <i>Nature</i>, <i>585</i>(7825), 357-362. <a href="https://doi.org/10.1038/s41586-020-2649-2">https://doi.org/10.1038/s41586-020-2649-2</a></p><p>[44] McKinney, W. (2010). Data structures for statistical computing in Python. In <i>Proceedings of the 9th Python in Science Conference</i> (pp. 56-61). <a href="https://doi.org/10.25080/Majora-92bf1922-00a">https://doi.org/10.25080/Majora-92bf1922-00a</a></p><p>[45] Hunter, J. D. (2007). Matplotlib: A 2D graphics environment. <i>Computing in Science &amp; Engineering</i>, <i>9</i>(3), 90-95. <a href="https://doi.org/10.1109/MCSE.2007.55">https://doi.org/10.1109/MCSE.2007.55</a></p><p>[46] Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). Scikit-learn: Machine learning in Python. <i>Journal of Machine Learning Research</i>, <i>12</i>, 2825-2830.</p><p>[47] Paszke, A., Gross, S., Massa, F., et al. (2019). PyTorch: An imperative style, high-performance deep learning library. In <i>Advances in Neural Information Processing Systems 32</i> (pp. 8024-8035). <a href="https://arxiv.org/abs/1912.01703">https://arxiv.org/abs/1912.01703</a></p><p>[48] Python Software Foundation (2026). <i>The Python Tutorial (Python 3 documentation)</i>. <a href="https://docs.python.org/3/tutorial/">https://docs.python.org/3/tutorial/</a></p><p>[49] Kluyver, T., Ragan-Kelley, B., Pérez, F., et al. (2016). Jupyter Notebooks: A publishing format for reproducible computational workflows. In <i>Positioning and Power in Academic Publishing: Players, Agents and Agendas</i> (pp. 87-90). IOS Press. <a href="https://doi.org/10.3233/978-1-61499-649-1-87">https://doi.org/10.3233/978-1-61499-649-1-87</a></p><p>[50] Google (2026). <i>Google Colaboratory: Frequently asked questions</i>. <a href="https://research.google.com/colaboratory/faq.html">https://research.google.com/colaboratory/faq.html</a></p><p>[51] Hersbach, H., Bell, B., Berrisford, P., et al. (2020). The ERA5 global reanalysis. <i>Quarterly Journal of the Royal Meteorological Society</i>, <i>146</i>(730), 1999-2049. <a href="https://doi.org/10.1002/qj.3803">https://doi.org/10.1002/qj.3803</a></p><p>[52] Open-Meteo (2026). <i>Open-Meteo free weather API: Historical Weather API and Elevation API (data licensed under CC BY 4.0)</i>. <a href="https://open-meteo.com">https://open-meteo.com</a></p></div></article>
+<script type="application/json" id="refdata">{"1": "Turing, A. M. (1950). Computing machinery and intelligence. <i>Mind</i>, <i>59</i>(236), 433-460. <a href=\"https://doi.org/10.1093/mind/LIX.236.433\">https://doi.org/10.1093/mind/LIX.236.433</a>", "2": "McCarthy, J., Minsky, M. L., Rochester, N., &amp; Shannon, C. E. (2006). A proposal for the Dartmouth summer research project on artificial intelligence, August 31, 1955. <i>AI Magazine</i>, <i>27</i>(4), 12-14. <a href=\"https://doi.org/10.1609/aimag.v27i4.1904\">https://doi.org/10.1609/aimag.v27i4.1904</a>", "3": "Russell, S., &amp; Norvig, P. (2021). <i>Artificial Intelligence: A Modern Approach</i> (4th ed.). Pearson.", "4": "Jordan, M. I., &amp; Mitchell, T. M. (2015). Machine learning: Trends, perspectives, and prospects. <i>Science</i>, <i>349</i>(6245), 255-260. <a href=\"https://doi.org/10.1126/science.aaa8415\">https://doi.org/10.1126/science.aaa8415</a>", "5": "McCulloch, W. S., &amp; Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. <i>The Bulletin of Mathematical Biophysics</i>, <i>5</i>(4), 115-133. <a href=\"https://doi.org/10.1007/BF02478259\">https://doi.org/10.1007/BF02478259</a>", "6": "Samuel, A. L. (1959). Some studies in machine learning using the game of checkers. <i>IBM Journal of Research and Development</i>, <i>3</i>(3), 210-229. <a href=\"https://doi.org/10.1147/rd.33.0210\">https://doi.org/10.1147/rd.33.0210</a>", "7": "Rosenblatt, F. (1958). The perceptron: A probabilistic model for information storage and organization in the brain. <i>Psychological Review</i>, <i>65</i>(6), 386-408. <a href=\"https://doi.org/10.1037/h0042519\">https://doi.org/10.1037/h0042519</a>", "8": "Hart, P. E., Nilsson, N. J., &amp; Raphael, B. (1968). A formal basis for the heuristic determination of minimum cost paths. <i>IEEE Transactions on Systems Science and Cybernetics</i>, <i>4</i>(2), 100-107. <a href=\"https://doi.org/10.1109/TSSC.1968.300136\">https://doi.org/10.1109/TSSC.1968.300136</a>", "9": "Buchanan, B. G., &amp; Shortliffe, E. H. (Eds.) (1984). <i>Rule-Based Expert Systems: The MYCIN Experiments of the Stanford Heuristic Programming Project</i>. Addison-Wesley.", "10": "Zadeh, L. A. (1965). Fuzzy sets. <i>Information and Control</i>, <i>8</i>(3), 338-353. <a href=\"https://doi.org/10.1016/S0019-9958(65)90241-X\">https://doi.org/10.1016/S0019-9958(65)90241-X</a>", "11": "Holland, J. H. (1992). <i>Adaptation in Natural and Artificial Systems</i> (2nd ed.). MIT Press. First edition 1975, University of Michigan Press.", "12": "Minsky, M., &amp; Papert, S. (1969). <i>Perceptrons: An Introduction to Computational Geometry</i>. MIT Press.", "13": "Rumelhart, D. E., Hinton, G. E., &amp; Williams, R. J. (1986). Learning representations by back-propagating errors. <i>Nature</i>, <i>323</i>(6088), 533-536. <a href=\"https://doi.org/10.1038/323533a0\">https://doi.org/10.1038/323533a0</a>", "14": "Cortes, C., &amp; Vapnik, V. (1995). Support-vector networks. <i>Machine Learning</i>, <i>20</i>(3), 273-297. <a href=\"https://doi.org/10.1007/BF00994018\">https://doi.org/10.1007/BF00994018</a>", "15": "Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</i> (2nd ed.). Springer. <a href=\"https://doi.org/10.1007/978-0-387-84858-7\">https://doi.org/10.1007/978-0-387-84858-7</a>", "16": "Kennedy, J., &amp; Eberhart, R. (1995). Particle swarm optimization. In <i>Proceedings of ICNN&#x27;95, International Conference on Neural Networks</i>, Vol. 4 (pp. 1942-1948). IEEE. <a href=\"https://doi.org/10.1109/ICNN.1995.488968\">https://doi.org/10.1109/ICNN.1995.488968</a>", "17": "Dorigo, M., Maniezzo, V., &amp; Colorni, A. (1996). Ant system: Optimization by a colony of cooperating agents. <i>IEEE Transactions on Systems, Man, and Cybernetics, Part B</i>, <i>26</i>(1), 29-41. <a href=\"https://doi.org/10.1109/3477.484436\">https://doi.org/10.1109/3477.484436</a>", "18": "Campbell, M., Hoane, A. J., &amp; Hsu, F.-h. (2002). Deep Blue. <i>Artificial Intelligence</i>, <i>134</i>(1-2), 57-83. <a href=\"https://doi.org/10.1016/S0004-3702(01)00129-1\">https://doi.org/10.1016/S0004-3702(01)00129-1</a>", "19": "Hochreiter, S., &amp; Schmidhuber, J. (1997). Long short-term memory. <i>Neural Computation</i>, <i>9</i>(8), 1735-1780. <a href=\"https://doi.org/10.1162/neco.1997.9.8.1735\">https://doi.org/10.1162/neco.1997.9.8.1735</a>", "20": "Krizhevsky, A., Sutskever, I., &amp; Hinton, G. E. (2017). ImageNet classification with deep convolutional neural networks. <i>Communications of the ACM</i>, <i>60</i>(6), 84-90. <a href=\"https://doi.org/10.1145/3065386\">https://doi.org/10.1145/3065386</a>", "21": "LeCun, Y., Bengio, Y., &amp; Hinton, G. (2015). Deep learning. <i>Nature</i>, <i>521</i>(7553), 436-444. <a href=\"https://doi.org/10.1038/nature14539\">https://doi.org/10.1038/nature14539</a>", "22": "Silver, D., Huang, A., Maddison, C. J., et al. (2016). Mastering the game of Go with deep neural networks and tree search. <i>Nature</i>, <i>529</i>(7587), 484-489. <a href=\"https://doi.org/10.1038/nature16961\">https://doi.org/10.1038/nature16961</a>", "23": "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, \u0141., &amp; Polosukhin, I. (2017). Attention is all you need. In <i>Advances in Neural Information Processing Systems 30</i> (pp. 5998-6008). <a href=\"https://arxiv.org/abs/1706.03762\">https://arxiv.org/abs/1706.03762</a>", "24": "Brown, T. B., Mann, B., Ryder, N., et al. (2020). Language models are few-shot learners. In <i>Advances in Neural Information Processing Systems 33</i> (pp. 1877-1901). <a href=\"https://arxiv.org/abs/2005.14165\">https://arxiv.org/abs/2005.14165</a>", "25": "Ouyang, L., Wu, J., Jiang, X., et al. (2022). Training language models to follow instructions with human feedback. In <i>Advances in Neural Information Processing Systems 35</i> (pp. 27730-27744). <a href=\"https://arxiv.org/abs/2203.02155\">https://arxiv.org/abs/2203.02155</a>", "26": "Jumper, J., Evans, R., Pritzel, A., et al. (2021). Highly accurate protein structure prediction with AlphaFold. <i>Nature</i>, <i>596</i>(7873), 583-589. <a href=\"https://doi.org/10.1038/s41586-021-03819-2\">https://doi.org/10.1038/s41586-021-03819-2</a>", "27": "Lam, R., Sanchez-Gonzalez, A., Willson, M., et al. (2023). Learning skillful medium-range global weather forecasting. <i>Science</i>, <i>382</i>(6677), 1416-1421. <a href=\"https://doi.org/10.1126/science.adi2336\">https://doi.org/10.1126/science.adi2336</a>", "28": "Goodfellow, I., Bengio, Y., &amp; Courville, A. (2016). <i>Deep Learning</i>. MIT Press.", "29": "Sutton, R. S., &amp; Barto, A. G. (2018). <i>Reinforcement Learning: An Introduction</i> (2nd ed.). MIT Press.", "30": "Engelbrecht, A. P. (2007). <i>Computational Intelligence: An Introduction</i> (2nd ed.). Wiley. <a href=\"https://doi.org/10.1002/9780470512517\">https://doi.org/10.1002/9780470512517</a>", "31": "Wooldridge, M., &amp; Jennings, N. R. (1995). Intelligent agents: Theory and practice. <i>The Knowledge Engineering Review</i>, <i>10</i>(2), 115-152. <a href=\"https://doi.org/10.1017/S0269888900008122\">https://doi.org/10.1017/S0269888900008122</a>", "32": "Wiener, N. (1961). <i>Cybernetics: Or Control and Communication in the Animal and the Machine</i> (2nd ed.). MIT Press.", "33": "\u00c5str\u00f6m, K. J., &amp; Murray, R. M. (2021). <i>Feedback Systems: An Introduction for Scientists and Engineers</i> (2nd ed.). Princeton University Press.", "34": "Mamdani, E. H., &amp; Assilian, S. (1975). An experiment in linguistic synthesis with a fuzzy logic controller. <i>International Journal of Man-Machine Studies</i>, <i>7</i>(1), 1-13. <a href=\"https://doi.org/10.1016/S0020-7373(75)80002-2\">https://doi.org/10.1016/S0020-7373(75)80002-2</a>", "35": "Degrave, J., Felici, F., Buchli, J., et al. (2022). Magnetic control of tokamak plasmas through deep reinforcement learning. <i>Nature</i>, <i>602</i>(7897), 414-419. <a href=\"https://doi.org/10.1038/s41586-021-04301-9\">https://doi.org/10.1038/s41586-021-04301-9</a>", "36": "Merchant, A., Batzner, S., Schoenholz, S. S., et al. (2023). Scaling deep learning for materials discovery. <i>Nature</i>, <i>624</i>(7990), 80-85. <a href=\"https://doi.org/10.1038/s41586-023-06735-9\">https://doi.org/10.1038/s41586-023-06735-9</a>", "37": "Presidency of the Republic of T\u00fcrkiye Digital Transformation Office, &amp; Ministry of Industry and Technology (2021). <i>National Artificial Intelligence Strategy 2021-2025 (Ulusal Yapay Zek\u00e2 Stratejisi 2021-2025)</i>. Ankara. Action plan updated for 2024-2025. <a href=\"https://www.cbddo.gov.tr/UYZS\">https://www.cbddo.gov.tr/UYZS</a>", "38": "Kose, U., &amp; Arslan, A. (2017). Optimization of self-learning in computer engineering courses: An intelligent software system supported by artificial neural network and vortex optimization algorithm. <i>Computer Applications in Engineering Education</i>, <i>25</i>(1), 142-156. <a href=\"https://doi.org/10.1002/cae.21787\">https://doi.org/10.1002/cae.21787</a>", "39": "Amodei, D., Olah, C., Steinhardt, J., Christiano, P., Schulman, J., &amp; Man\u00e9, D. (2016). Concrete problems in AI safety. arXiv preprint arXiv:1606.06565. <a href=\"https://arxiv.org/abs/1606.06565\">https://arxiv.org/abs/1606.06565</a>", "40": "Kose, U. (2018). Are we safe enough in the future of artificial intelligence? A discussion on machine ethics and artificial intelligence safety. <i>BRAIN. Broad Research in Artificial Intelligence and Neuroscience</i>, <i>9</i>(2), 184-197.", "41": "Strubell, E., Ganesh, A., &amp; McCallum, A. (2019). Energy and policy considerations for deep learning in NLP. In <i>Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics</i> (pp. 3645-3650). <a href=\"https://doi.org/10.18653/v1/P19-1355\">https://doi.org/10.18653/v1/P19-1355</a>", "42": "Python Software Foundation (2026). <i>History and license (Python 3 documentation)</i>. <a href=\"https://docs.python.org/3/license.html\">https://docs.python.org/3/license.html</a>", "43": "Harris, C. R., Millman, K. J., van der Walt, S. J., et al. (2020). Array programming with NumPy. <i>Nature</i>, <i>585</i>(7825), 357-362. <a href=\"https://doi.org/10.1038/s41586-020-2649-2\">https://doi.org/10.1038/s41586-020-2649-2</a>", "44": "McKinney, W. (2010). Data structures for statistical computing in Python. In <i>Proceedings of the 9th Python in Science Conference</i> (pp. 56-61). <a href=\"https://doi.org/10.25080/Majora-92bf1922-00a\">https://doi.org/10.25080/Majora-92bf1922-00a</a>", "45": "Hunter, J. D. (2007). Matplotlib: A 2D graphics environment. <i>Computing in Science &amp; Engineering</i>, <i>9</i>(3), 90-95. <a href=\"https://doi.org/10.1109/MCSE.2007.55\">https://doi.org/10.1109/MCSE.2007.55</a>", "46": "Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). Scikit-learn: Machine learning in Python. <i>Journal of Machine Learning Research</i>, <i>12</i>, 2825-2830.", "47": "Paszke, A., Gross, S., Massa, F., et al. (2019). PyTorch: An imperative style, high-performance deep learning library. In <i>Advances in Neural Information Processing Systems 32</i> (pp. 8024-8035). <a href=\"https://arxiv.org/abs/1912.01703\">https://arxiv.org/abs/1912.01703</a>", "48": "Python Software Foundation (2026). <i>The Python Tutorial (Python 3 documentation)</i>. <a href=\"https://docs.python.org/3/tutorial/\">https://docs.python.org/3/tutorial/</a>", "49": "Kluyver, T., Ragan-Kelley, B., P\u00e9rez, F., et al. (2016). Jupyter Notebooks: A publishing format for reproducible computational workflows. In <i>Positioning and Power in Academic Publishing: Players, Agents and Agendas</i> (pp. 87-90). IOS Press. <a href=\"https://doi.org/10.3233/978-1-61499-649-1-87\">https://doi.org/10.3233/978-1-61499-649-1-87</a>", "50": "Google (2026). <i>Google Colaboratory: Frequently asked questions</i>. <a href=\"https://research.google.com/colaboratory/faq.html\">https://research.google.com/colaboratory/faq.html</a>", "51": "Hersbach, H., Bell, B., Berrisford, P., et al. (2020). The ERA5 global reanalysis. <i>Quarterly Journal of the Royal Meteorological Society</i>, <i>146</i>(730), 1999-2049. <a href=\"https://doi.org/10.1002/qj.3803\">https://doi.org/10.1002/qj.3803</a>", "52": "Open-Meteo (2026). <i>Open-Meteo free weather API: Historical Weather API and Elevation API (data licensed under CC BY 4.0)</i>. <a href=\"https://open-meteo.com\">https://open-meteo.com</a>"}</script>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: September 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.values(st).filter(Boolean).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLecture(1);
+(function(root){
+const cv=root.querySelector('#t-cv'); let sp=21, db=1.0, tau=240;
+slider(root.querySelector('#t-sp'),{label:'Set point',min:18,max:24,step:0.5,value:sp,fmt:v=>v+' °C'},v=>{sp=v;reset();});
+slider(root.querySelector('#t-db'),{label:'Dead band',min:0,max:3,step:0.1,value:db,fmt:v=>v.toFixed(1)+' °C'},v=>{db=v;reset();});
+slider(root.querySelector('#t-ins'),{label:'Insulation time constant',min:90,max:480,step:10,value:tau,fmt:v=>v+' min'},v=>{tau=v;reset();});
+legend(root.querySelector('#t-leg'),[['room',0],['outside',1],['heater on',2]]);
+const ro=readout(root.querySelector('#t-ro'),['time','switching cycles','heater on','mean |error|']);
+let T=19,u=0,k=0,sw=0,on=0,err=0,Ts=[],Us=[]; const N=1440, rng=RNG(7), out=[];
+for(let i=0;i<N;i++) out.push(1.5-5*Math.cos(2*Math.PI*(i/60-4)/24)+0.6*rng.normal());
+function reset(){T=19;u=0;k=0;sw=0;on=0;err=0;Ts=[];Us=[];st.redraw();}
+function step(){ const lo=sp-db/2, hi=sp+db/2, noisy=T+0.15*Math.sin(k*1.7);
+  const nu = db===0 ? (noisy<sp?1:0) : (noisy<lo?1:(noisy>hi?0:u)); if(nu!==u) sw++; u=nu;
+  T += (out[k]-T)/tau + 0.12*u; Ts.push(T); Us.push(u); on+=u; err+=Math.abs(T-sp); k++; }
+const st=stage(cv,0.42,(c,w,h)=>{ c.clearRect(0,0,w,h); const C=COL(); const f=frame(c,w,h,{x0:0,x1:24,y0:-8,y1:26,xlabel:'hour of day',ylabel:'°C'});
+  c.fillStyle=C.c[2]; Us.forEach((v,i)=>{ if(v) c.fillRect(f.X(i/60),f.Y(-8)-7,Math.max(1,f.X(1/60)-f.X(0)),7); });
+  polyline(c,out.map((v,i)=>[f.X(i/60),f.Y(v)]),C.c[1],1.5);
+  polyline(c,[[f.X(0),f.Y(sp)],[f.X(24),f.Y(sp)]],C.steel,1,[4,4]);
+  polyline(c,Ts.map((v,i)=>[f.X(i/60),f.Y(v)]),C.c[0],2);
+  ro('time',(k/60).toFixed(1)+' h'); ro('switching cycles',sw); ro('heater on',(on/60).toFixed(1)+' h'); ro('mean |error|',k?(err/k).toFixed(2)+' °C':'-'); });
+const lp=loop(()=>{ for(let j=0;j<6&&k<N;j++) step(); st.redraw(); if(k>=N){lp.stop(); pb.textContent='Play';} });
+const pb=root.querySelector('#t-play'); pb.onclick=()=>{ if(lp.running){lp.stop(); pb.textContent='Play';} else { if(k>=N) reset(); lp.start(); pb.textContent='Pause'; } };
+root.querySelector('#t-reset').onclick=()=>{ lp.stop(); pb.textContent='Play'; reset(); };
+reset(); if(reduced()){ while(k<N) step(); st.redraw(); }
+})(document.getElementById('anim-thermo'));</script><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script><script>try{mermaid.initialize({startOnLoad:true,theme:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral"})}catch(e){}</script></body></html>

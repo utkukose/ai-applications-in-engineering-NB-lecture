@@ -1,0 +1,585 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning from Data: The Machine Learning Workflow and Regression | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 7 of 14</p><h1>Learning from Data: The Machine Learning Workflow and Regression</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="lab.html">Interactive lab</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-07/NB07_ml_workflow_regression.ipynb">Colab notebook</a><a href="Week07_Lecture_Notes.pdf">PDF notes</a><a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/tree/main/weeks/week-07">Week folder on GitHub</a></nav></header>
+<div class="lec-tools"><div class="lec-prog"><span class="lec-bar"><i></i></span><span class="lec-txt" aria-live="polite"></span></div></div>
+<article class="lecture"><h2>Overview</h2>
+<p>The first half of the course encoded knowledge by hand: search heuristics, rules, membership functions and cost functions. Machine learning takes the opposite route and estimates a model from examples <span class="cite" tabindex="0" data-refs="3">[3]</span>. This week introduces the workflow that every data-driven engineering project follows, from the question and the data to validation and deployment <span class="cite" tabindex="0" data-refs="1">[1]</span>, and applies it to regression: predicting a continuous quantity. The core case predicts the compressive strength of concrete from its mix and age, a problem studied with neural networks by Yeh <span class="cite" tabindex="0" data-refs="16,18">[16, 18]</span> and rooted in Abrams' water-cement rule <span class="cite" tabindex="0" data-refs="15">[15]</span>. A switch in the notebook repeats the whole pipeline on datasets from power plants, buildings, aerodynamics, gas turbines, superconductors and garment production.</p>
+<p><strong>Estimated study time:</strong> 9 to 11 hours.</p>
+<blockquote>
+<p><strong>Midterm project.</strong> The midterm project is due at the end of this week. The <a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/exams/midterm/README.md">project page</a> lists the deliverables and the evaluation criteria, and the report follows the common template.</p>
+</blockquote>
+<h2>Learning outcomes</h2>
+<p>By the end of the week, students are expected to describe the stages of a machine learning project, to load, inspect and clean a tabular dataset with pandas, to split data into training, validation and test sets and use cross-validation, to fit and compare linear, regularised, nearest-neighbour and tree-based regressors with scikit-learn, to report MAE, RMSE and the coefficient of determination, to read parity and residual plots, and to recognise data leakage.</p>
+<h2>Python in this week</h2>
+<p>The lecture ends with Python step 7: Tables with pandas and honest evaluation with scikit-learn. It covers pandas DataFrames for building, selecting, filtering, reading and summarising tables, the fit and predict pattern of scikit-learn, and error measures, baselines and cross-validation with a pipeline, applied to concrete mixes <span class="cite" tabindex="0" data-refs="14,17">[14, 17]</span>. The hands-on part of the notebook opens with the same step as runnable cells and short exercises with immediate feedback, and its later sections mark further constructs as Python moves.</p><h2>Study path</h2><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Activity</th>
+<th>Suggested time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Read the lecture with its animations on the <a href="lecture.html">lecture page</a>, or read the <a href="Week07_Lecture_Notes.pdf">PDF version</a></td>
+<td>2 hours</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Explore the <a href="lab.html">interactive lab</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Study the Python step at the end of the lecture, then run the same step at the start of the hands-on part of the <a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-07/NB07_ml_workflow_regression.ipynb">Colab notebook</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Work through the rest of the notebook, including its Python moves and exercises</td>
+<td>3 hours</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Solve the discipline challenge of your department</td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Take the self-assessment in the lab (tab: Check yourself)</td>
+<td>20 minutes</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Write the reflection, export the learning log and complete the weekly task</td>
+<td>1 hour</td>
+</tr>
+</tbody>
+</table><h2>Week at a glance</h2><pre class="mermaid">flowchart LR
+  Q[&quot;Engineering question&quot;] --&gt; D[&quot;Data: provenance, units, quality&quot;]
+  D --&gt; E[&quot;Exploration and features&quot;]
+  E --&gt; S[&quot;Split: train, validation, test&quot;]
+  S --&gt; M[&quot;Models: linear, ridge, k-NN, trees, ensembles&quot;]
+  M --&gt; V[&quot;Cross-validation and metrics&quot;]
+  V --&gt; T[&quot;Final test and residual analysis&quot;]
+  D --&gt; L[&quot;Leakage checks&quot;]
+  T --&gt; U[&quot;Use, monitoring, documentation&quot;]</pre>
+<h2>From rules to data</h2>
+<p>A rule-based system encodes what experts know. A machine learning system estimates a function from examples of inputs and outputs, so that it can predict outputs for new inputs <span class="cite" tabindex="0" data-refs="3">[3]</span>. In supervised learning, every example carries the correct answer: a measured strength, a failure label, a power output. In unsupervised learning, the examples carry no answers and the task is to find structure, such as groups or unusual points, which is the topic of Week 9. In reinforcement learning, an agent learns from rewards obtained by acting, which Week 14 treats. Regression is supervised learning with a continuous target, and classification, the topic of Week 8, predicts a category.</p>
+<p>Breiman described two cultures in statistical modelling <span class="cite" tabindex="0" data-refs="4">[4]</span>. The data modelling culture assumes a stochastic model of how the data were generated and estimates its parameters; the algorithmic culture treats the mechanism as unknown and judges models by their predictive accuracy on new data. Engineering needs both views. A fitted coefficient of a physical law can be interpreted and extrapolated with care, while a random forest may predict better inside the range of the data but says little outside it.</p>
+<h2>The workflow of a data-driven project</h2>
+<p>The CRISP-DM process model, developed with industrial partners, describes six phases: business understanding, data understanding, data preparation, modelling, evaluation and deployment <span class="cite" tabindex="0" data-refs="1">[1]</span>. The phases form a loop rather than a line, because evaluation often sends the team back to the data. In engineering terms, the first phase fixes the decision that the model will support and the accuracy it needs; the second checks where the data came from, which units they use and which conditions they cover; the third handles missing values, outliers and derived features; and the last phases test the model honestly and document its limits.</p>
+<p>Data are evidence and deserve the same care as a laboratory measurement. A dataset records a particular population of mixes, machines or buildings under particular conditions. A model trained on it inherits these limits, and predictions outside the covered range are extrapolations that no validation score protects.</p>
+<div class="kc" data-answer="0" data-why="The first phase translates the engineering objective into a data mining goal with success criteria [1]."><p class="q">Check your understanding. In which phase of CRISP-DM does a team decide what decision the model will support and how accurate it must be?</p><label><input type="radio" name="PH0" value="0"> Business understanding</label><label><input type="radio" name="PH0" value="1"> Data preparation</label><label><input type="radio" name="PH0" value="2"> Modelling</label><label><input type="radio" name="PH0" value="3"> Deployment</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Honest evaluation: Splits and cross-validation</h2>
+<p>A model that is judged on the data it was trained on looks better than it is. The standard protection is to hold out data. A test set is set aside at the start and used once, at the end, to estimate performance on new data. Model choices, such as the degree of a polynomial or the depth of a tree, are made with a validation set or with k-fold cross-validation on the training data: The training data are divided into k parts, each part serves once as validation data while the other parts train the model, and the k scores are averaged. Kohavi's study recommended ten-fold stratified cross-validation for model selection on real-world data <span class="cite" tabindex="0" data-refs="5">[5]</span>.</p>
+<p>Model complexity trades bias against variance <span class="cite" tabindex="0" data-refs="6,7">[6, 7]</span>. A model that is too simple misses real structure and has high error on training and new data alike. A model that is too flexible fits the noise of the training data, so its training error is low but its error on new data rises. The best complexity lies between, and only data that the model has not seen can locate it.</p>
+<div class="anim" id="anim-biasvar"><h4>Animation: Underfitting and overfitting</h4><p class="small">Polynomials of growing degree are fitted to noisy samples of a smooth curve. Watch the training error fall steadily while the error on new data first falls and then rises.</p><div class="row" id="bv-sl"></div><div style="display:grid;grid-template-columns:1.3fr 1fr;gap:10px"><canvas class="paper" id="bv-fit"></canvas><canvas class="paper" id="bv-err"></canvas></div>
+<div class="legend" id="bv-leg"></div><div id="bv-ro"></div><div class="row"><button class="btn ghost" id="bv-new" type="button">New sample</button></div></div>
+<div class="kc" data-answer="1" data-why="A large gap between training and validation performance is the signature of variance, that is, overfitting."><p class="q">Check your understanding. A regression tree reaches a training R-squared of 0.99 and a cross-validated R-squared of 0.61. What is the most likely diagnosis?</p><label><input type="radio" name="PH2" value="0"> Underfitting</label><label><input type="radio" name="PH2" value="1"> Overfitting</label><label><input type="radio" name="PH2" value="2"> Data leakage into the validation folds</label><label><input type="radio" name="PH2" value="3"> A perfectly calibrated model</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Models for regression</h2>
+<p>Linear regression fits a weighted sum of the inputs by least squares. It is fast, interpretable and a mandatory baseline. Scaling the inputs does not change its predictions but matters for regularised variants. Ridge regression adds a penalty on the squared size of the coefficients, which stabilises the fit when inputs are correlated <span class="cite" tabindex="0" data-refs="8">[8]</span>, and the lasso penalises absolute values, which drives some coefficients exactly to zero and selects features <span class="cite" tabindex="0" data-refs="9">[9]</span>.</p>
+<p>Nonlinear relationships need more flexible models. The k-nearest-neighbour method predicts the average target of the k most similar training examples <span class="cite" tabindex="0" data-refs="10">[10]</span>. A regression tree splits the input space into boxes with a constant prediction in each box <span class="cite" tabindex="0" data-refs="11">[11]</span>. A random forest averages many trees grown on bootstrap samples with random subsets of features, which reduces variance substantially <span class="cite" tabindex="0" data-refs="12">[12]</span>. Gradient boosting adds shallow trees one after another, each correcting the errors of the current ensemble, and implementations such as XGBoost made it a leading method for tabular data <span class="cite" tabindex="0" data-refs="13">[13]</span>. scikit-learn exposes all of these through the same <code>fit</code> and <code>predict</code> interface <span class="cite" tabindex="0" data-refs="14">[14]</span>.</p>
+<h2>Measuring errors</h2>
+<p>The mean absolute error (MAE) averages the absolute differences between predictions and measurements and keeps the units of the target. The root mean squared error (RMSE) penalises large errors more strongly. The coefficient of determination R-squared compares the model with the constant prediction of the mean: A value of 1 means perfect predictions and 0 means no better than the mean. Numbers alone hide patterns, so a parity plot of predicted against measured values and residual plots against each input belong to every report. A residual trend against age, for example, reveals that the model misses the strength gain of concrete over time.</p>
+<p>For concrete, the physics offers guidance. Abrams found that strength falls as the water-cement ratio rises <span class="cite" tabindex="0" data-refs="15">[15]</span>, and strength grows with age at a decreasing rate. Yeh showed that neural networks trained on mix proportions and age predict the strength of high-performance concrete better than regression on the traditional ratio alone <span class="cite" tabindex="0" data-refs="16">[16]</span>. A derived feature such as the water-binder ratio can help simple models and makes the model easier to interpret.</p>
+<figure><img src="figures/w07_fig2.png" alt="Parity plot of a gradient boosting model on held-out data of the synthetic concrete stand-in used by the notebook when the UCI data cannot be downloaded. Points on the diagonal are perfect predictions." loading="lazy"><figcaption>Figure 7.1. Parity plot of a gradient boosting model on held-out data of the synthetic concrete stand-in used by the notebook when the UCI data cannot be downloaded. Points on the diagonal are perfect predictions.</figcaption></figure>
+
+<div class="kc" data-answer="0" data-why="MAE is the mean absolute deviation in the units of the target; R-squared compares squared errors with those of the mean prediction."><p class="q">Check your understanding. A strength model has an MAE of 4.1 MPa and an R-squared of 0.88. Which statement is correct?</p><label><input type="radio" name="PH3" value="0"> On average, predictions deviate from measurements by 4.1 MPa in absolute terms</label><label><input type="radio" name="PH3" value="1"> 88 percent of the predictions are exactly right</label><label><input type="radio" name="PH3" value="2"> The model explains 4.1 percent of the variance</label><label><input type="radio" name="PH3" value="3"> The RMSE must also be 4.1 MPa</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Data leakage</h2>
+<p>Leakage occurs when information that would not be available at prediction time enters the training data <span class="cite" tabindex="0" data-refs="2">[2]</span>. Typical engineering forms are a feature computed from the target, such as a strength class assigned after testing; a measurement taken after the event to be predicted, such as the repair cost of a failure that the model should anticipate; duplicated specimens that appear in both training and test sets; and preprocessing, such as scaling, fitted on the whole dataset before splitting. Leakage produces excellent validation scores and useless models. The defence is to ask for every feature when and how it becomes known in practice, to split before any fitting, and to wrap preprocessing and model into one pipeline.</p>
+<div class="kc" data-answer="1" data-why="Information recorded after the event cannot be available when the prediction is needed [2]."><p class="q">Check your understanding. A dataset for predicting pump failure contains the column &quot;hours until repair was completed&quot;. What is the problem?</p><label><input type="radio" name="PH4" value="0"> The column has the wrong units</label><label><input type="radio" name="PH4" value="1"> The column is known only after the failure, so using it leaks the target</label><label><input type="radio" name="PH4" value="2"> The column must be scaled first</label><label><input type="radio" name="PH4" value="3"> Tree models cannot use time columns</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- python-step -->
+
+<h2>Python step 7: Tables with pandas and honest evaluation with scikit-learn</h2>
+<h3>Tables as DataFrames</h3>
+<p>Most engineering data arrive as tables, with one row per specimen, test or time and one column per variable. The pandas library represents such a table as a DataFrame <span class="cite" tabindex="0" data-refs="17">[17]</span>. A DataFrame can be built from a dictionary of columns, and <code>shape</code>, <code>head</code> and <code>describe</code> give a first view. The values below are invented for practice and only loosely follow the behaviour of real concrete; the notebook uses the measured Concrete Compressive Strength dataset <span class="cite" tabindex="0" data-refs="18">[18]</span>.</p>
+<pre><code class="language-python">import pandas as pd
+
+mixes = pd.DataFrame({
+    &quot;cement_kg&quot;: [380, 300, 450, 320, 400, 280, 350, 420],
+    &quot;water_kg&quot;: [175, 180, 160, 190, 170, 185, 165, 150],
+    &quot;age_days&quot;: [28, 28, 28, 7, 90, 28, 7, 28],
+    &quot;strength_MPa&quot;: [44.1, 33.9, 55.2, 21.3, 52.6, 29.8, 30.4, 58.7],
+})
+print(mixes.shape)
+print(mixes.head(3))
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">(8, 4)
+   cement_kg  water_kg  age_days  strength_MPa
+0        380       175        28          44.1
+1        300       180        28          33.9
+2        450       160        28          55.2
+</code></pre>
+<h3>Selecting, computing and filtering</h3>
+<p>A column is selected with its name in square brackets and returns a Series, a single labelled column. A list of names selects several columns. New columns come from arithmetic on existing ones, such as the water-cement ratio, the main factor of concrete strength. A condition on a column produces a boolean Series, and using it as an index keeps the matching rows. Conditions combine with <code>&amp;</code> for and and <code>|</code> for or, each condition in its own parentheses.</p>
+<pre><code class="language-python">mixes[&quot;wc_ratio&quot;] = mixes[&quot;water_kg&quot;] / mixes[&quot;cement_kg&quot;]
+at28 = mixes[mixes[&quot;age_days&quot;] == 28]
+print(at28[[&quot;wc_ratio&quot;, &quot;strength_MPa&quot;]].round(3))
+strong = mixes[(mixes[&quot;age_days&quot;] == 28) &amp; (mixes[&quot;strength_MPa&quot;] &gt; 40)]
+print(len(strong), &quot;mixes above 40 MPa at 28 days&quot;)
+print(mixes.sort_values(&quot;wc_ratio&quot;)[[&quot;cement_kg&quot;, &quot;wc_ratio&quot;]].head(2))
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">   wc_ratio  strength_MPa
+0     0.461          44.1
+1     0.600          33.9
+2     0.356          55.2
+5     0.661          29.8
+7     0.357          58.7
+3 mixes above 40 MPa at 28 days
+   cement_kg  wc_ratio
+2        450  0.355556
+7        420  0.357143
+</code></pre>
+<h3>Reading files and missing values</h3>
+<p><code>pd.read_csv</code> reads comma-separated files from a path or a web address. Empty fields become <code>NaN</code>, the marker of a missing value. <code>isna().sum()</code> counts the missing values of each column, and <code>dropna</code> removes incomplete rows. Whether removing, filling or modelling missing values is appropriate depends on why they are missing. The example reads a short text as if it were a file.</p>
+<pre><code class="language-python">import io
+
+csv_text = &quot;&quot;&quot;cement_kg,water_kg,age_days,strength_MPa
+380,175,28,44.1
+300,,28,33.9
+450,160,28,
+&quot;&quot;&quot;
+table = pd.read_csv(io.StringIO(csv_text))
+print(table.isna().sum())
+print(table.dropna())
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">cement_kg       0
+water_kg        1
+age_days        0
+strength_MPa    1
+dtype: int64
+   cement_kg  water_kg  age_days  strength_MPa
+0        380     175.0        28          44.1
+</code></pre>
+<h3>The scikit-learn pattern</h3>
+<p>scikit-learn gives all its models the same interface <span class="cite" tabindex="0" data-refs="14">[14]</span>. A model object is created with its settings, <code>fit</code> learns from the inputs X and the targets y, and <code>predict</code> applies the model to new inputs. <code>train_test_split</code> holds back part of the data for testing, and <code>random_state</code> makes the split repeatable. With eight invented rows, the numbers below practise the syntax only; the workflow of this week explains how models are validated properly.</p>
+<pre><code class="language-python">from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+X = mixes[[&quot;wc_ratio&quot;, &quot;age_days&quot;]]
+y = mixes[&quot;strength_MPa&quot;]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)
+model = LinearRegression().fit(X_train, y_train)
+print(model.coef_.round(2), round(float(model.intercept_), 2))
+print(model.predict(X_test).round(1), y_test.to_numpy())
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">[-98.57   0.11] 87.01
+[41.3 55.1] [30.4 55.2]
+</code></pre>
+<h3>Measuring errors</h3>
+<p>A model is judged by its errors on data it has not seen. The mean absolute error (MAE) averages the size of the errors in the unit of the target, here MPa, and the root mean squared error (RMSE) weights large errors more strongly. Both take one line of NumPy, and <code>sklearn.metrics</code> provides the same measures. A baseline that always predicts the mean strength of the training mixes shows whether the model has learned anything at all.</p>
+<pre><code class="language-python">import numpy as np
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+pred_test = model.predict(X_test)
+err = y_test.to_numpy() - pred_test
+print(&quot;MAE by hand:&quot;, round(float(np.mean(np.abs(err))), 2), &quot;MPa&quot;)
+print(&quot;MAE with scikit-learn:&quot;, round(float(mean_absolute_error(y_test, pred_test)), 2), &quot;MPa&quot;)
+print(&quot;RMSE:&quot;, round(float(np.sqrt(mean_squared_error(y_test, pred_test))), 2), &quot;MPa&quot;)
+baseline = np.full(len(y_test), y_train.mean())
+print(&quot;MAE of the mean baseline:&quot;, round(float(mean_absolute_error(y_test, baseline)), 2), &quot;MPa&quot;)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">MAE by hand: 5.5 MPa
+MAE with scikit-learn: 5.5 MPa
+RMSE: 7.73 MPa
+MAE of the mean baseline: 12.4 MPa
+</code></pre>
+<h3>Cross-validation and pipelines</h3>
+<p>A single split depends on which rows happen to land in the test set. K-fold cross-validation divides the data into k parts, trains k times and tests each time on a different part, which gives k error estimates instead of one. Preprocessing such as scaling must be learned from the training folds only; otherwise information from the test fold leaks into the model. A pipeline chains the preprocessing and the model, so that <code>cross_val_score</code> refits both inside every fold.</p>
+<pre><code class="language-python">from sklearn.model_selection import KFold, cross_val_score
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+folds = KFold(n_splits=4, shuffle=True, random_state=0)
+pipe = make_pipeline(StandardScaler(), LinearRegression())
+scores = -cross_val_score(pipe, X, y, cv=folds, scoring=&quot;neg_mean_absolute_error&quot;)
+print(scores.round(2), &quot;mean MAE:&quot;, round(float(scores.mean()), 2), &quot;MPa&quot;)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">[ 5.5   6.71  4.21 19.97] mean MAE: 9.1 MPa
+</code></pre>
+<p>scikit-learn treats larger scores as better, so it reports errors with a negative sign, and the minus in front turns them back into MAE values. With eight invented rows, the numbers serve to practise the pattern, which the notebook of this week applies to the full dataset.</p>
+<div class="kc" data-answer="1" data-why="pandas combines conditions element by element with &amp; and |, and each condition needs its own parentheses. The keyword and cannot combine two Series."><p class="q">Check your understanding. A DataFrame df has the columns age and f. Which expression keeps the rows with age 28 and f above 40?</p><label><input type="radio" name="PH5" value="0"> df[df[&quot;age&quot;] == 28 and df[&quot;f&quot;] &gt; 40]</label><label><input type="radio" name="PH5" value="1"> df[(df[&quot;age&quot;] == 28) &amp; (df[&quot;f&quot;] &gt; 40)]</label><label><input type="radio" name="PH5" value="2"> df[&quot;age&quot; == 28]</label><label><input type="radio" name="PH5" value="3"> df.keep(age=28, f=40)</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- /python-step --><h2>Discipline challenges</h2><p>The notebook's switch loads a regression dataset for several fields with one line. Pick the row of your department and run the whole pipeline on it, or bring your own public data.</p>
+<table class="disc">
+<thead>
+<tr>
+<th>Department</th>
+<th>Challenge</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Civil Engineering</td>
+<td>Concrete compressive strength from mix proportions and age, UCI 165 <span class="cite" tabindex="0" data-refs="18">[18]</span>.</td>
+</tr>
+<tr>
+<td>Mechanical Engineering and Electrical and Electronics Engineering</td>
+<td>Net electrical output of a combined cycle power plant from ambient conditions, UCI 294 <span class="cite" tabindex="0" data-refs="19">[19]</span>.</td>
+</tr>
+<tr>
+<td>Civil Engineering and Physics</td>
+<td>Heating load of residential buildings from shape parameters, UCI 242 <span class="cite" tabindex="0" data-refs="20">[20]</span>.</td>
+</tr>
+<tr>
+<td>Automotive Engineering and Mechanical Engineering</td>
+<td>Airfoil self-noise from frequency, angle of attack and flow speed, UCI 291 <span class="cite" tabindex="0" data-refs="21">[21]</span>.</td>
+</tr>
+<tr>
+<td>Environmental Engineering and Chemical Engineering</td>
+<td>NOx emissions of a gas turbine from ambient and process variables, UCI 551 <span class="cite" tabindex="0" data-refs="22">[22]</span>.</td>
+</tr>
+<tr>
+<td>Physics, Chemistry and Mathematics</td>
+<td>Critical temperature of superconductors from composition features, UCI 464 <span class="cite" tabindex="0" data-refs="23">[23]</span>.</td>
+</tr>
+<tr>
+<td>Industrial Engineering and Textile Engineering</td>
+<td>Actual productivity of garment production teams, UCI 597 <span class="cite" tabindex="0" data-refs="24">[24]</span>.</td>
+</tr>
+<tr>
+<td>Food Engineering and Chemistry</td>
+<td>Wine quality score from physicochemical measurements as a regression target, UCI 186 <span class="cite" tabindex="0" data-refs="25">[25]</span>.</td>
+</tr>
+<tr>
+<td>Statistics</td>
+<td>Compare ordinary least squares, ridge and lasso paths on the concrete data and interpret shrinkage <span class="cite" tabindex="0" data-refs="8,9">[8, 9]</span>.</td>
+</tr>
+<tr>
+<td>Geology, Geophysics, Mining and Earth Sciences Engineering</td>
+<td>Predict a well-log property (for example PE) from the other logs of the SEG facies data used in Week 9 <span class="cite" tabindex="0" data-refs="26">[26]</span>.</td>
+</tr>
+</tbody>
+</table><h2>Review cards</h2><p class="small">Select a card to turn it over.</p><div class="cards"><div class="card" tabindex="0" role="button"><div class="f">Supervised learning</div><div class="b">Learning a mapping from inputs to known outputs; regression for continuous targets, classification for categories.</div></div><div class="card" tabindex="0" role="button"><div class="f">k-fold cross-validation</div><div class="b">Split training data into k parts; each part validates a model trained on the others; average the scores <span class="cite" tabindex="0" data-refs="5">[5]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Bias and variance</div><div class="b">Error from overly simple assumptions versus error from sensitivity to the particular training sample <span class="cite" tabindex="0" data-refs="6">[6]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">RMSE</div><div class="b">Square root of the mean squared error; in the units of the target; sensitive to large errors.</div></div><div class="card" tabindex="0" role="button"><div class="f">Data leakage</div><div class="b">Information unavailable at prediction time that enters training and inflates scores <span class="cite" tabindex="0" data-refs="2">[2]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Pipeline</div><div class="b">scikit-learn object that chains preprocessing and a model so both are fitted only on training data.</div></div></div>
+<h2>References</h2><div class="small"><p>[1] Wirth, R., &amp; Hipp, J. (2000). CRISP-DM: Towards a standard process model for data mining. In <i>Proceedings of the 4th International Conference on the Practical Applications of Knowledge Discovery and Data Mining</i> (pp. 29-39).</p><p>[2] Kaufman, S., Rosset, S., Perlich, C., &amp; Stitelman, O. (2012). Leakage in data mining: Formulation, detection, and avoidance. <i>ACM Transactions on Knowledge Discovery from Data</i>, <i>6</i>(4), 15. <a href="https://doi.org/10.1145/2382577.2382579">https://doi.org/10.1145/2382577.2382579</a></p><p>[3] Jordan, M. I., &amp; Mitchell, T. M. (2015). Machine learning: Trends, perspectives, and prospects. <i>Science</i>, <i>349</i>(6245), 255-260. <a href="https://doi.org/10.1126/science.aaa8415">https://doi.org/10.1126/science.aaa8415</a></p><p>[4] Breiman, L. (2001). Statistical modeling: The two cultures. <i>Statistical Science</i>, <i>16</i>(3), 199-231. <a href="https://doi.org/10.1214/ss/1009213726">https://doi.org/10.1214/ss/1009213726</a></p><p>[5] Kohavi, R. (1995). A study of cross-validation and bootstrap for accuracy estimation and model selection. In <i>Proceedings of the 14th International Joint Conference on Artificial Intelligence</i> (pp. 1137-1143).</p><p>[6] Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</i> (2nd ed.). Springer. <a href="https://doi.org/10.1007/978-0-387-84858-7">https://doi.org/10.1007/978-0-387-84858-7</a></p><p>[7] James, G., Witten, D., Hastie, T., &amp; Tibshirani, R. (2021). <i>An Introduction to Statistical Learning</i> (2nd ed.). Springer. <a href="https://doi.org/10.1007/978-1-0716-1418-1">https://doi.org/10.1007/978-1-0716-1418-1</a></p><p>[8] Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge regression: Biased estimation for nonorthogonal problems. <i>Technometrics</i>, <i>12</i>(1), 55-67. <a href="https://doi.org/10.1080/00401706.1970.10488634">https://doi.org/10.1080/00401706.1970.10488634</a></p><p>[9] Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. <i>Journal of the Royal Statistical Society: Series B (Methodological)</i>, <i>58</i>(1), 267-288. <a href="https://doi.org/10.1111/j.2517-6161.1996.tb02080.x">https://doi.org/10.1111/j.2517-6161.1996.tb02080.x</a></p><p>[10] Cover, T., &amp; Hart, P. (1967). Nearest neighbor pattern classification. <i>IEEE Transactions on Information Theory</i>, <i>13</i>(1), 21-27. <a href="https://doi.org/10.1109/TIT.1967.1053964">https://doi.org/10.1109/TIT.1967.1053964</a></p><p>[11] Breiman, L., Friedman, J. H., Olshen, R. A., &amp; Stone, C. J. (1984). <i>Classification and Regression Trees</i>. Wadsworth.</p><p>[12] Breiman, L. (2001). Random forests. <i>Machine Learning</i>, <i>45</i>(1), 5-32. <a href="https://doi.org/10.1023/A:1010933404324">https://doi.org/10.1023/A:1010933404324</a></p><p>[13] Chen, T., &amp; Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In <i>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</i> (pp. 785-794). <a href="https://doi.org/10.1145/2939672.2939785">https://doi.org/10.1145/2939672.2939785</a></p><p>[14] Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). Scikit-learn: Machine learning in Python. <i>Journal of Machine Learning Research</i>, <i>12</i>, 2825-2830.</p><p>[15] Abrams, D. A. (1918). <i>Design of Concrete Mixtures (Bulletin 1)</i>. Structural Materials Research Laboratory, Lewis Institute, Chicago.</p><p>[16] Yeh, I.-C. (1998). Modeling of strength of high-performance concrete using artificial neural networks. <i>Cement and Concrete Research</i>, <i>28</i>(12), 1797-1808. <a href="https://doi.org/10.1016/S0008-8846(98)00165-3">https://doi.org/10.1016/S0008-8846(98)00165-3</a></p><p>[17] McKinney, W. (2010). Data structures for statistical computing in Python. In <i>Proceedings of the 9th Python in Science Conference</i> (pp. 56-61). <a href="https://doi.org/10.25080/Majora-92bf1922-00a">https://doi.org/10.25080/Majora-92bf1922-00a</a></p><p>[18] Yeh, I.-C. (1998). <i>Concrete Compressive Strength [Dataset]. UCI Machine Learning Repository, ID 165</i>. <a href="https://doi.org/10.24432/C5PK67">https://doi.org/10.24432/C5PK67</a></p><p>[19] Tüfekci, P. (2014). Prediction of full load electrical power output of a base load operated combined cycle power plant using machine learning methods. <i>International Journal of Electrical Power &amp; Energy Systems</i>, <i>60</i>, 126-140. <a href="https://doi.org/10.1016/j.ijepes.2014.02.027">https://doi.org/10.1016/j.ijepes.2014.02.027</a></p><p>[20] Tsanas, A., &amp; Xifara, A. (2012). Accurate quantitative estimation of energy performance of residential buildings using statistical machine learning tools. <i>Energy and Buildings</i>, <i>49</i>, 560-567. <a href="https://doi.org/10.1016/j.enbuild.2012.03.003">https://doi.org/10.1016/j.enbuild.2012.03.003</a></p><p>[21] Brooks, T. F., Pope, D. S., &amp; Marcolini, M. A. (1989). <i>Airfoil Self-Noise and Prediction (NASA Reference Publication 1218)</i>. NASA.</p><p>[22] Kaya, H., Tüfekci, P., &amp; Uzun, E. (2019). Predicting CO and NOx emissions from gas turbines: Novel data and a benchmark PEMS. <i>Turkish Journal of Electrical Engineering and Computer Sciences</i>, <i>27</i>(6), 4783-4796. <a href="https://doi.org/10.3906/elk-1807-87">https://doi.org/10.3906/elk-1807-87</a></p><p>[23] Hamidieh, K. (2018). A data-driven statistical model for predicting the critical temperature of a superconductor. <i>Computational Materials Science</i>, <i>154</i>, 346-354. <a href="https://doi.org/10.1016/j.commatsci.2018.07.052">https://doi.org/10.1016/j.commatsci.2018.07.052</a></p><p>[24] Imran, A. A., Rahim, M. S., &amp; Ahmed, T. (2020). <i>Productivity Prediction of Garment Employees [Dataset]. UCI Machine Learning Repository, ID 597</i>. <a href="https://archive.ics.uci.edu/dataset/597">https://archive.ics.uci.edu/dataset/597</a></p><p>[25] Cortez, P., Cerdeira, A., Almeida, F., Matos, T., &amp; Reis, J. (2009). Modeling wine preferences by data mining from physicochemical properties. <i>Decision Support Systems</i>, <i>47</i>(4), 547-553. <a href="https://doi.org/10.1016/j.dss.2009.05.016">https://doi.org/10.1016/j.dss.2009.05.016</a></p><p>[26] Hall, B. (2016). Facies classification using machine learning. <i>The Leading Edge</i>, <i>35</i>(10), 906-909. <a href="https://doi.org/10.1190/tle35100906.1">https://doi.org/10.1190/tle35100906.1</a></p></div></article>
+<script type="application/json" id="refdata">{"1": "Wirth, R., &amp; Hipp, J. (2000). CRISP-DM: Towards a standard process model for data mining. In <i>Proceedings of the 4th International Conference on the Practical Applications of Knowledge Discovery and Data Mining</i> (pp. 29-39).", "2": "Kaufman, S., Rosset, S., Perlich, C., &amp; Stitelman, O. (2012). Leakage in data mining: Formulation, detection, and avoidance. <i>ACM Transactions on Knowledge Discovery from Data</i>, <i>6</i>(4), 15. <a href=\"https://doi.org/10.1145/2382577.2382579\">https://doi.org/10.1145/2382577.2382579</a>", "3": "Jordan, M. I., &amp; Mitchell, T. M. (2015). Machine learning: Trends, perspectives, and prospects. <i>Science</i>, <i>349</i>(6245), 255-260. <a href=\"https://doi.org/10.1126/science.aaa8415\">https://doi.org/10.1126/science.aaa8415</a>", "4": "Breiman, L. (2001). Statistical modeling: The two cultures. <i>Statistical Science</i>, <i>16</i>(3), 199-231. <a href=\"https://doi.org/10.1214/ss/1009213726\">https://doi.org/10.1214/ss/1009213726</a>", "5": "Kohavi, R. (1995). A study of cross-validation and bootstrap for accuracy estimation and model selection. In <i>Proceedings of the 14th International Joint Conference on Artificial Intelligence</i> (pp. 1137-1143).", "6": "Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</i> (2nd ed.). Springer. <a href=\"https://doi.org/10.1007/978-0-387-84858-7\">https://doi.org/10.1007/978-0-387-84858-7</a>", "7": "James, G., Witten, D., Hastie, T., &amp; Tibshirani, R. (2021). <i>An Introduction to Statistical Learning</i> (2nd ed.). Springer. <a href=\"https://doi.org/10.1007/978-1-0716-1418-1\">https://doi.org/10.1007/978-1-0716-1418-1</a>", "8": "Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge regression: Biased estimation for nonorthogonal problems. <i>Technometrics</i>, <i>12</i>(1), 55-67. <a href=\"https://doi.org/10.1080/00401706.1970.10488634\">https://doi.org/10.1080/00401706.1970.10488634</a>", "9": "Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. <i>Journal of the Royal Statistical Society: Series B (Methodological)</i>, <i>58</i>(1), 267-288. <a href=\"https://doi.org/10.1111/j.2517-6161.1996.tb02080.x\">https://doi.org/10.1111/j.2517-6161.1996.tb02080.x</a>", "10": "Cover, T., &amp; Hart, P. (1967). Nearest neighbor pattern classification. <i>IEEE Transactions on Information Theory</i>, <i>13</i>(1), 21-27. <a href=\"https://doi.org/10.1109/TIT.1967.1053964\">https://doi.org/10.1109/TIT.1967.1053964</a>", "11": "Breiman, L., Friedman, J. H., Olshen, R. A., &amp; Stone, C. J. (1984). <i>Classification and Regression Trees</i>. Wadsworth.", "12": "Breiman, L. (2001). Random forests. <i>Machine Learning</i>, <i>45</i>(1), 5-32. <a href=\"https://doi.org/10.1023/A:1010933404324\">https://doi.org/10.1023/A:1010933404324</a>", "13": "Chen, T., &amp; Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In <i>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</i> (pp. 785-794). <a href=\"https://doi.org/10.1145/2939672.2939785\">https://doi.org/10.1145/2939672.2939785</a>", "14": "Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). Scikit-learn: Machine learning in Python. <i>Journal of Machine Learning Research</i>, <i>12</i>, 2825-2830.", "15": "Abrams, D. A. (1918). <i>Design of Concrete Mixtures (Bulletin 1)</i>. Structural Materials Research Laboratory, Lewis Institute, Chicago.", "16": "Yeh, I.-C. (1998). Modeling of strength of high-performance concrete using artificial neural networks. <i>Cement and Concrete Research</i>, <i>28</i>(12), 1797-1808. <a href=\"https://doi.org/10.1016/S0008-8846(98)00165-3\">https://doi.org/10.1016/S0008-8846(98)00165-3</a>", "17": "McKinney, W. (2010). Data structures for statistical computing in Python. In <i>Proceedings of the 9th Python in Science Conference</i> (pp. 56-61). <a href=\"https://doi.org/10.25080/Majora-92bf1922-00a\">https://doi.org/10.25080/Majora-92bf1922-00a</a>", "18": "Yeh, I.-C. (1998). <i>Concrete Compressive Strength [Dataset]. UCI Machine Learning Repository, ID 165</i>. <a href=\"https://doi.org/10.24432/C5PK67\">https://doi.org/10.24432/C5PK67</a>", "19": "T\u00fcfekci, P. (2014). Prediction of full load electrical power output of a base load operated combined cycle power plant using machine learning methods. <i>International Journal of Electrical Power &amp; Energy Systems</i>, <i>60</i>, 126-140. <a href=\"https://doi.org/10.1016/j.ijepes.2014.02.027\">https://doi.org/10.1016/j.ijepes.2014.02.027</a>", "20": "Tsanas, A., &amp; Xifara, A. (2012). Accurate quantitative estimation of energy performance of residential buildings using statistical machine learning tools. <i>Energy and Buildings</i>, <i>49</i>, 560-567. <a href=\"https://doi.org/10.1016/j.enbuild.2012.03.003\">https://doi.org/10.1016/j.enbuild.2012.03.003</a>", "21": "Brooks, T. F., Pope, D. S., &amp; Marcolini, M. A. (1989). <i>Airfoil Self-Noise and Prediction (NASA Reference Publication 1218)</i>. NASA.", "22": "Kaya, H., T\u00fcfekci, P., &amp; Uzun, E. (2019). Predicting CO and NOx emissions from gas turbines: Novel data and a benchmark PEMS. <i>Turkish Journal of Electrical Engineering and Computer Sciences</i>, <i>27</i>(6), 4783-4796. <a href=\"https://doi.org/10.3906/elk-1807-87\">https://doi.org/10.3906/elk-1807-87</a>", "23": "Hamidieh, K. (2018). A data-driven statistical model for predicting the critical temperature of a superconductor. <i>Computational Materials Science</i>, <i>154</i>, 346-354. <a href=\"https://doi.org/10.1016/j.commatsci.2018.07.052\">https://doi.org/10.1016/j.commatsci.2018.07.052</a>", "24": "Imran, A. A., Rahim, M. S., &amp; Ahmed, T. (2020). <i>Productivity Prediction of Garment Employees [Dataset]. UCI Machine Learning Repository, ID 597</i>. <a href=\"https://archive.ics.uci.edu/dataset/597\">https://archive.ics.uci.edu/dataset/597</a>", "25": "Cortez, P., Cerdeira, A., Almeida, F., Matos, T., &amp; Reis, J. (2009). Modeling wine preferences by data mining from physicochemical properties. <i>Decision Support Systems</i>, <i>47</i>(4), 547-553. <a href=\"https://doi.org/10.1016/j.dss.2009.05.016\">https://doi.org/10.1016/j.dss.2009.05.016</a>", "26": "Hall, B. (2016). Facies classification using machine learning. <i>The Leading Edge</i>, <i>35</i>(10), 906-909. <a href=\"https://doi.org/10.1190/tle35100906.1\">https://doi.org/10.1190/tle35100906.1</a>"}</script>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: September 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.values(st).filter(Boolean).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLecture(7);
+(function(root){
+let deg=3, n=20, seed=1; const truth=x=>Math.sin(2.5*x)+0.4*x;
+const sl=root.querySelector('#bv-sl');
+slider(sl,{label:'Polynomial degree',min:0,max:14,step:1,value:deg},v=>{deg=v;fit();});
+slider(sl,{label:'Training points',min:8,max:80,step:2,value:n},v=>{n=v;sample();});
+legend(root.querySelector('#bv-leg'),[['training data',0],['new data',1],['fitted model',2],['training error',0],['error on new data',1]]);
+const ro=readout(root.querySelector('#bv-ro'),['training RMSE','RMSE on new data']);
+let tr=[], te=[], coef=[], curves={tr:[],te:[]};
+function cheb(x,d){ const T=[1,x]; for(let k=2;k<=d;k++) T.push(2*x*T[k-1]-T[k-2]); return T.slice(0,d+1); }
+function lsq(pts,d){ const m=d+1, A=Array.from({length:m},()=>Array(m).fill(0)), b=Array(m).fill(0);
+  pts.forEach(([x,y])=>{ const t=cheb(x,d); for(let i=0;i<m;i++){ b[i]+=t[i]*y; for(let j=0;j<m;j++) A[i][j]+=t[i]*t[j]; } }); for(let i=0;i<m;i++) A[i][i]+=1e-9;
+  for(let i=0;i<m;i++){ let p=i; for(let r=i+1;r<m;r++) if(Math.abs(A[r][i])>Math.abs(A[p][i])) p=r; [A[i],A[p]]=[A[p],A[i]]; [b[i],b[p]]=[b[p],b[i]];
+    for(let r=i+1;r<m;r++){ const f=A[r][i]/A[i][i]; for(let c=i;c<m;c++) A[r][c]-=f*A[i][c]; b[r]-=f*b[i]; } }
+  const x=Array(m).fill(0); for(let i=m-1;i>=0;i--){ let s=b[i]; for(let c=i+1;c<m;c++) s-=A[i][c]*x[c]; x[i]=s/A[i][i]; } return x; }
+const pred=(c,x)=>cheb(x,c.length-1).reduce((s,t,i)=>s+t*c[i],0);
+const rmse=(c,pts)=>Math.sqrt(pts.reduce((s,[x,y])=>s+(pred(c,x)-y)**2,0)/pts.length);
+function sample(){ const r=RNG(seed++); tr=Array.from({length:n},()=>{ const x=r.uniform(-1,1); return [x,truth(x)+0.3*r.normal()]; }); te=Array.from({length:200},()=>{ const x=r.uniform(-1,1); return [x,truth(x)+0.3*r.normal()]; });
+  curves={tr:[],te:[]}; for(let d=0;d<=14;d++){ const c=lsq(tr,Math.min(d,tr.length-1)); curves.tr.push(rmse(c,tr)); curves.te.push(rmse(c,te)); } fit(); }
+function fit(){ coef=lsq(tr,Math.min(deg,tr.length-1)); ro('training RMSE',rmse(coef,tr).toFixed(3)); ro('RMSE on new data',rmse(coef,te).toFixed(3)); a.redraw(); b.redraw(); }
+const a=stage(root.querySelector('#bv-fit'),0.7,(c,w,h)=>{ c.clearRect(0,0,w,h); const C=COL(); const f=frame(c,w,h,{x0:-1,x1:1,y0:-2,y1:2,ticks:4});
+  te.slice(0,60).forEach(([x,y])=>dot(c,f.X(x),f.Y(y),2.5,C.c[1]+'88')); tr.forEach(([x,y])=>dot(c,f.X(x),f.Y(y),4,C.c[0],C.ink));
+  if(coef.length){ const pts=[]; for(let k=0;k<=200;k++){ const x=-1+2*k/200; pts.push([f.X(x),f.Y(clamp(pred(coef,x),-2.2,2.2))]); } polyline(c,pts,C.c[2],2.5); } });
+const b=stage(root.querySelector('#bv-err'),0.9,(c,w,h)=>{ c.clearRect(0,0,w,h); const C=COL(); const f=frame(c,w,h,{x0:0,x1:14,y0:0,y1:1.2,xlabel:'degree',ylabel:'RMSE',ticks:7});
+  polyline(c,curves.tr.map((v,i)=>[f.X(i),f.Y(Math.min(v,1.2))]),C.c[0],2); polyline(c,curves.te.map((v,i)=>[f.X(i),f.Y(Math.min(v,1.2))]),C.c[1],2); polyline(c,[[f.X(deg),f.Y(0)],[f.X(deg),f.Y(1.2)]],C.ink,1,[3,3]); });
+root.querySelector('#bv-new').onclick=sample; sample();
+})(document.getElementById('anim-biasvar'));</script><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script><script>try{mermaid.initialize({startOnLoad:true,theme:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral"})}catch(e){}</script></body></html>

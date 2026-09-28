@@ -1,0 +1,558 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Problem Solving by Search: Routes, Plans and Paths | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 2 of 14</p><h1>Problem Solving by Search: Routes, Plans and Paths</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="lab.html">Interactive lab</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-02/NB02_search_and_planning.ipynb">Colab notebook</a><a href="Week02_Lecture_Notes.pdf">PDF notes</a><a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/tree/main/weeks/week-02">Week folder on GitHub</a></nav></header>
+<div class="lec-tools"><div class="lec-prog"><span class="lec-bar"><i></i></span><span class="lec-txt" aria-live="polite"></span></div></div>
+<article class="lecture"><h2>Overview</h2>
+<p>Many engineering decisions are sequences: the route of a truck, the order of drilling holes, the moves of a crane or the path of a pipeline across a valley. Search turns such decisions into the exploration of a state space and finds a sequence of actions that reaches a goal at least cost <span class="cite" tabindex="0" data-refs="1,6">[1, 6]</span>. This week formulates problems as state spaces, compares uninformed search with heuristic search, proves why A* returns optimal paths when its heuristic never overestimates, and applies the ideas to path planning for vehicles on real terrain near Isparta <span class="cite" tabindex="0" data-refs="2,5,9">[2, 5, 9]</span>.</p>
+<p><strong>Estimated study time:</strong> 8 to 10 hours.</p>
+<h2>Learning outcomes</h2>
+<p>By the end of the week, students are expected to formulate an engineering task as a search problem with states, actions, transition model, goal test and path cost, to trace breadth-first search, uniform-cost search and A* by hand, to judge whether a heuristic is admissible and consistent, to explain the effect of a heuristic on the number of expanded nodes, and to implement grid path planning with terrain costs in Python.</p>
+<h2>Python in this week</h2>
+<p>The lecture ends with Python step 2: Lists, tuples and loops. It covers lists, tuples, for and while loops, sets and a first queue, applied to routes and grid maps like those searched in this week <span class="cite" tabindex="0" data-refs="12">[12]</span>. The hands-on part of the notebook opens with the same step as runnable cells and short exercises with immediate feedback, and its later sections mark further constructs as Python moves.</p><h2>Study path</h2><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Activity</th>
+<th>Suggested time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Read the lecture with its animations on the <a href="lecture.html">lecture page</a>, or read the <a href="Week02_Lecture_Notes.pdf">PDF version</a></td>
+<td>2 hours</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Explore the <a href="lab.html">interactive lab</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Study the Python step at the end of the lecture, then run the same step at the start of the hands-on part of the <a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-02/NB02_search_and_planning.ipynb">Colab notebook</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Work through the rest of the notebook, including its Python moves and exercises</td>
+<td>3 hours</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Solve the discipline challenge of your department</td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Take the self-assessment in the lab (tab: Check yourself)</td>
+<td>20 minutes</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Write the reflection, export the learning log and complete the weekly task</td>
+<td>1 hour</td>
+</tr>
+</tbody>
+</table><h2>Week at a glance</h2><pre class="mermaid">flowchart LR
+  P[&quot;Engineering decision as a sequence&quot;] --&gt; F[&quot;Formulation: states, actions, costs, goal&quot;]
+  F --&gt; U[&quot;Uninformed: BFS, DFS, uniform cost&quot;]
+  F --&gt; I[&quot;Informed: greedy, A*&quot;]
+  I --&gt; H[&quot;Heuristics: admissible, consistent&quot;]
+  U --&gt; C[&quot;Completeness, optimality, complexity&quot;]
+  H --&gt; T[&quot;Terrain path planning near Isparta&quot;]
+  C --&gt; L[&quot;Local search: bridge to Weeks 5 and 6&quot;]</pre>
+<h2>Problems as state spaces</h2>
+<p>A search problem has five parts <span class="cite" tabindex="0" data-refs="1">[1]</span>. The initial state describes where the agent starts. The actions available in a state say what the agent can do. The transition model gives the state that results from an action. The goal test decides whether a state solves the problem, and the path cost adds up the cost of the actions along a sequence. A solution is a sequence of actions from the initial state to a goal state, and an optimal solution has the lowest path cost among all solutions.</p>
+<p>The formulation is an engineering decision in its own right. For a haul truck in an open-pit mine, a state can be a node of the road network, and the path cost can be travel time, fuel or tyre wear. For a mobile robot in a factory, the state can be a cell of an occupancy grid, which divides the floor into squares that are free or blocked <span class="cite" tabindex="0" data-refs="2">[2]</span>. For a crane that stacks containers, the state is the arrangement of all containers, and the number of states grows combinatorially. A good formulation keeps only the details that matter for the decision: A route planner for a truck does not need the colour of the truck, but it may need the slope of every road segment.</p>
+<div class="kc" data-answer="1" data-why="The future cost depends on which contours remain and where the head is, so both belong in the state."><p class="q">Check your understanding. A planner chooses the order in which a laser cutter visits 60 contours on a steel sheet. What is a natural state in the formulation?</p><label><input type="radio" name="PH0" value="0"> The colour of the steel sheet</label><label><input type="radio" name="PH0" value="1"> The set of contours already cut together with the current position of the cutting head</label><label><input type="radio" name="PH0" value="2"> The electrical power of the laser only</label><label><input type="radio" name="PH0" value="3"> The final cutting plan</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Uninformed search: Breadth first, depth first and uniform cost</h2>
+<p>Uninformed strategies know nothing about the goal beyond the goal test. They differ only in the order in which they expand nodes of the search tree. Breadth-first search expands the shallowest node first by keeping the frontier in a first-in first-out queue. It finds the solution with the fewest actions, which is optimal when every action has the same cost. Depth-first search expands the deepest node first with a last-in first-out stack, needs little memory, but may wander along an infinite branch and does not guarantee the shortest solution. Iterative deepening repeats depth-limited search with growing limits and combines the memory use of depth-first search with the completeness of breadth-first search <span class="cite" tabindex="0" data-refs="3">[3]</span>.</p>
+<p>When actions have different costs, the fewest actions is not the cheapest path. Uniform-cost search expands the node with the lowest path cost so far, which is Dijkstra's algorithm on an explicit graph <span class="cite" tabindex="0" data-refs="4">[4]</span>. It is optimal for non-negative costs, because a node is expanded only when no cheaper route to it can exist.</p>
+<p>The price of uninformed search is growth. With branching factor b and solution depth d, breadth-first search may generate on the order of b to the power d nodes. On a grid with four moves and a goal forty steps away, blind search explores almost every reachable cell within that radius. The number becomes unmanageable for combinatorial problems such as sequencing: Twenty jobs can be ordered in more than two quintillion ways.</p>
+<figure><img src="figures/w02_fig1.png" alt="Growth of the number of nodes in a complete search tree with branching factor b. Uninformed search must be guided or limited when b or d is large ." loading="lazy"><figcaption>Figure 2.1. Growth of the number of nodes in a complete search tree with branching factor b. Uninformed search must be guided or limited when b or d is large <span class="cite" tabindex="0" data-refs="1">[1]</span>.</figcaption></figure>
+
+<div class="kc" data-answer="2" data-why="Uniform-cost search, Dijkstra&#x27;s algorithm, expands the node with the lowest accumulated cost, so it is optimal for non-negative costs."><p class="q">Check your understanding. Road segments of a network have different travel times. Which strategy returns the fastest route without extra knowledge about the goal?</p><label><input type="radio" name="PH1" value="0"> Breadth-first search</label><label><input type="radio" name="PH1" value="1"> Depth-first search</label><label><input type="radio" name="PH1" value="2"> Uniform-cost search</label><label><input type="radio" name="PH1" value="3"> Random walk</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Informed search: Heuristics and A*</h2>
+<p>A heuristic function h(n) estimates the cost from node n to the nearest goal. Greedy best-first search expands the node with the smallest h and often reaches a goal quickly, but it can be misled into long detours. A* combines the cost already paid, g(n), with the estimate, and expands the node with the smallest f(n) = g(n) + h(n) <span class="cite" tabindex="0" data-refs="5">[5]</span>.</p>
+<p>Hart, Nilsson and Raphael showed that A<em> returns an optimal path if the heuristic is admissible, which means it never overestimates the true remaining cost <span class="cite" tabindex="0" data-refs="5">[5]</span>. The straight-line distance is admissible for road travel, because no road is shorter than a straight line. On a grid with four moves, the Manhattan distance, the sum of horizontal and vertical offsets, is admissible. A heuristic is consistent when its estimate never drops by more than the cost of one step. Consistency implies admissibility and guarantees that A</em> never needs to reopen a node <span class="cite" tabindex="0" data-refs="6">[6]</span>.</p>
+<p>Better heuristics save work. If one admissible heuristic is always at least as large as another, A<em> with the larger one expands no more nodes. The zero heuristic turns A</em> into uniform-cost search, and a perfect heuristic walks straight to the goal. Weighted A* multiplies the heuristic by a factor larger than one: It usually expands far fewer nodes and returns a path whose cost is at most that factor times the optimum, which is a common engineering compromise when planning must meet a deadline.</p>
+<div class="anim" id="anim-grid"><h4>Animation: Breadth-first search and A* on the same map</h4><p class="small">Both searches start at the green cell and look for the red cell. Blue cells have been expanded. Compare how many cells each algorithm expands before it finds a path of the same length.</p><div class="row"><button class="btn" id="g-play" type="button">Play</button><button class="btn ghost" id="g-step" type="button">Step</button><button class="btn ghost" id="g-reset" type="button">Reset</button></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px"><div><b>Breadth-first search</b><canvas class="paper" id="g-a"></canvas></div><div><b>A* with Manhattan distance</b><canvas class="paper" id="g-b"></canvas></div></div>
+<div id="g-ro"></div></div>
+<div class="kc" data-answer="1" data-why="The Manhattan distance is the length of a path without obstacles, so it can never exceed the true remaining cost."><p class="q">Check your understanding. Which heuristic is admissible for a robot that moves on a grid with four moves of cost 1?</p><label><input type="radio" name="PH3" value="0"> Twice the Manhattan distance</label><label><input type="radio" name="PH3" value="1"> The Manhattan distance</label><label><input type="radio" name="PH3" value="2"> The number of obstacles on the map</label><label><input type="radio" name="PH3" value="3"> The square of the Euclidean distance</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Path planning for vehicles and machines</h2>
+<p>Path planning in engineering adds physical constraints to graph search. Occupancy grids and road graphs give the search space, while costs encode travel time, energy, risk or wear <span class="cite" tabindex="0" data-refs="2">[2]</span>. Vehicles cannot turn on the spot, so planners for cars and trucks search over positions and headings. Hybrid A* keeps continuous positions inside discrete cells and has been used to park and manoeuvre autonomous vehicles in unstructured environments such as parking lots <span class="cite" tabindex="0" data-refs="7">[7]</span>. Surveys of self-driving urban vehicles place such graph-search planners next to sampling-based and optimisation-based methods <span class="cite" tabindex="0" data-refs="8">[8]</span>.</p>
+<p>Terrain adds cost and feasibility. A haul road in a mine, a pipeline or a forest road must respect a maximum grade, and steep segments cost more fuel and time. A digital elevation model turns the terrain into a grid of heights, and the cost of moving between two cells can combine distance with a penalty on slope and a hard limit above which the move is forbidden. The notebook applies this idea to a real elevation grid near Isparta from the Copernicus GLO-90 model, served by the Open-Meteo Elevation API <span class="cite" tabindex="0" data-refs="9,10">[9, 10]</span>.</p>
+<h2>Beyond systematic search: Local search</h2>
+<p>Systematic search remembers the paths it explores. Local search keeps only a current solution and improves it by small changes, which suits problems where the path does not matter and only the final configuration counts, such as a layout or a schedule. Hill climbing accepts only improvements and stops at the first local optimum. Simulated annealing sometimes accepts worse solutions, with a probability that falls as a temperature parameter is lowered, and can therefore escape local optima <span class="cite" tabindex="0" data-refs="11">[11]</span>. Weeks 5 and 6 develop this line into evolutionary and swarm algorithms, which keep a population of candidate solutions instead of one.</p>
+<div class="kc" data-answer="1" data-why="Occasional uphill moves in cost let the search leave the basin of a local optimum early in the run."><p class="q">Check your understanding. Why can simulated annealing escape a local optimum where hill climbing stops?</p><label><input type="radio" name="PH4" value="0"> It evaluates every possible solution</label><label><input type="radio" name="PH4" value="1"> It sometimes accepts a worse solution, with a probability that decreases over time</label><label><input type="radio" name="PH4" value="2"> It uses the gradient of the objective</label><label><input type="radio" name="PH4" value="3"> It always restarts from the best known solution</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- python-step -->
+
+<h2>Python step 2: Lists, tuples and loops</h2>
+<h3>Lists</h3>
+<p>A list holds several values in a fixed order and is written in square brackets. Positions are counted from 0, so <code>heights_m[0]</code> is the first element, and negative positions count from the end. A slice such as <code>heights_m[2:5]</code> returns the elements at positions 2, 3 and 4: The start is included and the stop is excluded. Lists can grow with <code>append</code>, and <code>len</code>, <code>min</code>, <code>max</code> and <code>sum</code> work on any list of numbers. The list below holds the ground elevation of successive cells along a planned route.</p>
+<pre><code class="language-python">heights_m = [1012, 1018, 1031, 1047, 1040, 1066, 1080]
+print(len(heights_m), heights_m[0], heights_m[-1])
+print(heights_m[2:5])
+heights_m.append(1093)
+print(max(heights_m) - min(heights_m), &quot;m between the lowest and the highest cell&quot;)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">7 1012 1080
+[1031, 1047, 1040]
+81 m between the lowest and the highest cell
+</code></pre>
+<h3>Loops over lists</h3>
+<p>A <code>for</code> loop can run over the elements of a list directly or over positions produced by <code>range</code>. The loop below adds up all rises between neighbouring cells, which gives the total climb that a vehicle must make. The operator <code>+=</code> adds to a variable in place. The function <code>enumerate</code> supplies position and value together, which is often clearer than indexing by hand.</p>
+<pre><code class="language-python">total_climb = 0
+for i in range(1, len(heights_m)):
+    rise = heights_m[i] - heights_m[i - 1]
+    if rise &gt; 0:
+        total_climb += rise
+print(&quot;total climb:&quot;, total_climb, &quot;m&quot;)
+for i, h in enumerate(heights_m[:3]):
+    print(&quot;cell&quot;, i, &quot;is at&quot;, h, &quot;m&quot;)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">total climb: 88 m
+cell 0 is at 1012 m
+cell 1 is at 1018 m
+cell 2 is at 1031 m
+</code></pre>
+<h3>Grids and tuples</h3>
+<p>A map for path planning can be written as a list of strings, one string per row, with <code>#</code> marking obstacles. <code>grid[r][c]</code> then reads the character in row r and column c. A cell is naturally described by a tuple <code>(row, column)</code>. Tuples are written with parentheses and, unlike lists, cannot be changed after creation, which suits fixed coordinates. Two nested loops visit every cell, and unpacking assigns the parts of a tuple to separate names.</p>
+<pre><code class="language-python">grid = [&quot;S..#....&quot;,
+        &quot;.#.#.##.&quot;,
+        &quot;.#...#..&quot;,
+        &quot;...#...G&quot;]
+rows, cols = len(grid), len(grid[0])
+for r in range(rows):
+    for c in range(cols):
+        if grid[r][c] == &quot;S&quot;:
+            start = (r, c)
+        elif grid[r][c] == &quot;G&quot;:
+            goal = (r, c)
+print(&quot;start&quot;, start, &quot;goal&quot;, goal)
+r, c = goal
+print(&quot;the goal is in row&quot;, r, &quot;and column&quot;, c)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">start (0, 0) goal (3, 7)
+the goal is in row 3 and column 7
+</code></pre>
+<p>The neighbours of a cell follow from four moves. A move is valid when it stays inside the map and does not enter an obstacle, and every valid neighbour is appended to a list.</p>
+<pre><code class="language-python">moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]    # up, down, left, right
+cell = (1, 2)
+free_neighbours = []
+for dr, dc in moves:
+    nr, nc = cell[0] + dr, cell[1] + dc
+    if 0 &lt;= nr &lt; rows and 0 &lt;= nc &lt; cols and grid[nr][nc] != &quot;#&quot;:
+        free_neighbours.append((nr, nc))
+print(free_neighbours)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">[(0, 2), (2, 2)]
+</code></pre>
+<h3>While loops, sets and a queue</h3>
+<p>A <code>while</code> loop repeats as long as its condition holds, which suits searches whose length is not known in advance. Breadth-first search keeps a queue of cells to explore: New cells join at the back, and the next cell to expand leaves from the front. <code>collections.deque</code> provides such a queue with <code>append</code> and <code>popleft</code>. A set, written with braces, stores the cells already seen and answers membership questions such as <code>nxt not in visited</code> quickly. A dictionary <code>parent</code> records from which cell each cell was reached; Week 3 explains dictionaries in detail. The statement <code>break</code> leaves a loop early.</p>
+<pre><code class="language-python">from collections import deque
+
+frontier = deque([start])
+visited = {start}
+parent = {start: None}
+while frontier:                 # an empty queue counts as False
+    cell = frontier.popleft()
+    if cell == goal:
+        break
+    for dr, dc in moves:
+        nxt = (cell[0] + dr, cell[1] + dc)
+        inside = 0 &lt;= nxt[0] &lt; rows and 0 &lt;= nxt[1] &lt; cols
+        if inside and grid[nxt[0]][nxt[1]] != &quot;#&quot; and nxt not in visited:
+            visited.add(nxt)
+            parent[nxt] = cell
+            frontier.append(nxt)
+
+path = []
+while cell is not None:
+    path.append(cell)
+    cell = parent[cell]
+path.reverse()
+print(len(path) - 1, &quot;moves:&quot;, path)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">10 moves: [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 3), (2, 4), (3, 4), (3, 5), (3, 6), (3, 7)]
+</code></pre>
+<p>The second <code>while</code> loop walks back from the goal through the recorded parents until it reaches the start, whose parent is <code>None</code>, and <code>reverse</code> puts the path in travel order. The notebook of this week extends the same pattern with a priority queue for A*.</p>
+<div class="kc" data-answer="0" data-why="The slice includes position 1 and stops before position 3, and position -1 is the last element."><p class="q">Check your understanding. After heights = [5, 7, 9, 11], what does print(heights[1:3], heights[-1]) display?</p><label><input type="radio" name="PH5" value="0"> [7, 9] 11</label><label><input type="radio" name="PH5" value="1"> [5, 7, 9] 11</label><label><input type="radio" name="PH5" value="2"> [7, 9, 11] 5</label><label><input type="radio" name="PH5" value="3"> [7, 9] 9</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- /python-step --><h2>Discipline challenges</h2><p>Each row names a search problem from one department. Write its formulation and propose a heuristic, then decide whether systematic search, weighted search or local search suits its size.</p>
+<table class="disc">
+<thead>
+<tr>
+<th>Department</th>
+<th>Challenge</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mining Engineering</td>
+<td>Haul-road routing between a loading point and the crusher with a maximum grade and a fuel cost per metre of climb.</td>
+</tr>
+<tr>
+<td>Civil Engineering</td>
+<td>Corridor selection for a road or pipeline across a digital elevation model with slope and land-use costs.</td>
+</tr>
+<tr>
+<td>Industrial Engineering</td>
+<td>Order of picking items in a warehouse aisle system to minimise walking distance.</td>
+</tr>
+<tr>
+<td>Electrical and Electronics Engineering</td>
+<td>Routing a cable harness or a printed-circuit trace around keep-out zones.</td>
+</tr>
+<tr>
+<td>Mechanical Engineering</td>
+<td>Collision-free path of a robot arm tool point between two fixtures.</td>
+</tr>
+<tr>
+<td>Automotive Engineering</td>
+<td>Parking manoeuvre planning with position and heading states, as in hybrid A*.</td>
+</tr>
+<tr>
+<td>Computer Engineering</td>
+<td>Shortest route of packets in a network with link delays as costs.</td>
+</tr>
+<tr>
+<td>Geological Engineering and Earth Sciences Engineering</td>
+<td>Field survey route that visits outcrops on steep terrain with limited walking time.</td>
+</tr>
+<tr>
+<td>Chemistry and Chemical Engineering</td>
+<td>Reaction route from a starting compound to a target through known transformations with yields as costs.</td>
+</tr>
+<tr>
+<td>Mathematics</td>
+<td>Proof that consistency implies admissibility, and a counterexample in which an inadmissible heuristic misleads A*.</td>
+</tr>
+</tbody>
+</table><h2>Review cards</h2><p class="small">Select a card to turn it over.</p><div class="cards"><div class="card" tabindex="0" role="button"><div class="f">State space</div><div class="b">All states reachable from the initial state by sequences of actions, with the transitions between them.</div></div><div class="card" tabindex="0" role="button"><div class="f">Uniform-cost search</div><div class="b">Expands the frontier node with the lowest path cost; Dijkstra&#x27;s algorithm on an explicit graph <span class="cite" tabindex="0" data-refs="4">[4]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Admissible heuristic</div><div class="b">Never overestimates the true cost to the goal; guarantees optimal paths for A* <span class="cite" tabindex="0" data-refs="5">[5]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Consistent heuristic</div><div class="b">h(n) is at most the step cost to a neighbour n&#x27; plus h(n&#x27;); implies admissibility.</div></div><div class="card" tabindex="0" role="button"><div class="f">Weighted A*</div><div class="b">Uses g + w h with w greater than one; faster search, path cost within a factor w of the optimum.</div></div><div class="card" tabindex="0" role="button"><div class="f">heapq</div><div class="b">Python module for a binary heap: heappush adds an item, heappop removes the smallest.</div></div></div>
+<h2>References</h2><div class="small"><p>[1] Russell, S., &amp; Norvig, P. (2021). <i>Artificial Intelligence: A Modern Approach</i> (4th ed.). Pearson.</p><p>[2] LaValle, S. M. (2006). <i>Planning Algorithms</i>. Cambridge University Press. <a href="https://doi.org/10.1017/CBO9780511546877">https://doi.org/10.1017/CBO9780511546877</a></p><p>[3] Korf, R. E. (1985). Depth-first iterative-deepening: An optimal admissible tree search. <i>Artificial Intelligence</i>, <i>27</i>(1), 97-109. <a href="https://doi.org/10.1016/0004-3702(85)90084-0">https://doi.org/10.1016/0004-3702(85)90084-0</a></p><p>[4] Dijkstra, E. W. (1959). A note on two problems in connexion with graphs. <i>Numerische Mathematik</i>, <i>1</i>, 269-271. <a href="https://doi.org/10.1007/BF01386390">https://doi.org/10.1007/BF01386390</a></p><p>[5] Hart, P. E., Nilsson, N. J., &amp; Raphael, B. (1968). A formal basis for the heuristic determination of minimum cost paths. <i>IEEE Transactions on Systems Science and Cybernetics</i>, <i>4</i>(2), 100-107. <a href="https://doi.org/10.1109/TSSC.1968.300136">https://doi.org/10.1109/TSSC.1968.300136</a></p><p>[6] Pearl, J. (1984). <i>Heuristics: Intelligent Search Strategies for Computer Problem Solving</i>. Addison-Wesley.</p><p>[7] Dolgov, D., Thrun, S., Montemerlo, M., &amp; Diebel, J. (2010). Path planning for autonomous vehicles in unknown semi-structured environments. <i>The International Journal of Robotics Research</i>, <i>29</i>(5), 485-501. <a href="https://doi.org/10.1177/0278364909359210">https://doi.org/10.1177/0278364909359210</a></p><p>[8] Paden, B., Čáp, M., Yong, S. Z., Yershov, D., &amp; Frazzoli, E. (2016). A survey of motion planning and control techniques for self-driving urban vehicles. <i>IEEE Transactions on Intelligent Vehicles</i>, <i>1</i>(1), 33-55. <a href="https://doi.org/10.1109/TIV.2016.2578706">https://doi.org/10.1109/TIV.2016.2578706</a></p><p>[9] European Space Agency (2021). <i>Copernicus Global Digital Elevation Model (GLO-90)</i>. <a href="https://doi.org/10.5270/ESA-c5d3d65">https://doi.org/10.5270/ESA-c5d3d65</a></p><p>[10] Open-Meteo (2026). <i>Open-Meteo free weather API: Historical Weather API and Elevation API (data licensed under CC BY 4.0)</i>. <a href="https://open-meteo.com">https://open-meteo.com</a></p><p>[11] Kirkpatrick, S., Gelatt, C. D., &amp; Vecchi, M. P. (1983). Optimization by simulated annealing. <i>Science</i>, <i>220</i>(4598), 671-680. <a href="https://doi.org/10.1126/science.220.4598.671">https://doi.org/10.1126/science.220.4598.671</a></p><p>[12] Python Software Foundation (2026). <i>The Python Tutorial (Python 3 documentation)</i>. <a href="https://docs.python.org/3/tutorial/">https://docs.python.org/3/tutorial/</a></p></div></article>
+<script type="application/json" id="refdata">{"1": "Russell, S., &amp; Norvig, P. (2021). <i>Artificial Intelligence: A Modern Approach</i> (4th ed.). Pearson.", "2": "LaValle, S. M. (2006). <i>Planning Algorithms</i>. Cambridge University Press. <a href=\"https://doi.org/10.1017/CBO9780511546877\">https://doi.org/10.1017/CBO9780511546877</a>", "3": "Korf, R. E. (1985). Depth-first iterative-deepening: An optimal admissible tree search. <i>Artificial Intelligence</i>, <i>27</i>(1), 97-109. <a href=\"https://doi.org/10.1016/0004-3702(85)90084-0\">https://doi.org/10.1016/0004-3702(85)90084-0</a>", "4": "Dijkstra, E. W. (1959). A note on two problems in connexion with graphs. <i>Numerische Mathematik</i>, <i>1</i>, 269-271. <a href=\"https://doi.org/10.1007/BF01386390\">https://doi.org/10.1007/BF01386390</a>", "5": "Hart, P. E., Nilsson, N. J., &amp; Raphael, B. (1968). A formal basis for the heuristic determination of minimum cost paths. <i>IEEE Transactions on Systems Science and Cybernetics</i>, <i>4</i>(2), 100-107. <a href=\"https://doi.org/10.1109/TSSC.1968.300136\">https://doi.org/10.1109/TSSC.1968.300136</a>", "6": "Pearl, J. (1984). <i>Heuristics: Intelligent Search Strategies for Computer Problem Solving</i>. Addison-Wesley.", "7": "Dolgov, D., Thrun, S., Montemerlo, M., &amp; Diebel, J. (2010). Path planning for autonomous vehicles in unknown semi-structured environments. <i>The International Journal of Robotics Research</i>, <i>29</i>(5), 485-501. <a href=\"https://doi.org/10.1177/0278364909359210\">https://doi.org/10.1177/0278364909359210</a>", "8": "Paden, B., \u010c\u00e1p, M., Yong, S. Z., Yershov, D., &amp; Frazzoli, E. (2016). A survey of motion planning and control techniques for self-driving urban vehicles. <i>IEEE Transactions on Intelligent Vehicles</i>, <i>1</i>(1), 33-55. <a href=\"https://doi.org/10.1109/TIV.2016.2578706\">https://doi.org/10.1109/TIV.2016.2578706</a>", "9": "European Space Agency (2021). <i>Copernicus Global Digital Elevation Model (GLO-90)</i>. <a href=\"https://doi.org/10.5270/ESA-c5d3d65\">https://doi.org/10.5270/ESA-c5d3d65</a>", "10": "Open-Meteo (2026). <i>Open-Meteo free weather API: Historical Weather API and Elevation API (data licensed under CC BY 4.0)</i>. <a href=\"https://open-meteo.com\">https://open-meteo.com</a>", "11": "Kirkpatrick, S., Gelatt, C. D., &amp; Vecchi, M. P. (1983). Optimization by simulated annealing. <i>Science</i>, <i>220</i>(4598), 671-680. <a href=\"https://doi.org/10.1126/science.220.4598.671\">https://doi.org/10.1126/science.220.4598.671</a>", "12": "Python Software Foundation (2026). <i>The Python Tutorial (Python 3 documentation)</i>. <a href=\"https://docs.python.org/3/tutorial/\">https://docs.python.org/3/tutorial/</a>"}</script>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: September 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.values(st).filter(Boolean).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLecture(2);
+(function(root){
+const W=24,Hh=16, S=[8,2], G=[8,21]; const wall=new Set();
+for(let r=2;r<14;r++) wall.add(r+','+11); for(let c=6;c<11;c++) wall.add('3,'+c); for(let c=12;c<18;c++) wall.add('12,'+c); wall.delete('8,11'); wall.add('7,11'); wall.delete('13,11');
+const key=(r,c)=>r+','+c;
+function* search(astar){ const g={}, par={}, closed=new Set(); const open=[[0,0,S[0],S[1]]]; g[key(...S)]=0; let t=0;
+  while(open.length){ open.sort((a,b)=>a[0]-b[0]||a[1]-b[1]); const [f,_,r,c]=open.shift(); const k=key(r,c); if(closed.has(k)) continue; closed.add(k);
+    yield {closed,done:false}; if(r===G[0]&&c===G[1]) break;
+    for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nr=r+dr,nc=c+dc,nk=key(nr,nc); if(nr<0||nc<0||nr>=Hh||nc>=W||wall.has(nk)) continue;
+      const ng=g[k]+1; if(g[nk]===undefined||ng<g[nk]){ g[nk]=ng; par[nk]=k; const hh=astar?Math.abs(nr-G[0])+Math.abs(nc-G[1]):0; open.push([ng+hh,++t,nr,nc]); } } }
+  let path=[], k=key(...G); while(k){ path.push(k); k=par[k]; } yield {closed,done:true,path}; }
+let sa,sb,A,B; const ro=readout(root.querySelector('#g-ro'),['BFS expanded','A* expanded','path length']);
+function draw(cv,st){ return stage(cv,Hh/W,(c,w,h)=>{ const C=COL(), s=w/W; c.clearRect(0,0,w,h);
+  for(let r=0;r<Hh;r++) for(let q=0;q<W;q++){ const k=key(r,q); let col=null; if(wall.has(k)) col=C.ink; else if(st.s&&st.s.closed.has(k)) col=C.c[0]+'55'; if(st.s&&st.s.path&&st.s.path.includes(k)) col=C.c[1]; if(col){c.fillStyle=col;c.fillRect(q*s,r*s,s-1,s-1);} }
+  c.fillStyle=C.ok; c.fillRect(S[1]*s,S[0]*s,s-1,s-1); c.fillStyle=C.bad; c.fillRect(G[1]*s,G[0]*s,s-1,s-1); }); }
+const stA={s:null}, stB={s:null}; const dA=draw(root.querySelector('#g-a'),stA), dB=draw(root.querySelector('#g-b'),stB);
+function reset(){ A=search(false); B=search(true); stA.s=null; stB.s=null; dA.redraw(); dB.redraw(); ro('BFS expanded',0); ro('A* expanded',0); ro('path length','-'); }
+function step(){ let busy=false; for(const [it,st,d,name] of [[A,stA,dA,'BFS expanded'],[B,stB,dB,'A* expanded']]){ if(st.s&&st.s.done) continue; const v=it.next().value; if(v){ st.s={closed:new Set(v.closed),done:v.done,path:v.path}; busy=true; ro(name,v.closed.size); if(v.done) ro('path length',v.path.length-1); } d.redraw(); } return busy; }
+const lp=loop(()=>{ if(!step()){ lp.stop(); pb.textContent='Play'; } }); const pb=root.querySelector('#g-play');
+pb.onclick=()=>{ if(lp.running){lp.stop();pb.textContent='Play';} else {lp.start();pb.textContent='Pause';} };
+root.querySelector('#g-step').onclick=()=>step(); root.querySelector('#g-reset').onclick=()=>{lp.stop();pb.textContent='Play';reset();};
+reset(); if(reduced()){ while(step()){} }
+})(document.getElementById('anim-grid'));</script><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script><script>try{mermaid.initialize({startOnLoad:true,theme:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral"})}catch(e){}</script></body></html>

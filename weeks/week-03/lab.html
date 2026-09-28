@@ -1,0 +1,347 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rule-based reasoning lab: Soil classification and pump diagnosis | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 3 of 14: interactive lab</p><h1>Rule-based reasoning lab: Soil classification and pump diagnosis</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="lecture.html">Lecture page</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-03/NB03_rule_based_systems.ipynb">Colab notebook</a><a href="Week03_Lecture_Notes.pdf">PDF notes</a></nav></header>
+<p>Part A classifies a soil with the Unified Soil Classification System from grain-size and plasticity values set with sliders, and prints the reasoning path rule by rule next to the plasticity chart <span class="cite" tabindex="0" data-refs="1,2">[1, 2]</span>. Part B is a diagnostic expert system for a centrifugal pump with certainty factors: Symptoms are selected with a confidence, rules fire forward, evidence combines as in MYCIN, and every conclusion can be asked how it was reached <span class="cite" tabindex="0" data-refs="3">[3]</span>.</p><div class="tabs" role="tablist"><button aria-selected="true">Explore</button><button aria-selected="false">Check yourself</button><button aria-selected="false">Reflect and export</button></div><section class="tabpanel">
+<h2>Part A: USCS classification with an explanation</h2>
+<div class="bench"><div class="row" id="u-sl"></div>
+<div style="display:grid;grid-template-columns:1.1fr 1fr;gap:14px;align-items:start"><div><canvas class="paper" id="u-cv" aria-label="Plasticity chart"></canvas><div class="legend" id="u-leg"></div></div>
+<div><p style="font-size:2rem;margin:.2rem 0" id="u-sym"></p><ol id="u-trace" class="small"></ol></div></div></div>
+<h2>Part B: Pump diagnosis with certainty factors</h2>
+<div class="bench"><p class="small">Set a certainty for each observation (0 means not observed). Conclusions and their combined certainty update immediately. Select a conclusion to see how it was reached.</p>
+<div class="row" id="d-sl"></div><div class="tablewrap"><table><thead><tr><th>Conclusion</th><th>Certainty</th><th>Recommended action</th></tr></thead><tbody id="d-tab"></tbody></table></div><p id="d-how" class="small"></p></div></section><section class="tabpanel" hidden><p>Six questions with instant feedback. Rate your confidence before checking each answer.</p><div id="quiz"></div></section><section class="tabpanel" hidden><p>Answers are saved in this browser only. The export creates a Markdown learning log for your portfolio.</p><div id="reflect"></div></section>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: September 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.values(st).filter(Boolean).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLab(3,"Knowledge, Rules and Expert Systems",[{"q": "Which component of an expert system applies rules to facts?", "options": ["Knowledge base", "Inference engine", "User interface", "Training set"], "answer": 1, "why": "The inference engine matches rule conditions against facts and derives conclusions."}, {"q": "Forward chaining is best described as", "options": ["goal driven", "data driven", "random", "gradient based"], "answer": 1, "why": "It starts from known data and derives everything that follows from it."}, {"q": "What problem does the Rete algorithm address?", "options": ["Learning rules from data", "Efficient matching of many rules against changing facts", "Combining certainty factors", "Explaining conclusions"], "answer": 1, "why": "Rete stores partial matches in a network so that new facts are compared only with relevant conditions."}, {"q": "A coarse soil has 3 percent fines, more than half of its coarse fraction is retained on the No. 4 sieve, Cu = 6.2 and Cc = 1.8. Its group symbol is", "options": ["GP", "GW", "SW", "GM"], "answer": 1, "why": "It is a clean gravel with Cu at least 4 and Cc between 1 and 3, hence well graded: GW."}, {"q": "Why are crisp thresholds a weakness for rules such as 'IF temperature > 70 THEN overheating'?", "options": ["They are too slow to evaluate", "Readings just below and just above the threshold lead to completely different conclusions", "They cannot be written in Python", "They require neural networks"], "answer": 1, "why": "A crisp threshold makes the conclusion jump; fuzzy sets in Week 4 make the transition gradual."}, {"q": "In Python, `set(['a', 'b']).issubset({'a', 'b', 'c'})` returns", "options": ["False", "True", "['a', 'b']", "an error"], "answer": 1, "why": "Every element of the first set is in the second set."}],["Which standard, code or procedure in your field could be turned into a rule base? What would be hard to formalise?", "When would you trust a transparent rule base more than a more accurate but opaque learned model?", "Which comprehension or set operation from this week made the rule engine shorter, and could you write it as an ordinary loop as well?"]);</script><script>(function(){
+const U={fines:8,gravel:60,cu:6,cc:1.5,ll:38,pi:18};
+const us=$('#u-sl');
+slider(us,{label:'Passing No. 200 (fines)',min:0,max:100,step:1,value:U.fines,fmt:v=>v+' %'},v=>{U.fines=v;cls();});
+slider(us,{label:'Coarse fraction retained on No. 4',min:0,max:100,step:1,value:U.gravel,fmt:v=>v+' %'},v=>{U.gravel=v;cls();});
+slider(us,{label:'Cu',min:1,max:20,step:0.1,value:U.cu},v=>{U.cu=v;cls();});
+slider(us,{label:'Cc',min:0.2,max:5,step:0.1,value:U.cc},v=>{U.cc=v;cls();});
+slider(us,{label:'Liquid limit LL',min:10,max:100,step:1,value:U.ll},v=>{U.ll=v;cls();});
+slider(us,{label:'Plasticity index PI',min:0,max:60,step:1,value:U.pi},v=>{U.pi=v;cls();});
+legend($('#u-leg'),[['A-line: PI = 0.73 (LL - 20)',0],['U-line: PI = 0.9 (LL - 8)',4],['current fines',1]]);
+function fineGroup(ll,pi,t){ const A=0.73*(ll-20); if(ll<50){ if(pi>7&&pi>=A){t.push(`LL < 50, PI > 7 and on or above the A-line (${A.toFixed(1)})`);return 'CL';}
+  if(pi>=4&&pi<=7&&pi>=A){t.push('LL < 50 and PI between 4 and 7 above the A-line');return 'CL-ML';} t.push('LL < 50 and PI < 4 or below the A-line');return 'ML'; }
+  if(pi>=A){t.push(`LL >= 50 and on or above the A-line (${A.toFixed(1)})`);return 'CH';} t.push('LL >= 50 and below the A-line'); return 'MH'; }
+function cls(){ const t=[]; let s;
+  if(U.fines>=50){ t.push(`${U.fines}% passes No. 200, so the soil is fine grained`); s=fineGroup(U.ll,U.pi,t); }
+  else { t.push(`${U.fines}% passes No. 200, so the soil is coarse grained`); const G=U.gravel>50; const L=G?'G':'S'; t.push(G?'More than half of the coarse fraction is retained on No. 4: gravel':'Half or more of the coarse fraction passes No. 4: sand');
+    const wellLim=G?4:6, well=U.cu>=wellLim&&U.cc>=1&&U.cc<=3; const grad=L+(well?'W':'P');
+    const fg=fineGroup(U.ll,U.pi,[]); const plast=(fg==='CL'||fg==='CH')?'C':(fg==='CL-ML'?'C-M':'M');
+    if(U.fines<5){ t.push(`Fines < 5%: Cu = ${U.cu} and Cc = ${U.cc} give ${well?'well':'poorly'} graded (Cu >= ${wellLim} and 1 <= Cc <= 3 needed)`); s=grad; }
+    else if(U.fines>12){ t.push(`Fines > 12%: the fines classify as ${fg}`); s= plast==='C-M'?L+'C-'+L+'M':L+plast; }
+    else { t.push(`Fines 5 to 12%: dual symbol from gradation (${grad}) and fines (${fg})`); s=grad+'-'+L+(plast==='C'?'C':'M'); } }
+  $('#u-sym').textContent=s; const ol=$('#u-trace'); ol.innerHTML=''; t.forEach(x=>ol.append(h('li',{},x))); st.redraw(); }
+const st=stage($('#u-cv'),0.8,(c,w,h)=>{ c.clearRect(0,0,w,h); const C=COL(); const f=frame(c,w,h,{x0:0,x1:100,y0:0,y1:60,xlabel:'liquid limit LL',ylabel:'plasticity index PI'});
+  polyline(c,[[f.X(20),f.Y(0)],[f.X(100),f.Y(0.73*80)]],C.c[0],2); polyline(c,[[f.X(16),f.Y(7)],[f.X(8+60/0.9),f.Y(60)]],C.c[3],1.5,[5,4]);
+  polyline(c,[[f.X(50),f.Y(0)],[f.X(50),f.Y(60)]],C.steel,1,[3,3]); c.fillStyle=C.steel; c.font='12px sans-serif'; c.fillText('CL or OL',f.X(30),f.Y(22)); c.fillText('CH or OH',f.X(60),f.Y(45)); c.fillText('ML or OL',f.X(33),f.Y(3)); c.fillText('MH or OH',f.X(70),f.Y(14));
+  dot(c,f.X(U.ll),f.Y(U.pi),6,C.c[1],C.ink); });
+cls();
+const OBS=[['high_vibration','High vibration'],['peak_1x','Peak at 1x speed'],['peak_2x','Peak at 2x speed'],['crackling','Crackling noise at inlet'],['low_suction','Low suction pressure'],['hot_bearing','Hot bearing'],['seal_leak','Seal leak']];
+const RULES=[['R1',['high_vibration','peak_1x'],'unbalance',0.7],['R2',['high_vibration','peak_2x'],'misalignment',0.7],['R3',['crackling','low_suction'],'cavitation',0.8],
+ ['R4',['hot_bearing','high_vibration'],'bearing wear',0.6],['R5',['hot_bearing','peak_2x'],'misalignment',0.4],['R6',['seal_leak'],'seal failure',0.9],['R7',['crackling'],'cavitation',0.3]];
+const ACT={'unbalance':'Balance the impeller','misalignment':'Realign pump and motor','cavitation':'Raise suction head or reduce flow','bearing wear':'Replace bearing, check lubrication','seal failure':'Replace mechanical seal'};
+const cf={high_vibration:0.9,peak_1x:0,peak_2x:0.8,crackling:0,low_suction:0,hot_bearing:0.6,seal_leak:0};
+OBS.forEach(([k,t])=>slider($('#d-sl'),{label:t,min:0,max:1,step:0.1,value:cf[k],fmt:v=>v.toFixed(1)},v=>{cf[k]=v;infer();}));
+function infer(){ const out={}, how={}; RULES.forEach(([n,cond,concl,rc])=>{ const m=Math.min(...cond.map(c=>cf[c])); if(m<=0) return; const v=rc*m;
+    out[concl]= out[concl]===undefined? v : out[concl]+v*(1-out[concl]); (how[concl]=how[concl]||[]).push(`${n} (rule CF ${rc} x min condition CF ${m.toFixed(1)} = ${v.toFixed(2)})`); });
+  const tb=$('#d-tab'); tb.innerHTML=''; Object.entries(out).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{ const tr=h('tr',{style:'cursor:pointer',tabindex:0},h('td',{},k),h('td',{},v.toFixed(2)),h('td',{},ACT[k]));
+    tr.onclick=()=>{ $('#d-how').textContent=`How was "${k}" concluded? `+how[k].join('; ')+(how[k].length>1?'. Supports combine as CF1 + CF2 (1 - CF1).':'.'); }; tb.append(tr); });
+  if(!Object.keys(out).length) tb.append(h('tr',{},h('td',{colspan:3},'No rule fires with the current observations.'))); }
+infer();
+})();</script></body></html>

@@ -1,0 +1,536 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knowledge, Rules and Expert Systems | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 3 of 14</p><h1>Knowledge, Rules and Expert Systems</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="lab.html">Interactive lab</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-03/NB03_rule_based_systems.ipynb">Colab notebook</a><a href="Week03_Lecture_Notes.pdf">PDF notes</a><a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/tree/main/weeks/week-03">Week folder on GitHub</a></nav></header>
+<div class="lec-tools"><div class="lec-prog"><span class="lec-bar"><i></i></span><span class="lec-txt" aria-live="polite"></span></div></div>
+<article class="lecture"><h2>Overview</h2>
+<p>Before machine learning dominated the field, artificial intelligence reached industry through expert systems: programs that store the knowledge of specialists as rules and draw conclusions with an inference engine <span class="cite" tabindex="0" data-refs="1,5">[1, 5]</span>. DENDRAL inferred molecular structures, MYCIN recommended antibiotics and R1 configured computer orders for a manufacturer <span class="cite" tabindex="0" data-refs="2,3,4">[2, 3, 4]</span>. Engineering is full of explicit knowledge in the same form: standards, codes, classification systems and diagnostic procedures. This week builds a small rule engine, applies it to the Unified Soil Classification System and to pump diagnosis, and discusses why transparent rules remain valuable next to learned models <span class="cite" tabindex="0" data-refs="9,10">[9, 10]</span>.</p>
+<p><strong>Estimated study time:</strong> 8 to 10 hours.</p>
+<h2>Learning outcomes</h2>
+<p>By the end of the week, students are expected to represent engineering knowledge as facts and IF-THEN rules, to trace forward and backward chaining by hand, to explain how an expert system justifies its conclusions, to combine certainty factors, to encode a standard classification procedure as a rule base, and to name the strengths and limits of knowledge-based systems.</p>
+<h2>Python in this week</h2>
+<p>The lecture ends with Python step 3: Dictionaries and functions. It covers dictionaries, functions with parameters, default values, return values and docstrings, and rules stored as data, applied to soil classification and pump diagnosis <span class="cite" tabindex="0" data-refs="11">[11]</span>. The hands-on part of the notebook opens with the same step as runnable cells and short exercises with immediate feedback, and its later sections mark further constructs as Python moves.</p><h2>Study path</h2><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Activity</th>
+<th>Suggested time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Read the lecture with its animations on the <a href="lecture.html">lecture page</a>, or read the <a href="Week03_Lecture_Notes.pdf">PDF version</a></td>
+<td>2 hours</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Explore the <a href="lab.html">interactive lab</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Study the Python step at the end of the lecture, then run the same step at the start of the hands-on part of the <a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-03/NB03_rule_based_systems.ipynb">Colab notebook</a></td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Work through the rest of the notebook, including its Python moves and exercises</td>
+<td>3 hours</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Solve the discipline challenge of your department</td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Take the self-assessment in the lab (tab: Check yourself)</td>
+<td>20 minutes</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Write the reflection, export the learning log and complete the weekly task</td>
+<td>1 hour</td>
+</tr>
+</tbody>
+</table><h2>Week at a glance</h2><pre class="mermaid">flowchart LR
+  K[&quot;Expert and standard knowledge&quot;] --&gt; R[&quot;Facts and IF-THEN rules&quot;]
+  R --&gt; F[&quot;Forward chaining: data to conclusions&quot;]
+  R --&gt; B[&quot;Backward chaining: goal to evidence&quot;]
+  F --&gt; E[&quot;Explanation: how and why&quot;]
+  B --&gt; E
+  R --&gt; U[&quot;Uncertainty: certainty factors&quot;]
+  U --&gt; Z[&quot;Motivation for fuzzy logic in Week 4&quot;]
+  R --&gt; S[&quot;Soil classification and pump diagnosis&quot;]</pre>
+<h2>Knowledge-based systems</h2>
+<p>A knowledge-based system separates what is known from how it is used. The knowledge base holds facts about the current case and general rules of the domain. The inference engine applies the rules to the facts to derive new facts, and an explanation facility reports which rules led to a conclusion <span class="cite" tabindex="0" data-refs="1">[1]</span>. Because the rules are separate from the engine, experts can read, review and extend the knowledge without changing the program.</p>
+<p>Three systems defined the approach. DENDRAL, started at Stanford in the 1960s, generated candidate molecular structures from mass spectrometry data and pruned them with chemical rules; its developers later called it the first expert system for scientific hypothesis formation <span class="cite" tabindex="0" data-refs="2">[2]</span>. MYCIN diagnosed bacterial infections and recommended therapy with about 450 rules, and its evaluation showed performance comparable to specialists <span class="cite" tabindex="0" data-refs="3">[3]</span>. R1, later called XCON, configured computer systems for Digital Equipment Corporation and was among the first expert systems used in daily industrial operation <span class="cite" tabindex="0" data-refs="4">[4]</span>. Building such systems revealed the knowledge acquisition bottleneck: Experts find it hard to state their knowledge as complete and consistent rules, and the rule base needs continuous maintenance as products and practices change <span class="cite" tabindex="0" data-refs="5">[5]</span>.</p>
+<div class="kc" data-answer="1" data-why="Separating the knowledge base from the inference engine lets experts inspect and extend rules without changing the engine."><p class="q">Check your understanding. What is the main architectural idea of a knowledge-based system?</p><label><input type="radio" name="PH0" value="0"> Knowledge is learned automatically from data without experts</label><label><input type="radio" name="PH0" value="1"> Domain knowledge is stored separately from the inference engine that applies it</label><label><input type="radio" name="PH0" value="2"> All decisions are made by a neural network</label><label><input type="radio" name="PH0" value="3"> The program is rewritten for every new case</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Facts, rules and logic</h2>
+<p>Propositional logic gives the simplest representation. A fact is a statement that is true or false, such as "the fines content is above 50 percent". A rule states that a conclusion follows when its conditions hold: IF high vibration AND a peak at twice the running speed THEN misalignment is suspected. Rules whose conditions are conjunctions of facts and whose conclusion is a single fact are called Horn clauses, and for them inference is both simple and efficient <span class="cite" tabindex="0" data-refs="6">[6]</span>. The basic inference step is modus ponens: From "A" and "IF A THEN B", conclude "B".</p>
+<p>Richer representations exist. First-order logic introduces objects, relations and quantifiers, so that one rule can speak about every pump in a plant. Frames and object-oriented representations group attributes of a concept, and decision tables list combinations of conditions with their actions, a format that engineers know from codes and standards. Whatever the representation, the knowledge must be complete for the intended cases, consistent so that rules do not contradict each other, and specific enough that the engine can test it.</p>
+<h2>Forward and backward chaining</h2>
+<p>Forward chaining is data driven. The engine repeatedly searches for rules whose conditions are all satisfied by known facts, adds their conclusions to the facts, and stops when no rule adds anything new. It suits monitoring and classification, where measurements arrive and the question is what follows from them. Backward chaining is goal driven. The engine starts from a hypothesis, finds rules that conclude it, and tries to establish their conditions, recursively, until it reaches known facts or must ask the user. It suits diagnosis, where the system checks a suspected fault and asks only the questions that matter for it <span class="cite" tabindex="0" data-refs="1,6">[1, 6]</span>.</p>
+<p>When several rules can fire at once, a conflict resolution strategy chooses among them, for example by rule priority, by specificity or by the recency of the facts involved. Large rule bases need efficient matching: The Rete algorithm compiles rule conditions into a network that remembers partial matches, so that each new fact is compared only with the conditions it can affect <span class="cite" tabindex="0" data-refs="7">[7]</span>.</p>
+<div class="anim" id="anim-chain"><h4>Animation: Forward chaining in a pump diagnosis rule base</h4><p class="small">Select the observed symptoms and step through the inference. Each step fires one rule whose conditions are satisfied and adds its conclusion to the facts.</p><div class="row" id="c-obs"></div>
+<div class="row"><button class="btn" id="c-step" type="button">Fire next rule</button><button class="btn ghost" id="c-run" type="button">Run to the end</button><button class="btn ghost" id="c-reset" type="button">Reset</button></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><b>Facts</b><ul id="c-facts" class="small"></ul></div><div><b>Trace</b><ol id="c-trace" class="small"></ol></div></div></div>
+<div class="kc" data-answer="1" data-why="Backward chaining starts from the goal and seeks only the evidence needed to confirm or reject it."><p class="q">Check your understanding. A maintenance engineer suspects cavitation and wants the system to ask only the questions relevant to that suspicion. Which inference strategy fits?</p><label><input type="radio" name="PH2" value="0"> Forward chaining over all rules</label><label><input type="radio" name="PH2" value="1"> Backward chaining from the hypothesis</label><label><input type="radio" name="PH2" value="2"> Random rule selection</label><label><input type="radio" name="PH2" value="3"> Breadth-first search over sensor readings</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Explanation and uncertainty</h2>
+<p>An expert system can answer two questions that most learned models cannot answer directly. The question how is answered by the chain of rules that produced a conclusion. The question why, asked when the system requests information, is answered by the rule that it is trying to establish. In safety-relevant engineering work, such traceable reasoning supports review, audit and certification.</p>
+<p>Real knowledge is uncertain. MYCIN attached a certainty factor between minus one and one to rules and facts <span class="cite" tabindex="0" data-refs="3">[3]</span>. A conclusion receives the certainty of its rule multiplied by the smallest certainty of its conditions, and two rules supporting the same positive conclusion combine as CF = CF1 + CF2 (1 - CF1), so that evidence accumulates but never exceeds one. Certainty factors were a practical engineering compromise rather than a probability theory, and their difficulties motivated both probabilistic reasoning and fuzzy logic. Vague conditions such as "slightly high temperature" cannot be captured by crisp thresholds at all: A reading of 69.9 degrees and one of 70.1 degrees would fire different rules. Week 4 addresses this with fuzzy sets <span class="cite" tabindex="0" data-refs="8">[8]</span>.</p>
+<div class="kc" data-answer="1" data-why="0.6 + 0.5 x (1 - 0.6) = 0.8. Supporting evidence accumulates but never exceeds one."><p class="q">Check your understanding. Two independent rules support the conclusion &quot;bearing wear&quot; with certainty factors 0.6 and 0.5. What is the combined certainty factor?</p><label><input type="radio" name="PH3" value="0"> 0.5</label><label><input type="radio" name="PH3" value="1"> 0.8</label><label><input type="radio" name="PH3" value="2"> 1.1</label><label><input type="radio" name="PH3" value="3"> 0.3</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Engineering standards as rule bases: The Unified Soil Classification System</h2>
+<p>Many engineering standards are rule bases written for people. The Unified Soil Classification System, based on Casagrande's airfield classification and standardised as ASTM D2487, assigns a group symbol to a soil from its grain-size distribution and its Atterberg limits <span class="cite" tabindex="0" data-refs="9,10">[9, 10]</span>. The rules proceed in stages. A soil is fine grained when at least half of it passes the No. 200 sieve (0.075 mm), and coarse grained otherwise. A coarse soil is a gravel when more than half of its coarse fraction is retained on the No. 4 sieve (4.75 mm), and a sand otherwise. A clean gravel with less than 5 percent fines is well graded (GW) when its coefficient of uniformity is at least 4 and its coefficient of curvature lies between 1 and 3, and poorly graded (GP) otherwise; for sands the uniformity limit is 6. Gravels and sands with more than 12 percent fines are silty (GM, SM) or clayey (GC, SC) depending on the plasticity of the fines, and those with 5 to 12 percent fines receive dual symbols such as GW-GM.</p>
+<p>Fine-grained soils are placed on Casagrande's plasticity chart, which plots the plasticity index PI against the liquid limit LL. The A-line, PI = 0.73 (LL - 20), separates clays above it from silts below it. Soils with LL below 50 are lean clays (CL) when PI is above 7 and on or above the A-line, silts (ML) when PI is below 4 or the point lies below the A-line, and silty clays (CL-ML) in the band of PI from 4 to 7 above the A-line. Soils with LL of 50 or more are fat clays (CH) above the A-line and elastic silts (MH) below it <span class="cite" tabindex="0" data-refs="10">[10]</span>. The notebook turns these rules into a function, and the lab shows the reasoning path for any combination of test results.</p>
+<figure><img src="figures/w03_fig1.png" alt="Casagrande&#x27;s plasticity chart with the A-line and U-line used by the Unified Soil Classification System for fine-grained soils ." loading="lazy"><figcaption>Figure 3.1. Casagrande's plasticity chart with the A-line and U-line used by the Unified Soil Classification System for fine-grained soils <span class="cite" tabindex="0" data-refs="9,10">[9, 10]</span>.</figcaption></figure>
+
+<div class="kc" data-answer="1" data-why="LL is below 50, PI is above 7 and the point lies above the A-line, so the soil is a lean clay, CL."><p class="q">Check your understanding. A fine-grained soil has LL = 38 and PI = 18. The A-line value at LL = 38 is 0.73 x 18 = 13.1. What is its group symbol?</p><label><input type="radio" name="PH4" value="0"> ML</label><label><input type="radio" name="PH4" value="1"> CL</label><label><input type="radio" name="PH4" value="2"> CH</label><label><input type="radio" name="PH4" value="3"> MH</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<h2>Strengths and limits</h2>
+<p>Knowledge-based systems are transparent, can be verified rule by rule, need no training data, and encode requirements that must hold exactly, such as the limits of a standard. They are brittle outside the cases their authors anticipated, they are expensive to acquire and maintain, and they cannot perceive raw signals or images. Modern practice therefore combines them with learning: A convolutional network may detect a crack, and a rule base derived from a code decides whether the crack width requires repair. Such hybrid systems return in later weeks, for example when a language model retrieves passages from standards in Week 13.</p>
+<!-- python-step -->
+
+<h2>Python step 3: Dictionaries and functions</h2>
+<h3>Dictionaries</h3>
+<p>A dictionary maps keys to values, like a small table with named entries. It is written with braces and colons, and values are read and written with square brackets and the key. The method <code>get</code> returns a default instead of an error when a key is missing, and <code>items</code> yields pairs of key and value for a loop. A laboratory result for a soil sample fits naturally into a dictionary.</p>
+<pre><code class="language-python">sample = {&quot;id&quot;: &quot;BH2-3.5m&quot;, &quot;fines_pct&quot;: 62.0, &quot;LL&quot;: 48.0, &quot;PL&quot;: 22.0}
+print(sample[&quot;LL&quot;], sample.get(&quot;organic&quot;, False))
+sample[&quot;PI&quot;] = sample[&quot;LL&quot;] - sample[&quot;PL&quot;]      # adds a new key
+for key, value in sample.items():
+    print(key, &quot;=&quot;, value)
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">48.0 False
+id = BH2-3.5m
+fines_pct = 62.0
+LL = 48.0
+PL = 22.0
+PI = 26.0
+</code></pre>
+<p>Dictionaries can hold other containers, for example a list of samples, or a dictionary of samples keyed by borehole and depth. They are also the everyday format of records read from files and web services.</p>
+<h3>Functions</h3>
+<p>A function packages a calculation under a name so that it can be reused and tested. The keyword <code>def</code> starts the definition, the names in parentheses are parameters, and <code>return</code> sends the result back to the caller. The string on the first line of the body, the docstring, documents what the function does. Variables created inside a function are local and disappear when it returns. The A-line of the plasticity chart and a simplified group decision for fine-grained soils make two short functions <span class="cite" tabindex="0" data-refs="10">[10]</span>.</p>
+<pre><code class="language-python">def a_line(ll):
+    &quot;&quot;&quot;Plasticity index on the A-line of the plasticity chart for liquid limit ll.&quot;&quot;&quot;
+    return 0.73 * (ll - 20)
+
+
+def fine_soil_group(ll, pi):
+    &quot;&quot;&quot;Group symbol of an inorganic fine-grained soil (simplified).&quot;&quot;&quot;
+    clay = pi &gt; a_line(ll) and pi &gt; 7
+    if ll &lt; 50:
+        return &quot;CL&quot; if clay else &quot;ML&quot;
+    return &quot;CH&quot; if clay else &quot;MH&quot;
+
+
+print(round(a_line(48), 2))
+print(fine_soil_group(48, 26), fine_soil_group(ll=62, pi=18))
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">20.44
+CL MH
+</code></pre>
+<p>The second call names its arguments, which makes it easier to read and independent of the order of the parameters. The full standard adds further cases, such as a dual symbol for low plasticity near the A-line and separate groups for organic soils; the simplified function shows the pattern, not the complete procedure. Parameters can also have default values, which a caller may omit.</p>
+<pre><code class="language-python">def plasticity_check(pl, ll, margin=0.0):
+    &quot;&quot;&quot;True when the liquid limit exceeds the plastic limit by more than the margin.&quot;&quot;&quot;
+    return ll - pl &gt; margin
+
+
+print(plasticity_check(22, 48), plasticity_check(22, 48, margin=30))
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">True False
+</code></pre>
+<h3>Rules as data</h3>
+<p>Expert systems keep their knowledge as data, separate from the code that reasons with it. A list of dictionaries represents a small rule base for pump diagnosis, and a set holds the observed facts. The built-in function <code>all</code> returns <code>True</code> when every item of a sequence is true, so <code>all(c in facts for c in rule["if"])</code> asks whether every condition of a rule is among the facts. Repeating the pass until no rule adds a new fact is forward chaining, the inference method of this week.</p>
+<pre><code class="language-python">rules = [
+    {&quot;name&quot;: &quot;R1&quot;, &quot;if&quot;: [&quot;low suction pressure&quot;, &quot;crackling noise&quot;], &quot;then&quot;: &quot;cavitation&quot;},
+    {&quot;name&quot;: &quot;R2&quot;, &quot;if&quot;: [&quot;high vibration&quot;, &quot;peak at running speed&quot;], &quot;then&quot;: &quot;imbalance&quot;},
+    {&quot;name&quot;: &quot;R3&quot;, &quot;if&quot;: [&quot;cavitation&quot;], &quot;then&quot;: &quot;check suction line and NPSH margin&quot;},
+]
+facts = {&quot;low suction pressure&quot;, &quot;crackling noise&quot;, &quot;high vibration&quot;}
+
+changed = True
+while changed:
+    changed = False
+    for rule in rules:
+        if all(c in facts for c in rule[&quot;if&quot;]) and rule[&quot;then&quot;] not in facts:
+            facts.add(rule[&quot;then&quot;])
+            print(rule[&quot;name&quot;], &quot;fired:&quot;, rule[&quot;then&quot;])
+            changed = True
+</code></pre>
+<p><em>Output</em></p>
+<pre><code class="language-text">R1 fired: cavitation
+R3 fired: check suction line and NPSH margin
+</code></pre>
+<p>Rule R2 does not fire, because one of its conditions is missing. Adding knowledge requires no change to the reasoning code, only a new dictionary in the list, which is the main practical advantage of keeping rules as data.</p>
+<div class="kc" data-answer="0" data-why="The first call uses the default h = 0.5 and returns 1.0, and the second passes h = 1 and returns 2."><p class="q">Check your understanding. After def area(b, h=0.5): return b * h, what is the value of area(2) + area(2, h=1)?</p><label><input type="radio" name="PH5" value="0"> 3.0</label><label><input type="radio" name="PH5" value="1"> 2.0</label><label><input type="radio" name="PH5" value="2"> 4.0</label><label><input type="radio" name="PH5" value="3"> An error, because h is missing in the first call</label><button class="btn" type="button">Check</button><div class="fb" aria-live="polite"></div></div>
+<!-- /python-step --><h2>Discipline challenges</h2><p>Standards and diagnostic procedures exist in every department. Pick the row closest to your field and write the rules; start with five and test them with the engine of the notebook.</p>
+<table class="disc">
+<thead>
+<tr>
+<th>Department</th>
+<th>Challenge</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Civil Engineering</td>
+<td>Full USCS classification including dual symbols, and a check of whether a soil is suitable as a road subgrade.</td>
+</tr>
+<tr>
+<td>Geological Engineering</td>
+<td>Rock mass description rules, for example classes from joint spacing and weathering grade.</td>
+</tr>
+<tr>
+<td>Mechanical Engineering</td>
+<td>Pump or fan fault diagnosis from vibration spectrum features, extending the rule base of the lecture.</td>
+</tr>
+<tr>
+<td>Electrical and Electronics Engineering</td>
+<td>Transformer condition rules from dissolved-gas ratios, written as a decision table.</td>
+</tr>
+<tr>
+<td>Environmental Engineering</td>
+<td>Discharge compliance checks of treated wastewater against permit limits.</td>
+</tr>
+<tr>
+<td>Food Engineering</td>
+<td>Hazard analysis rules that assign critical control points in a production line.</td>
+</tr>
+<tr>
+<td>Chemistry</td>
+<td>Rules that assign a functional group from infrared absorption bands.</td>
+</tr>
+<tr>
+<td>Mining Engineering</td>
+<td>Ventilation alarm rules that combine methane concentration, airflow and trends.</td>
+</tr>
+<tr>
+<td>Computer Engineering</td>
+<td>Firewall or access-control policy evaluation with rule conflicts and priorities.</td>
+</tr>
+<tr>
+<td>Industrial Engineering</td>
+<td>Dispatching rules for a job shop, compared on a small scenario.</td>
+</tr>
+<tr>
+<td>Textile Engineering</td>
+<td>Defect-cause rules that link fabric faults to loom settings.</td>
+</tr>
+</tbody>
+</table><h2>Review cards</h2><p class="small">Select a card to turn it over.</p><div class="cards"><div class="card" tabindex="0" role="button"><div class="f">Knowledge base</div><div class="b">Facts about the current case plus general rules of the domain, kept separate from the inference engine.</div></div><div class="card" tabindex="0" role="button"><div class="f">Forward chaining</div><div class="b">Data-driven inference: fire every rule whose conditions hold until no new fact appears.</div></div><div class="card" tabindex="0" role="button"><div class="f">Backward chaining</div><div class="b">Goal-driven inference: start from a hypothesis and establish the conditions of rules that conclude it.</div></div><div class="card" tabindex="0" role="button"><div class="f">Certainty factor combination</div><div class="b">Two positive supports combine as CF1 + CF2 (1 - CF1) <span class="cite" tabindex="0" data-refs="3">[3]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">A-line</div><div class="b">PI = 0.73 (LL - 20) on the plasticity chart; clays plot above it, silts below it <span class="cite" tabindex="0" data-refs="9">[9]</span>.</div></div><div class="card" tabindex="0" role="button"><div class="f">Knowledge acquisition bottleneck</div><div class="b">The difficulty of eliciting complete, consistent rules from experts and keeping them current <span class="cite" tabindex="0" data-refs="5">[5]</span>.</div></div></div>
+<h2>References</h2><div class="small"><p>[1] Giarratano, J. C., &amp; Riley, G. D. (2005). <i>Expert Systems: Principles and Programming</i> (4th ed.). Thomson Course Technology.</p><p>[2] Lindsay, R. K., Buchanan, B. G., Feigenbaum, E. A., &amp; Lederberg, J. (1993). DENDRAL: A case study of the first expert system for scientific hypothesis formation. <i>Artificial Intelligence</i>, <i>61</i>(2), 209-261. <a href="https://doi.org/10.1016/0004-3702(93)90068-M">https://doi.org/10.1016/0004-3702(93)90068-M</a></p><p>[3] Buchanan, B. G., &amp; Shortliffe, E. H. (Eds.) (1984). <i>Rule-Based Expert Systems: The MYCIN Experiments of the Stanford Heuristic Programming Project</i>. Addison-Wesley.</p><p>[4] McDermott, J. (1982). R1: A rule-based configurer of computer systems. <i>Artificial Intelligence</i>, <i>19</i>(1), 39-88. <a href="https://doi.org/10.1016/0004-3702(82)90021-2">https://doi.org/10.1016/0004-3702(82)90021-2</a></p><p>[5] Hayes-Roth, F., Waterman, D. A., &amp; Lenat, D. B. (Eds.) (1983). <i>Building Expert Systems</i>. Addison-Wesley.</p><p>[6] Russell, S., &amp; Norvig, P. (2021). <i>Artificial Intelligence: A Modern Approach</i> (4th ed.). Pearson.</p><p>[7] Forgy, C. L. (1982). Rete: A fast algorithm for the many pattern/many object pattern match problem. <i>Artificial Intelligence</i>, <i>19</i>(1), 17-37. <a href="https://doi.org/10.1016/0004-3702(82)90020-0">https://doi.org/10.1016/0004-3702(82)90020-0</a></p><p>[8] Zadeh, L. A. (1965). Fuzzy sets. <i>Information and Control</i>, <i>8</i>(3), 338-353. <a href="https://doi.org/10.1016/S0019-9958(65)90241-X">https://doi.org/10.1016/S0019-9958(65)90241-X</a></p><p>[9] Casagrande, A. (1948). Classification and identification of soils. <i>Transactions of the American Society of Civil Engineers</i>, <i>113</i>, 901-930.</p><p>[10] ASTM International (2017). <i>ASTM D2487-17: Standard Practice for Classification of Soils for Engineering Purposes (Unified Soil Classification System)</i>. ASTM International.</p><p>[11] Python Software Foundation (2026). <i>The Python Tutorial (Python 3 documentation)</i>. <a href="https://docs.python.org/3/tutorial/">https://docs.python.org/3/tutorial/</a></p></div></article>
+<script type="application/json" id="refdata">{"1": "Giarratano, J. C., &amp; Riley, G. D. (2005). <i>Expert Systems: Principles and Programming</i> (4th ed.). Thomson Course Technology.", "2": "Lindsay, R. K., Buchanan, B. G., Feigenbaum, E. A., &amp; Lederberg, J. (1993). DENDRAL: A case study of the first expert system for scientific hypothesis formation. <i>Artificial Intelligence</i>, <i>61</i>(2), 209-261. <a href=\"https://doi.org/10.1016/0004-3702(93)90068-M\">https://doi.org/10.1016/0004-3702(93)90068-M</a>", "3": "Buchanan, B. G., &amp; Shortliffe, E. H. (Eds.) (1984). <i>Rule-Based Expert Systems: The MYCIN Experiments of the Stanford Heuristic Programming Project</i>. Addison-Wesley.", "4": "McDermott, J. (1982). R1: A rule-based configurer of computer systems. <i>Artificial Intelligence</i>, <i>19</i>(1), 39-88. <a href=\"https://doi.org/10.1016/0004-3702(82)90021-2\">https://doi.org/10.1016/0004-3702(82)90021-2</a>", "5": "Hayes-Roth, F., Waterman, D. A., &amp; Lenat, D. B. (Eds.) (1983). <i>Building Expert Systems</i>. Addison-Wesley.", "6": "Russell, S., &amp; Norvig, P. (2021). <i>Artificial Intelligence: A Modern Approach</i> (4th ed.). Pearson.", "7": "Forgy, C. L. (1982). Rete: A fast algorithm for the many pattern/many object pattern match problem. <i>Artificial Intelligence</i>, <i>19</i>(1), 17-37. <a href=\"https://doi.org/10.1016/0004-3702(82)90020-0\">https://doi.org/10.1016/0004-3702(82)90020-0</a>", "8": "Zadeh, L. A. (1965). Fuzzy sets. <i>Information and Control</i>, <i>8</i>(3), 338-353. <a href=\"https://doi.org/10.1016/S0019-9958(65)90241-X\">https://doi.org/10.1016/S0019-9958(65)90241-X</a>", "9": "Casagrande, A. (1948). Classification and identification of soils. <i>Transactions of the American Society of Civil Engineers</i>, <i>113</i>, 901-930.", "10": "ASTM International (2017). <i>ASTM D2487-17: Standard Practice for Classification of Soils for Engineering Purposes (Unified Soil Classification System)</i>. ASTM International.", "11": "Python Software Foundation (2026). <i>The Python Tutorial (Python 3 documentation)</i>. <a href=\"https://docs.python.org/3/tutorial/\">https://docs.python.org/3/tutorial/</a>"}</script>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: September 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.values(st).filter(Boolean).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLecture(3);
+(function(root){
+const OBS={high_vibration:'High vibration',peak_1x:'Peak at 1x running speed',peak_2x:'Peak at 2x running speed',crackling_noise:'Crackling noise at the inlet',low_suction:'Low suction pressure',hot_bearing:'High bearing temperature',seal_leak:'Leak at the shaft seal'};
+const RULES=[['R1',['high_vibration','peak_1x'],'unbalance'],['R2',['high_vibration','peak_2x'],'misalignment'],['R3',['crackling_noise','low_suction'],'cavitation'],
+ ['R4',['hot_bearing','high_vibration'],'bearing_wear'],['R5',['seal_leak'],'seal_failure'],['R6',['cavitation'],'action: raise suction head or reduce flow'],
+ ['R7',['unbalance'],'action: balance the impeller'],['R8',['misalignment'],'action: realign pump and motor'],['R9',['bearing_wear'],'action: replace bearing'],['R10',['seal_failure'],'action: replace mechanical seal']];
+const box=root.querySelector('#c-obs'); const sel=new Set(['high_vibration','peak_2x','hot_bearing']);
+Object.entries(OBS).forEach(([k,t])=>{ const cb=h('input',{type:'checkbox'}); cb.checked=sel.has(k); cb.onchange=()=>{ cb.checked?sel.add(k):sel.delete(k); reset(); }; box.append(h('label',{class:'small',style:'margin-right:10px'},cb,' '+t)); });
+let facts, fired;
+function reset(){ facts=new Set(sel); fired=new Set(); render(); root.querySelector('#c-trace').innerHTML=''; }
+function render(){ const ul=root.querySelector('#c-facts'); ul.innerHTML=''; facts.forEach(f=>ul.append(h('li',{style:sel.has(f)?'':'color:var(--accent);font-weight:700'},f))); }
+function step(){ for(const [n,cond,concl] of RULES){ if(fired.has(n)) continue; if(cond.every(c=>facts.has(c))){ fired.add(n); facts.add(concl); render();
+  root.querySelector('#c-trace').append(h('li',{},`${n}: IF ${cond.join(' AND ')} THEN ${concl}`)); return true; } }
+  root.querySelector('#c-trace').append(h('li',{},'No further rule can fire. Inference complete.')); return false; }
+root.querySelector('#c-step').onclick=step; root.querySelector('#c-run').onclick=()=>{ while(step()){} }; root.querySelector('#c-reset').onclick=reset; reset();
+})(document.getElementById('anim-chain'));</script><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script><script>try{mermaid.initialize({startOnLoad:true,theme:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral"})}catch(e){}</script></body></html>

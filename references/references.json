@@ -1,0 +1,2162 @@
+{
+ "abrams1918": {
+  "type": "report",
+  "authors": "Abrams, D. A.",
+  "year": 1918,
+  "title": "Design of Concrete Mixtures (Bulletin 1)",
+  "publisher": "Structural Materials Research Laboratory, Lewis Institute, Chicago"
+ },
+ "amodei2016": {
+  "type": "arxiv",
+  "authors": "Amodei, D., Olah, C., Steinhardt, J., Christiano, P., Schulman, J., & Mané, D.",
+  "year": 2016,
+  "title": "Concrete problems in AI safety",
+  "arxiv": "1606.06565"
+ },
+ "arthur2007": {
+  "type": "inproceedings",
+  "authors": "Arthur, D., & Vassilvitskii, S.",
+  "year": 2007,
+  "title": "k-means++: The advantages of careful seeding",
+  "venue": "Proceedings of the Eighteenth Annual ACM-SIAM Symposium on Discrete Algorithms",
+  "pages": "1027-1035",
+  "publisher": "SIAM"
+ },
+ "arzamasov2018data": {
+  "type": "dataset",
+  "authors": "Arzamasov, V.",
+  "year": 2018,
+  "title": "Electrical Grid Stability Simulated Data [Dataset]. UCI Machine Learning Repository, ID 471",
+  "doi": "10.24432/C5PG66"
+ },
+ "astm2487": {
+  "type": "standard",
+  "authors": "ASTM International",
+  "year": 2017,
+  "title": "ASTM D2487-17: Standard Practice for Classification of Soils for Engineering Purposes (Unified Soil Classification System)",
+  "publisher": "ASTM International"
+ },
+ "astrom1995": {
+  "type": "book",
+  "authors": "Åström, K. J., & Hägglund, T.",
+  "year": 1995,
+  "title": "PID Controllers: Theory, Design, and Tuning",
+  "publisher": "Instrument Society of America",
+  "edition": "2nd ed."
+ },
+ "astrom2021": {
+  "type": "book",
+  "authors": "Åström, K. J., & Murray, R. M.",
+  "year": 2021,
+  "title": "Feedback Systems: An Introduction for Scientists and Engineers",
+  "publisher": "Princeton University Press",
+  "edition": "2nd ed."
+ },
+ "bahdanau2015": {
+  "type": "inproceedings",
+  "authors": "Bahdanau, D., Cho, K., & Bengio, Y.",
+  "year": 2015,
+  "title": "Neural machine translation by jointly learning to align and translate",
+  "venue": "3rd International Conference on Learning Representations (ICLR 2015)",
+  "arxiv": "1409.0473"
+ },
+ "bai2018": {
+  "type": "arxiv",
+  "authors": "Bai, S., Kolter, J. Z., & Koltun, V.",
+  "year": 2018,
+  "title": "An empirical evaluation of generic convolutional and recurrent networks for sequence modeling",
+  "arxiv": "1803.01271"
+ },
+ "barto1983": {
+  "type": "article",
+  "authors": "Barto, A. G., Sutton, R. S., & Anderson, C. W.",
+  "year": 1983,
+  "title": "Neuronlike adaptive elements that can solve difficult learning control problems",
+  "venue": "IEEE Transactions on Systems, Man, and Cybernetics",
+  "volume": "SMC-13",
+  "issue": "5",
+  "pages": "834-846",
+  "doi": "10.1109/TSMC.1983.6313077"
+ },
+ "bengio1994": {
+  "type": "article",
+  "authors": "Bengio, Y., Simard, P., & Frasconi, P.",
+  "year": 1994,
+  "title": "Learning long-term dependencies with gradient descent is difficult",
+  "venue": "IEEE Transactions on Neural Networks",
+  "volume": "5",
+  "issue": "2",
+  "pages": "157-166",
+  "doi": "10.1109/72.279181"
+ },
+ "bergen2019": {
+  "type": "article",
+  "authors": "Bergen, K. J., Johnson, P. A., de Hoop, M. V., & Beroza, G. C.",
+  "year": 2019,
+  "title": "Machine learning for data-driven discovery in solid Earth geoscience",
+  "venue": "Science",
+  "volume": "363",
+  "issue": "6433",
+  "pages": "eaau0323",
+  "doi": "10.1126/science.aau0323"
+ },
+ "bock2004data": {
+  "type": "dataset",
+  "authors": "Bock, R.",
+  "year": 2004,
+  "title": "MAGIC Gamma Telescope [Dataset]. UCI Machine Learning Repository, ID 159",
+  "doi": "10.24432/C52C8B"
+ },
+ "boiko2023": {
+  "type": "article",
+  "authors": "Boiko, D. A., MacKnight, R., Kline, B., & Gomes, G.",
+  "year": 2023,
+  "title": "Autonomous chemical research with large language models",
+  "venue": "Nature",
+  "volume": "624",
+  "issue": "7992",
+  "pages": "570-578",
+  "doi": "10.1038/s41586-023-06792-0"
+ },
+ "bommasani2021": {
+  "type": "arxiv",
+  "authors": "Bommasani, R., Hudson, D. A., Adeli, E., et al.",
+  "year": 2021,
+  "title": "On the opportunities and risks of foundation models",
+  "arxiv": "2108.07258"
+ },
+ "bonabeau1999": {
+  "type": "book",
+  "authors": "Bonabeau, E., Dorigo, M., & Theraulaz, G.",
+  "year": 1999,
+  "title": "Swarm Intelligence: From Natural to Artificial Systems",
+  "publisher": "Oxford University Press"
+ },
+ "box2015": {
+  "type": "book",
+  "authors": "Box, G. E. P., Jenkins, G. M., Reinsel, G. C., & Ljung, G. M.",
+  "year": 2015,
+  "title": "Time Series Analysis: Forecasting and Control",
+  "publisher": "Wiley",
+  "edition": "5th ed."
+ },
+ "breiman1984": {
+  "type": "book",
+  "authors": "Breiman, L., Friedman, J. H., Olshen, R. A., & Stone, C. J.",
+  "year": 1984,
+  "title": "Classification and Regression Trees",
+  "publisher": "Wadsworth"
+ },
+ "breiman2001rf": {
+  "type": "article",
+  "authors": "Breiman, L.",
+  "year": 2001,
+  "title": "Random forests",
+  "venue": "Machine Learning",
+  "volume": "45",
+  "issue": "1",
+  "pages": "5-32",
+  "doi": "10.1023/A:1010933404324"
+ },
+ "breiman2001two": {
+  "type": "article",
+  "authors": "Breiman, L.",
+  "year": 2001,
+  "title": "Statistical modeling: The two cultures",
+  "venue": "Statistical Science",
+  "volume": "16",
+  "issue": "3",
+  "pages": "199-231",
+  "doi": "10.1214/ss/1009213726"
+ },
+ "brooks1989": {
+  "type": "report",
+  "authors": "Brooks, T. F., Pope, D. S., & Marcolini, M. A.",
+  "year": 1989,
+  "title": "Airfoil Self-Noise and Prediction (NASA Reference Publication 1218)",
+  "publisher": "NASA"
+ },
+ "brown2020": {
+  "type": "inproceedings",
+  "authors": "Brown, T. B., Mann, B., Ryder, N., et al.",
+  "year": 2020,
+  "title": "Language models are few-shot learners",
+  "venue": "Advances in Neural Information Processing Systems 33",
+  "pages": "1877-1901",
+  "arxiv": "2005.14165"
+ },
+ "brunton2016": {
+  "type": "article",
+  "authors": "Brunton, S. L., Proctor, J. L., & Kutz, J. N.",
+  "year": 2016,
+  "title": "Discovering governing equations from data by sparse identification of nonlinear dynamical systems",
+  "venue": "Proceedings of the National Academy of Sciences",
+  "volume": "113",
+  "issue": "15",
+  "pages": "3932-3937",
+  "doi": "10.1073/pnas.1517384113"
+ },
+ "brunton2022": {
+  "type": "book",
+  "authors": "Brunton, S. L., & Kutz, J. N.",
+  "year": 2022,
+  "title": "Data-Driven Science and Engineering: Machine Learning, Dynamical Systems, and Control",
+  "doi": "10.1017/9781009089517",
+  "publisher": "Cambridge University Press",
+  "edition": "2nd ed."
+ },
+ "buchanan1984": {
+  "type": "book",
+  "authors": "Buchanan, B. G., & Shortliffe, E. H. (Eds.)",
+  "year": 1984,
+  "title": "Rule-Based Expert Systems: The MYCIN Experiments of the Stanford Heuristic Programming Project",
+  "publisher": "Addison-Wesley"
+ },
+ "buscema2010data": {
+  "type": "dataset",
+  "authors": "Buscema, M., Terzi, S., & Tastle, W.",
+  "year": 2010,
+  "title": "Steel Plates Faults [Dataset]. UCI Machine Learning Repository, ID 198",
+  "doi": "10.24432/C5J88N"
+ },
+ "butler2018": {
+  "type": "article",
+  "authors": "Butler, K. T., Davies, D. W., Cartwright, H., Isayev, O., & Walsh, A.",
+  "year": 2018,
+  "title": "Machine learning for molecular and materials science",
+  "venue": "Nature",
+  "volume": "559",
+  "issue": "7715",
+  "pages": "547-555",
+  "doi": "10.1038/s41586-018-0337-2"
+ },
+ "campbell2002": {
+  "type": "article",
+  "authors": "Campbell, M., Hoane, A. J., & Hsu, F.-h.",
+  "year": 2002,
+  "title": "Deep Blue",
+  "venue": "Artificial Intelligence",
+  "volume": "134",
+  "issue": "1-2",
+  "pages": "57-83",
+  "doi": "10.1016/S0004-3702(01)00129-1"
+ },
+ "casagrande1948": {
+  "type": "article",
+  "authors": "Casagrande, A.",
+  "year": 1948,
+  "title": "Classification and identification of soils",
+  "venue": "Transactions of the American Society of Civil Engineers",
+  "volume": "113",
+  "pages": "901-930"
+ },
+ "cha2017": {
+  "type": "article",
+  "authors": "Cha, Y.-J., Choi, W., & Büyüköztürk, O.",
+  "year": 2017,
+  "title": "Deep learning-based crack damage detection using convolutional neural networks",
+  "venue": "Computer-Aided Civil and Infrastructure Engineering",
+  "volume": "32",
+  "issue": "5",
+  "pages": "361-378",
+  "doi": "10.1111/mice.12263"
+ },
+ "chandola2009": {
+  "type": "article",
+  "authors": "Chandola, V., Banerjee, A., & Kumar, V.",
+  "year": 2009,
+  "title": "Anomaly detection: A survey",
+  "venue": "ACM Computing Surveys",
+  "volume": "41",
+  "issue": "3",
+  "pages": "15",
+  "doi": "10.1145/1541880.1541882"
+ },
+ "chawla2002": {
+  "type": "article",
+  "authors": "Chawla, N. V., Bowyer, K. W., Hall, L. O., & Kegelmeyer, W. P.",
+  "year": 2002,
+  "title": "SMOTE: Synthetic minority over-sampling technique",
+  "venue": "Journal of Artificial Intelligence Research",
+  "volume": "16",
+  "pages": "321-357",
+  "doi": "10.1613/jair.953"
+ },
+ "chen2016": {
+  "type": "inproceedings",
+  "authors": "Chen, T., & Guestrin, C.",
+  "year": 2016,
+  "title": "XGBoost: A scalable tree boosting system",
+  "venue": "Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+  "pages": "785-794",
+  "doi": "10.1145/2939672.2939785"
+ },
+ "chen2021codex": {
+  "type": "arxiv",
+  "authors": "Chen, M., Tworek, J., Jun, H., et al.",
+  "year": 2021,
+  "title": "Evaluating large language models trained on code",
+  "arxiv": "2107.03374"
+ },
+ "cho2014": {
+  "type": "inproceedings",
+  "authors": "Cho, K., van Merriënboer, B., Gulcehre, C., et al.",
+  "year": 2014,
+  "title": "Learning phrase representations using RNN encoder-decoder for statistical machine translation",
+  "venue": "Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+  "pages": "1724-1734",
+  "doi": "10.3115/v1/D14-1179"
+ },
+ "cinar2019": {
+  "type": "article",
+  "authors": "Cinar, I., & Koklu, M.",
+  "year": 2019,
+  "title": "Classification of rice varieties using artificial intelligence methods",
+  "venue": "International Journal of Intelligent Systems and Applications in Engineering",
+  "volume": "7",
+  "issue": "3",
+  "pages": "188-194",
+  "doi": "10.18201/ijisae.2019355381"
+ },
+ "cinar2019data": {
+  "type": "dataset",
+  "authors": "Cinar, I., & Koklu, M.",
+  "year": 2019,
+  "title": "Rice (Cammeo and Osmancik) [Dataset]. UCI Machine Learning Repository, ID 545",
+  "doi": "10.24432/C5MW4Z"
+ },
+ "clerc2002": {
+  "type": "article",
+  "authors": "Clerc, M., & Kennedy, J.",
+  "year": 2002,
+  "title": "The particle swarm: Explosion, stability, and convergence in a multidimensional complex space",
+  "venue": "IEEE Transactions on Evolutionary Computation",
+  "volume": "6",
+  "issue": "1",
+  "pages": "58-73",
+  "doi": "10.1109/4235.985692"
+ },
+ "colabfaq": {
+  "type": "web",
+  "authors": "Google",
+  "year": 2026,
+  "title": "Google Colaboratory: Frequently asked questions",
+  "url": "https://research.google.com/colaboratory/faq.html"
+ },
+ "cooley1965": {
+  "type": "article",
+  "authors": "Cooley, J. W., & Tukey, J. W.",
+  "year": 1965,
+  "title": "An algorithm for the machine calculation of complex Fourier series",
+  "venue": "Mathematics of Computation",
+  "volume": "19",
+  "issue": "90",
+  "pages": "297-301",
+  "doi": "10.1090/S0025-5718-1965-0178586-1"
+ },
+ "copernicusdem": {
+  "type": "dataset",
+  "authors": "European Space Agency",
+  "year": 2021,
+  "title": "Copernicus Global Digital Elevation Model (GLO-90)",
+  "doi": "10.5270/ESA-c5d3d65"
+ },
+ "cormen2022": {
+  "type": "book",
+  "authors": "Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C.",
+  "year": 2022,
+  "title": "Introduction to Algorithms",
+  "publisher": "MIT Press",
+  "edition": "4th ed."
+ },
+ "cortes1995": {
+  "type": "article",
+  "authors": "Cortes, C., & Vapnik, V.",
+  "year": 1995,
+  "title": "Support-vector networks",
+  "venue": "Machine Learning",
+  "volume": "20",
+  "issue": "3",
+  "pages": "273-297",
+  "doi": "10.1007/BF00994018"
+ },
+ "cortez2009": {
+  "type": "article",
+  "authors": "Cortez, P., Cerdeira, A., Almeida, F., Matos, T., & Reis, J.",
+  "year": 2009,
+  "title": "Modeling wine preferences by data mining from physicochemical properties",
+  "venue": "Decision Support Systems",
+  "volume": "47",
+  "issue": "4",
+  "pages": "547-553",
+  "doi": "10.1016/j.dss.2009.05.016"
+ },
+ "cortez2009data": {
+  "type": "dataset",
+  "authors": "Cortez, P., Cerdeira, A., Almeida, F., Matos, T., & Reis, J.",
+  "year": 2009,
+  "title": "Wine Quality [Dataset]. UCI Machine Learning Repository, ID 186",
+  "doi": "10.24432/C56S3T"
+ },
+ "cover1967": {
+  "type": "article",
+  "authors": "Cover, T., & Hart, P.",
+  "year": 1967,
+  "title": "Nearest neighbor pattern classification",
+  "venue": "IEEE Transactions on Information Theory",
+  "volume": "13",
+  "issue": "1",
+  "pages": "21-27",
+  "doi": "10.1109/TIT.1967.1053964"
+ },
+ "ctms": {
+  "type": "web",
+  "authors": "University of Michigan, Carnegie Mellon University, & University of Detroit Mercy",
+  "year": 2026,
+  "title": "Control Tutorials for MATLAB and Simulink: DC motor speed, system modeling",
+  "url": "https://ctms.engin.umich.edu"
+ },
+ "cybenko1989": {
+  "type": "article",
+  "authors": "Cybenko, G.",
+  "year": 1989,
+  "title": "Approximation by superpositions of a sigmoidal function",
+  "venue": "Mathematics of Control, Signals and Systems",
+  "volume": "2",
+  "issue": "4",
+  "pages": "303-314",
+  "doi": "10.1007/BF02551274"
+ },
+ "deb2000": {
+  "type": "article",
+  "authors": "Deb, K.",
+  "year": 2000,
+  "title": "An efficient constraint handling method for genetic algorithms",
+  "venue": "Computer Methods in Applied Mechanics and Engineering",
+  "volume": "186",
+  "issue": "2-4",
+  "pages": "311-338",
+  "doi": "10.1016/S0045-7825(99)00389-8"
+ },
+ "deb2002": {
+  "type": "article",
+  "authors": "Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T.",
+  "year": 2002,
+  "title": "A fast and elitist multiobjective genetic algorithm: NSGA-II",
+  "venue": "IEEE Transactions on Evolutionary Computation",
+  "volume": "6",
+  "issue": "2",
+  "pages": "182-197",
+  "doi": "10.1109/4235.996017"
+ },
+ "degrave2022": {
+  "type": "article",
+  "authors": "Degrave, J., Felici, F., Buchli, J., et al.",
+  "year": 2022,
+  "title": "Magnetic control of tokamak plasmas through deep reinforcement learning",
+  "venue": "Nature",
+  "volume": "602",
+  "issue": "7897",
+  "pages": "414-419",
+  "doi": "10.1038/s41586-021-04301-9"
+ },
+ "deng2009": {
+  "type": "inproceedings",
+  "authors": "Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., & Fei-Fei, L.",
+  "year": 2009,
+  "title": "ImageNet: A large-scale hierarchical image database",
+  "venue": "2009 IEEE Conference on Computer Vision and Pattern Recognition",
+  "pages": "248-255",
+  "doi": "10.1109/CVPR.2009.5206848"
+ },
+ "devlin2019": {
+  "type": "inproceedings",
+  "authors": "Devlin, J., Chang, M.-W., Lee, K., & Toutanova, K.",
+  "year": 2019,
+  "title": "BERT: Pre-training of deep bidirectional transformers for language understanding",
+  "venue": "Proceedings of NAACL-HLT 2019",
+  "pages": "4171-4186",
+  "doi": "10.18653/v1/N19-1423"
+ },
+ "dijkstra1959": {
+  "type": "article",
+  "authors": "Dijkstra, E. W.",
+  "year": 1959,
+  "title": "A note on two problems in connexion with graphs",
+  "venue": "Numerische Mathematik",
+  "volume": "1",
+  "pages": "269-271",
+  "doi": "10.1007/BF01386390"
+ },
+ "dolgov2010": {
+  "type": "article",
+  "authors": "Dolgov, D., Thrun, S., Montemerlo, M., & Diebel, J.",
+  "year": 2010,
+  "title": "Path planning for autonomous vehicles in unknown semi-structured environments",
+  "venue": "The International Journal of Robotics Research",
+  "volume": "29",
+  "issue": "5",
+  "pages": "485-501",
+  "doi": "10.1177/0278364909359210"
+ },
+ "dorigo1996": {
+  "type": "article",
+  "authors": "Dorigo, M., Maniezzo, V., & Colorni, A.",
+  "year": 1996,
+  "title": "Ant system: Optimization by a colony of cooperating agents",
+  "venue": "IEEE Transactions on Systems, Man, and Cybernetics, Part B",
+  "volume": "26",
+  "issue": "1",
+  "pages": "29-41",
+  "doi": "10.1109/3477.484436"
+ },
+ "dorigo1997": {
+  "type": "article",
+  "authors": "Dorigo, M., & Gambardella, L. M.",
+  "year": 1997,
+  "title": "Ant colony system: A cooperative learning approach to the traveling salesman problem",
+  "venue": "IEEE Transactions on Evolutionary Computation",
+  "volume": "1",
+  "issue": "1",
+  "pages": "53-66",
+  "doi": "10.1109/4235.585892"
+ },
+ "dorigo2004": {
+  "type": "book",
+  "authors": "Dorigo, M., & Stützle, T.",
+  "year": 2004,
+  "title": "Ant Colony Optimization",
+  "publisher": "MIT Press"
+ },
+ "dosovitskiy2021": {
+  "type": "inproceedings",
+  "authors": "Dosovitskiy, A., Beyer, L., Kolesnikov, A., et al.",
+  "year": 2021,
+  "title": "An image is worth 16x16 words: Transformers for image recognition at scale",
+  "venue": "9th International Conference on Learning Representations (ICLR 2021)",
+  "arxiv": "2010.11929"
+ },
+ "eiben2015": {
+  "type": "book",
+  "authors": "Eiben, A. E., & Smith, J. E.",
+  "year": 2015,
+  "title": "Introduction to Evolutionary Computing",
+  "doi": "10.1007/978-3-662-44874-8",
+  "publisher": "Springer",
+  "edition": "2nd ed."
+ },
+ "elman1990": {
+  "type": "article",
+  "authors": "Elman, J. L.",
+  "year": 1990,
+  "title": "Finding structure in time",
+  "venue": "Cognitive Science",
+  "volume": "14",
+  "issue": "2",
+  "pages": "179-211",
+  "doi": "10.1207/s15516709cog1402_1"
+ },
+ "engelbrecht2007": {
+  "type": "book",
+  "authors": "Engelbrecht, A. P.",
+  "year": 2007,
+  "title": "Computational Intelligence: An Introduction",
+  "doi": "10.1002/9780470512517",
+  "publisher": "Wiley",
+  "edition": "2nd ed."
+ },
+ "ester1996": {
+  "type": "inproceedings",
+  "authors": "Ester, M., Kriegel, H.-P., Sander, J., & Xu, X.",
+  "year": 1996,
+  "title": "A density-based algorithm for discovering clusters in large spatial databases with noise",
+  "venue": "Proceedings of the Second International Conference on Knowledge Discovery and Data Mining (KDD-96)",
+  "pages": "226-231",
+  "publisher": "AAAI Press"
+ },
+ "euaiact2024": {
+  "type": "law",
+  "authors": "European Parliament and Council of the European Union",
+  "year": 2024,
+  "title": "Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence (Artificial Intelligence Act)",
+  "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+  "publisher": "Official Journal of the European Union, L series, 12 July 2024"
+ },
+ "fawcett2006": {
+  "type": "article",
+  "authors": "Fawcett, T.",
+  "year": 2006,
+  "title": "An introduction to ROC analysis",
+  "venue": "Pattern Recognition Letters",
+  "volume": "27",
+  "issue": "8",
+  "pages": "861-874",
+  "doi": "10.1016/j.patrec.2005.10.010"
+ },
+ "forgy1982": {
+  "type": "article",
+  "authors": "Forgy, C. L.",
+  "year": 1982,
+  "title": "Rete: A fast algorithm for the many pattern/many object pattern match problem",
+  "venue": "Artificial Intelligence",
+  "volume": "19",
+  "issue": "1",
+  "pages": "17-37",
+  "doi": "10.1016/0004-3702(82)90020-0"
+ },
+ "gaing2004": {
+  "type": "article",
+  "authors": "Gaing, Z.-L.",
+  "year": 2004,
+  "title": "A particle swarm optimization approach for optimum design of PID controller in AVR system",
+  "venue": "IEEE Transactions on Energy Conversion",
+  "volume": "19",
+  "issue": "2",
+  "pages": "384-391",
+  "doi": "10.1109/TEC.2003.821821"
+ },
+ "gere2013": {
+  "type": "book",
+  "authors": "Gere, J. M., & Goodno, B. J.",
+  "year": 2013,
+  "title": "Mechanics of Materials",
+  "publisher": "Cengage Learning",
+  "edition": "8th ed."
+ },
+ "giarratano2005": {
+  "type": "book",
+  "authors": "Giarratano, J. C., & Riley, G. D.",
+  "year": 2005,
+  "title": "Expert Systems: Principles and Programming",
+  "publisher": "Thomson Course Technology",
+  "edition": "4th ed."
+ },
+ "glorot2010": {
+  "type": "inproceedings",
+  "authors": "Glorot, X., & Bengio, Y.",
+  "year": 2010,
+  "title": "Understanding the difficulty of training deep feedforward neural networks",
+  "venue": "Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics, PMLR 9",
+  "pages": "249-256"
+ },
+ "goldberg1989": {
+  "type": "book",
+  "authors": "Goldberg, D. E.",
+  "year": 1989,
+  "title": "Genetic Algorithms in Search, Optimization, and Machine Learning",
+  "publisher": "Addison-Wesley"
+ },
+ "goodfellow2014": {
+  "type": "inproceedings",
+  "authors": "Goodfellow, I., Pouget-Abadie, J., Mirza, M., et al.",
+  "year": 2014,
+  "title": "Generative adversarial nets",
+  "venue": "Advances in Neural Information Processing Systems 27",
+  "pages": "2672-2680",
+  "arxiv": "1406.2661"
+ },
+ "goodfellow2016": {
+  "type": "book",
+  "authors": "Goodfellow, I., Bengio, Y., & Courville, A.",
+  "year": 2016,
+  "title": "Deep Learning",
+  "publisher": "MIT Press"
+ },
+ "grieves2017": {
+  "type": "incollection",
+  "authors": "Grieves, M., & Vickers, J.",
+  "year": 2017,
+  "title": "Digital twin: Mitigating unpredictable, undesirable emergent behavior in complex systems",
+  "venue": "Transdisciplinary Perspectives on Complex Systems (F.-J. Kahlen, S. Flumerfelt, & A. Alves, Eds.)",
+  "pages": "85-113",
+  "doi": "10.1007/978-3-319-38756-7_4",
+  "publisher": "Springer"
+ },
+ "hall2016": {
+  "type": "article",
+  "authors": "Hall, B.",
+  "year": 2016,
+  "title": "Facies classification using machine learning",
+  "venue": "The Leading Edge",
+  "volume": "35",
+  "issue": "10",
+  "pages": "906-909",
+  "doi": "10.1190/tle35100906.1"
+ },
+ "hamidieh2018": {
+  "type": "article",
+  "authors": "Hamidieh, K.",
+  "year": 2018,
+  "title": "A data-driven statistical model for predicting the critical temperature of a superconductor",
+  "venue": "Computational Materials Science",
+  "volume": "154",
+  "pages": "346-354",
+  "doi": "10.1016/j.commatsci.2018.07.052"
+ },
+ "hansen2001": {
+  "type": "article",
+  "authors": "Hansen, N., & Ostermeier, A.",
+  "year": 2001,
+  "title": "Completely derandomized self-adaptation in evolution strategies",
+  "venue": "Evolutionary Computation",
+  "volume": "9",
+  "issue": "2",
+  "pages": "159-195",
+  "doi": "10.1162/106365601750190398"
+ },
+ "harris2020": {
+  "type": "article",
+  "authors": "Harris, C. R., Millman, K. J., van der Walt, S. J., et al.",
+  "year": 2020,
+  "title": "Array programming with NumPy",
+  "venue": "Nature",
+  "volume": "585",
+  "issue": "7825",
+  "pages": "357-362",
+  "doi": "10.1038/s41586-020-2649-2"
+ },
+ "hart1968": {
+  "type": "article",
+  "authors": "Hart, P. E., Nilsson, N. J., & Raphael, B.",
+  "year": 1968,
+  "title": "A formal basis for the heuristic determination of minimum cost paths",
+  "venue": "IEEE Transactions on Systems Science and Cybernetics",
+  "volume": "4",
+  "issue": "2",
+  "pages": "100-107",
+  "doi": "10.1109/TSSC.1968.300136"
+ },
+ "hastie2009": {
+  "type": "book",
+  "authors": "Hastie, T., Tibshirani, R., & Friedman, J.",
+  "year": 2009,
+  "title": "The Elements of Statistical Learning: Data Mining, Inference, and Prediction",
+  "doi": "10.1007/978-0-387-84858-7",
+  "publisher": "Springer",
+  "edition": "2nd ed."
+ },
+ "hayesroth1983": {
+  "type": "book",
+  "authors": "Hayes-Roth, F., Waterman, D. A., & Lenat, D. B. (Eds.)",
+  "year": 1983,
+  "title": "Building Expert Systems",
+  "publisher": "Addison-Wesley"
+ },
+ "he2016": {
+  "type": "inproceedings",
+  "authors": "He, K., Zhang, X., Ren, S., & Sun, J.",
+  "year": 2016,
+  "title": "Deep residual learning for image recognition",
+  "venue": "2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+  "pages": "770-778",
+  "doi": "10.1109/CVPR.2016.90"
+ },
+ "hersbach2020": {
+  "type": "article",
+  "authors": "Hersbach, H., Bell, B., Berrisford, P., et al.",
+  "year": 2020,
+  "title": "The ERA5 global reanalysis",
+  "venue": "Quarterly Journal of the Royal Meteorological Society",
+  "volume": "146",
+  "issue": "730",
+  "pages": "1999-2049",
+  "doi": "10.1002/qj.3803"
+ },
+ "ho2020": {
+  "type": "inproceedings",
+  "authors": "Ho, J., Jain, A., & Abbeel, P.",
+  "year": 2020,
+  "title": "Denoising diffusion probabilistic models",
+  "venue": "Advances in Neural Information Processing Systems 33",
+  "pages": "6840-6851",
+  "arxiv": "2006.11239"
+ },
+ "hochreiter1997": {
+  "type": "article",
+  "authors": "Hochreiter, S., & Schmidhuber, J.",
+  "year": 1997,
+  "title": "Long short-term memory",
+  "venue": "Neural Computation",
+  "volume": "9",
+  "issue": "8",
+  "pages": "1735-1780",
+  "doi": "10.1162/neco.1997.9.8.1735"
+ },
+ "hoerl1970": {
+  "type": "article",
+  "authors": "Hoerl, A. E., & Kennard, R. W.",
+  "year": 1970,
+  "title": "Ridge regression: Biased estimation for nonorthogonal problems",
+  "venue": "Technometrics",
+  "volume": "12",
+  "issue": "1",
+  "pages": "55-67",
+  "doi": "10.1080/00401706.1970.10488634"
+ },
+ "holland1992": {
+  "type": "book",
+  "authors": "Holland, J. H.",
+  "year": 1992,
+  "title": "Adaptation in Natural and Artificial Systems",
+  "publisher": "MIT Press",
+  "edition": "2nd ed.",
+  "note": "First edition 1975, University of Michigan Press"
+ },
+ "holmblad1982": {
+  "type": "incollection",
+  "authors": "Holmblad, L. P., & Østergaard, J.-J.",
+  "year": 1982,
+  "title": "Control of a cement kiln by fuzzy logic",
+  "venue": "Fuzzy Information and Decision Processes (M. M. Gupta & E. Sanchez, Eds.)",
+  "pages": "389-399",
+  "publisher": "North-Holland"
+ },
+ "hong2016": {
+  "type": "article",
+  "authors": "Hong, T., Pinson, P., Fan, S., Zareipour, H., Troccoli, A., & Hyndman, R. J.",
+  "year": 2016,
+  "title": "Probabilistic energy forecasting: Global Energy Forecasting Competition 2014 and beyond",
+  "venue": "International Journal of Forecasting",
+  "volume": "32",
+  "issue": "3",
+  "pages": "896-913",
+  "doi": "10.1016/j.ijforecast.2016.02.001"
+ },
+ "hornby2011": {
+  "type": "article",
+  "authors": "Hornby, G. S., Lohn, J. D., & Linden, D. S.",
+  "year": 2011,
+  "title": "Computer-automated evolution of an X-band antenna for NASA's Space Technology 5 mission",
+  "venue": "Evolutionary Computation",
+  "volume": "19",
+  "issue": "1",
+  "pages": "1-23",
+  "doi": "10.1162/EVCO_a_00005"
+ },
+ "hornik1989": {
+  "type": "article",
+  "authors": "Hornik, K., Stinchcombe, M., & White, H.",
+  "year": 1989,
+  "title": "Multilayer feedforward networks are universal approximators",
+  "venue": "Neural Networks",
+  "volume": "2",
+  "issue": "5",
+  "pages": "359-366",
+  "doi": "10.1016/0893-6080(89)90020-8"
+ },
+ "hunter2007": {
+  "type": "article",
+  "authors": "Hunter, J. D.",
+  "year": 2007,
+  "title": "Matplotlib: A 2D graphics environment",
+  "venue": "Computing in Science & Engineering",
+  "volume": "9",
+  "issue": "3",
+  "pages": "90-95",
+  "doi": "10.1109/MCSE.2007.55"
+ },
+ "hyndman2021": {
+  "type": "book",
+  "authors": "Hyndman, R. J., & Athanasopoulos, G.",
+  "year": 2021,
+  "title": "Forecasting: Principles and Practice",
+  "url": "https://otexts.com/fpp3/",
+  "publisher": "OTexts",
+  "edition": "3rd ed."
+ },
+ "imran2020data": {
+  "type": "dataset",
+  "authors": "Imran, A. A., Rahim, M. S., & Ahmed, T.",
+  "year": 2020,
+  "title": "Productivity Prediction of Garment Employees [Dataset]. UCI Machine Learning Repository, ID 597",
+  "url": "https://archive.ics.uci.edu/dataset/597"
+ },
+ "ioffe2015": {
+  "type": "inproceedings",
+  "authors": "Ioffe, S., & Szegedy, C.",
+  "year": 2015,
+  "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+  "venue": "Proceedings of the 32nd International Conference on Machine Learning, PMLR 37",
+  "pages": "448-456",
+  "arxiv": "1502.03167"
+ },
+ "iso42001": {
+  "type": "standard",
+  "authors": "International Organization for Standardization",
+  "year": 2023,
+  "title": "ISO/IEC 42001:2023 Information technology, Artificial intelligence, Management system",
+  "publisher": "ISO"
+ },
+ "james2021": {
+  "type": "book",
+  "authors": "James, G., Witten, D., Hastie, T., & Tibshirani, R.",
+  "year": 2021,
+  "title": "An Introduction to Statistical Learning",
+  "doi": "10.1007/978-1-0716-1418-1",
+  "publisher": "Springer",
+  "edition": "2nd ed."
+ },
+ "jang1993": {
+  "type": "article",
+  "authors": "Jang, J.-S. R.",
+  "year": 1993,
+  "title": "ANFIS: Adaptive-network-based fuzzy inference system",
+  "venue": "IEEE Transactions on Systems, Man, and Cybernetics",
+  "volume": "23",
+  "issue": "3",
+  "pages": "665-685",
+  "doi": "10.1109/21.256541"
+ },
+ "ji2023": {
+  "type": "article",
+  "authors": "Ji, Z., Lee, N., Frieske, R., et al.",
+  "year": 2023,
+  "title": "Survey of hallucination in natural language generation",
+  "venue": "ACM Computing Surveys",
+  "volume": "55",
+  "issue": "12",
+  "pages": "248",
+  "doi": "10.1145/3571730"
+ },
+ "jolliffe2016": {
+  "type": "article",
+  "authors": "Jolliffe, I. T., & Cadima, J.",
+  "year": 2016,
+  "title": "Principal component analysis: A review and recent developments",
+  "venue": "Philosophical Transactions of the Royal Society A",
+  "volume": "374",
+  "issue": "2065",
+  "pages": "20150202",
+  "doi": "10.1098/rsta.2015.0202"
+ },
+ "jordan2015": {
+  "type": "article",
+  "authors": "Jordan, M. I., & Mitchell, T. M.",
+  "year": 2015,
+  "title": "Machine learning: Trends, perspectives, and prospects",
+  "venue": "Science",
+  "volume": "349",
+  "issue": "6245",
+  "pages": "255-260",
+  "doi": "10.1126/science.aaa8415"
+ },
+ "jumper2021": {
+  "type": "article",
+  "authors": "Jumper, J., Evans, R., Pritzel, A., et al.",
+  "year": 2021,
+  "title": "Highly accurate protein structure prediction with AlphaFold",
+  "venue": "Nature",
+  "volume": "596",
+  "issue": "7873",
+  "pages": "583-589",
+  "doi": "10.1038/s41586-021-03819-2"
+ },
+ "kamilaris2018": {
+  "type": "article",
+  "authors": "Kamilaris, A., & Prenafeta-Boldú, F. X.",
+  "year": 2018,
+  "title": "Deep learning in agriculture: A survey",
+  "venue": "Computers and Electronics in Agriculture",
+  "volume": "147",
+  "pages": "70-90",
+  "doi": "10.1016/j.compag.2018.02.016"
+ },
+ "kaplan2020": {
+  "type": "arxiv",
+  "authors": "Kaplan, J., McCandlish, S., Henighan, T., et al.",
+  "year": 2020,
+  "title": "Scaling laws for neural language models",
+  "arxiv": "2001.08361"
+ },
+ "karaboga2007": {
+  "type": "article",
+  "authors": "Karaboga, D., & Basturk, B.",
+  "year": 2007,
+  "title": "A powerful and efficient algorithm for numerical function optimization: Artificial bee colony (ABC) algorithm",
+  "venue": "Journal of Global Optimization",
+  "volume": "39",
+  "issue": "3",
+  "pages": "459-471",
+  "doi": "10.1007/s10898-007-9149-x"
+ },
+ "karniadakis2021": {
+  "type": "article",
+  "authors": "Karniadakis, G. E., Kevrekidis, I. G., Lu, L., Perdikaris, P., Wang, S., & Yang, L.",
+  "year": 2021,
+  "title": "Physics-informed machine learning",
+  "venue": "Nature Reviews Physics",
+  "volume": "3",
+  "issue": "6",
+  "pages": "422-440",
+  "doi": "10.1038/s42254-021-00314-5"
+ },
+ "kaufman2012": {
+  "type": "article",
+  "authors": "Kaufman, S., Rosset, S., Perlich, C., & Stitelman, O.",
+  "year": 2012,
+  "title": "Leakage in data mining: Formulation, detection, and avoidance",
+  "venue": "ACM Transactions on Knowledge Discovery from Data",
+  "volume": "6",
+  "issue": "4",
+  "pages": "15",
+  "doi": "10.1145/2382577.2382579"
+ },
+ "kaya2019": {
+  "type": "article",
+  "authors": "Kaya, H., Tüfekci, P., & Uzun, E.",
+  "year": 2019,
+  "title": "Predicting CO and NOx emissions from gas turbines: Novel data and a benchmark PEMS",
+  "venue": "Turkish Journal of Electrical Engineering and Computer Sciences",
+  "volume": "27",
+  "issue": "6",
+  "pages": "4783-4796",
+  "doi": "10.3906/elk-1807-87"
+ },
+ "keeling1976": {
+  "type": "article",
+  "authors": "Keeling, C. D., Bacastow, R. B., Bainbridge, A. E., Ekdahl, C. A., Guenther, P. R., Waterman, L. S., & Chin, J. F. S.",
+  "year": 1976,
+  "title": "Atmospheric carbon dioxide variations at Mauna Loa Observatory, Hawaii",
+  "venue": "Tellus",
+  "volume": "28",
+  "issue": "6",
+  "pages": "538-551",
+  "doi": "10.1111/j.2153-3490.1976.tb00701.x"
+ },
+ "kennedy1995": {
+  "type": "inproceedings",
+  "authors": "Kennedy, J., & Eberhart, R.",
+  "year": 1995,
+  "title": "Particle swarm optimization",
+  "venue": "Proceedings of ICNN'95, International Conference on Neural Networks",
+  "volume": "4",
+  "pages": "1942-1948",
+  "doi": "10.1109/ICNN.1995.488968",
+  "publisher": "IEEE"
+ },
+ "kingma2014": {
+  "type": "inproceedings",
+  "authors": "Kingma, D. P., & Welling, M.",
+  "year": 2014,
+  "title": "Auto-encoding variational Bayes",
+  "venue": "2nd International Conference on Learning Representations (ICLR 2014)",
+  "arxiv": "1312.6114"
+ },
+ "kingma2015": {
+  "type": "inproceedings",
+  "authors": "Kingma, D. P., & Ba, J.",
+  "year": 2015,
+  "title": "Adam: A method for stochastic optimization",
+  "venue": "3rd International Conference on Learning Representations (ICLR 2015)",
+  "arxiv": "1412.6980"
+ },
+ "kirkpatrick1983": {
+  "type": "article",
+  "authors": "Kirkpatrick, S., Gelatt, C. D., & Vecchi, M. P.",
+  "year": 1983,
+  "title": "Optimization by simulated annealing",
+  "venue": "Science",
+  "volume": "220",
+  "issue": "4598",
+  "pages": "671-680",
+  "doi": "10.1126/science.220.4598.671"
+ },
+ "kluyver2016": {
+  "type": "incollection",
+  "authors": "Kluyver, T., Ragan-Kelley, B., Pérez, F., et al.",
+  "year": 2016,
+  "title": "Jupyter Notebooks: A publishing format for reproducible computational workflows",
+  "venue": "Positioning and Power in Academic Publishing: Players, Agents and Agendas",
+  "pages": "87-90",
+  "doi": "10.3233/978-1-61499-649-1-87",
+  "publisher": "IOS Press"
+ },
+ "kober2013": {
+  "type": "article",
+  "authors": "Kober, J., Bagnell, J. A., & Peters, J.",
+  "year": 2013,
+  "title": "Reinforcement learning in robotics: A survey",
+  "venue": "The International Journal of Robotics Research",
+  "volume": "32",
+  "issue": "11",
+  "pages": "1238-1274",
+  "doi": "10.1177/0278364913495721"
+ },
+ "kohavi1995": {
+  "type": "inproceedings",
+  "authors": "Kohavi, R.",
+  "year": 1995,
+  "title": "A study of cross-validation and bootstrap for accuracy estimation and model selection",
+  "venue": "Proceedings of the 14th International Joint Conference on Artificial Intelligence",
+  "pages": "1137-1143"
+ },
+ "koklu2020": {
+  "type": "article",
+  "authors": "Koklu, M., & Ozkan, I. A.",
+  "year": 2020,
+  "title": "Multiclass classification of dry beans using computer vision and machine learning techniques",
+  "venue": "Computers and Electronics in Agriculture",
+  "volume": "174",
+  "pages": "105507",
+  "doi": "10.1016/j.compag.2020.105507"
+ },
+ "koklu2020data": {
+  "type": "dataset",
+  "authors": "Koklu, M., & Ozkan, I. A.",
+  "year": 2020,
+  "title": "Dry Bean [Dataset]. UCI Machine Learning Repository, ID 602",
+  "doi": "10.24432/C50S4B"
+ },
+ "kong2019": {
+  "type": "article",
+  "authors": "Kong, Q., Trugman, D. T., Ross, Z. E., Bianco, M. J., Meade, B. J., & Gerstoft, P.",
+  "year": 2019,
+  "title": "Machine learning in seismology: Turning data into insights",
+  "venue": "Seismological Research Letters",
+  "volume": "90",
+  "issue": "1",
+  "pages": "3-14",
+  "doi": "10.1785/0220180259"
+ },
+ "korf1985": {
+  "type": "article",
+  "authors": "Korf, R. E.",
+  "year": 1985,
+  "title": "Depth-first iterative-deepening: An optimal admissible tree search",
+  "venue": "Artificial Intelligence",
+  "volume": "27",
+  "issue": "1",
+  "pages": "97-109",
+  "doi": "10.1016/0004-3702(85)90084-0"
+ },
+ "kose2017anfis": {
+  "type": "article",
+  "authors": "Kose, U., & Arslan, A.",
+  "year": 2017,
+  "title": "Forecasting chaotic time series via ANFIS supported by vortex optimization algorithm: Applications on electroencephalogram time series",
+  "venue": "Arabian Journal for Science and Engineering",
+  "volume": "42",
+  "issue": "8",
+  "pages": "3103-3114",
+  "doi": "10.1007/s13369-016-2279-z"
+ },
+ "kose2017selflearning": {
+  "type": "article",
+  "authors": "Kose, U., & Arslan, A.",
+  "year": 2017,
+  "title": "Optimization of self-learning in computer engineering courses: An intelligent software system supported by artificial neural network and vortex optimization algorithm",
+  "venue": "Computer Applications in Engineering Education",
+  "volume": "25",
+  "issue": "1",
+  "pages": "142-156",
+  "doi": "10.1002/cae.21787"
+ },
+ "kose2018alo": {
+  "type": "article",
+  "authors": "Kose, U.",
+  "year": 2018,
+  "title": "An ant-lion optimizer-trained artificial neural network system for chaotic electroencephalogram (EEG) prediction",
+  "venue": "Applied Sciences",
+  "volume": "8",
+  "issue": "9",
+  "pages": "1613",
+  "doi": "10.3390/app8091613"
+ },
+ "kose2018brain": {
+  "type": "article",
+  "authors": "Kose, U.",
+  "year": 2018,
+  "title": "Are we safe enough in the future of artificial intelligence? A discussion on machine ethics and artificial intelligence safety",
+  "venue": "BRAIN. Broad Research in Artificial Intelligence and Neuroscience",
+  "volume": "9",
+  "issue": "2",
+  "pages": "184-197"
+ },
+ "kose2019adv": {
+  "type": "inproceedings",
+  "authors": "Kose, U.",
+  "year": 2019,
+  "title": "Techniques for adversarial examples threatening the safety of artificial intelligence based systems",
+  "venue": "I. International Science and Innovation Congress (INSI Congress 2019)",
+  "arxiv": "1910.06907",
+  "publisher": "Pamukkale, Denizli, Türkiye"
+ },
+ "kose2026gemex": {
+  "type": "software",
+  "authors": "Kose, U.",
+  "year": 2026,
+  "title": "GEMEX: Geodesic Entropic Manifold Explainability (Version 1.2.2) [Python package]",
+  "url": "https://pypi.org/project/gemex/",
+  "publisher": "Python Package Index"
+ },
+ "krizhevsky2017": {
+  "type": "article",
+  "authors": "Krizhevsky, A., Sutskever, I., & Hinton, G. E.",
+  "year": 2017,
+  "title": "ImageNet classification with deep convolutional neural networks",
+  "venue": "Communications of the ACM",
+  "volume": "60",
+  "issue": "6",
+  "pages": "84-90",
+  "doi": "10.1145/3065386"
+ },
+ "lam2023": {
+  "type": "article",
+  "authors": "Lam, R., Sanchez-Gonzalez, A., Willson, M., et al.",
+  "year": 2023,
+  "title": "Learning skillful medium-range global weather forecasting",
+  "venue": "Science",
+  "volume": "382",
+  "issue": "6677",
+  "pages": "1416-1421",
+  "doi": "10.1126/science.adi2336"
+ },
+ "lavalle2006": {
+  "type": "book",
+  "authors": "LaValle, S. M.",
+  "year": 2006,
+  "title": "Planning Algorithms",
+  "doi": "10.1017/CBO9780511546877",
+  "publisher": "Cambridge University Press"
+ },
+ "lecun1989": {
+  "type": "article",
+  "authors": "LeCun, Y., Boser, B., Denker, J. S., et al.",
+  "year": 1989,
+  "title": "Backpropagation applied to handwritten zip code recognition",
+  "venue": "Neural Computation",
+  "volume": "1",
+  "issue": "4",
+  "pages": "541-551",
+  "doi": "10.1162/neco.1989.1.4.541"
+ },
+ "lecun1998": {
+  "type": "article",
+  "authors": "LeCun, Y., Bottou, L., Bengio, Y., & Haffner, P.",
+  "year": 1998,
+  "title": "Gradient-based learning applied to document recognition",
+  "venue": "Proceedings of the IEEE",
+  "volume": "86",
+  "issue": "11",
+  "pages": "2278-2324",
+  "doi": "10.1109/5.726791"
+ },
+ "lecun2015": {
+  "type": "article",
+  "authors": "LeCun, Y., Bengio, Y., & Hinton, G.",
+  "year": 2015,
+  "title": "Deep learning",
+  "venue": "Nature",
+  "volume": "521",
+  "issue": "7553",
+  "pages": "436-444",
+  "doi": "10.1038/nature14539"
+ },
+ "lee1990": {
+  "type": "article",
+  "authors": "Lee, C. C.",
+  "year": 1990,
+  "title": "Fuzzy logic in control systems: Fuzzy logic controller, Part I",
+  "venue": "IEEE Transactions on Systems, Man, and Cybernetics",
+  "volume": "20",
+  "issue": "2",
+  "pages": "404-418",
+  "doi": "10.1109/21.52551"
+ },
+ "lei2020": {
+  "type": "article",
+  "authors": "Lei, Y., Yang, B., Jiang, X., Jia, F., Li, N., & Nandi, A. K.",
+  "year": 2020,
+  "title": "Applications of machine learning to machine fault diagnosis: A review and roadmap",
+  "venue": "Mechanical Systems and Signal Processing",
+  "volume": "138",
+  "pages": "106587",
+  "doi": "10.1016/j.ymssp.2019.106587"
+ },
+ "lewis2020": {
+  "type": "inproceedings",
+  "authors": "Lewis, P., Perez, E., Piktus, A., et al.",
+  "year": 2020,
+  "title": "Retrieval-augmented generation for knowledge-intensive NLP tasks",
+  "venue": "Advances in Neural Information Processing Systems 33",
+  "pages": "9459-9474",
+  "arxiv": "2005.11401"
+ },
+ "lim2021": {
+  "type": "article",
+  "authors": "Lim, B., & Zohren, S.",
+  "year": 2021,
+  "title": "Time-series forecasting with deep learning: A survey",
+  "venue": "Philosophical Transactions of the Royal Society A",
+  "volume": "379",
+  "issue": "2194",
+  "pages": "20200209",
+  "doi": "10.1098/rsta.2020.0209"
+ },
+ "lindsay1993": {
+  "type": "article",
+  "authors": "Lindsay, R. K., Buchanan, B. G., Feigenbaum, E. A., & Lederberg, J.",
+  "year": 1993,
+  "title": "DENDRAL: A case study of the first expert system for scientific hypothesis formation",
+  "venue": "Artificial Intelligence",
+  "volume": "61",
+  "issue": "2",
+  "pages": "209-261",
+  "doi": "10.1016/0004-3702(93)90068-M"
+ },
+ "liu2008": {
+  "type": "inproceedings",
+  "authors": "Liu, F. T., Ting, K. M., & Zhou, Z.-H.",
+  "year": 2008,
+  "title": "Isolation forest",
+  "venue": "2008 Eighth IEEE International Conference on Data Mining",
+  "pages": "413-422",
+  "doi": "10.1109/ICDM.2008.17"
+ },
+ "lloyd1982": {
+  "type": "article",
+  "authors": "Lloyd, S.",
+  "year": 1982,
+  "title": "Least squares quantization in PCM",
+  "venue": "IEEE Transactions on Information Theory",
+  "volume": "28",
+  "issue": "2",
+  "pages": "129-137",
+  "doi": "10.1109/TIT.1982.1056489"
+ },
+ "lundberg2017": {
+  "type": "inproceedings",
+  "authors": "Lundberg, S. M., & Lee, S.-I.",
+  "year": 2017,
+  "title": "A unified approach to interpreting model predictions",
+  "venue": "Advances in Neural Information Processing Systems 30",
+  "pages": "4765-4774",
+  "arxiv": "1705.07874"
+ },
+ "macqueen1967": {
+  "type": "inproceedings",
+  "authors": "MacQueen, J.",
+  "year": 1967,
+  "title": "Some methods for classification and analysis of multivariate observations",
+  "venue": "Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability",
+  "volume": "1",
+  "pages": "281-297",
+  "publisher": "University of California Press"
+ },
+ "mamdani1975": {
+  "type": "article",
+  "authors": "Mamdani, E. H., & Assilian, S.",
+  "year": 1975,
+  "title": "An experiment in linguistic synthesis with a fuzzy logic controller",
+  "venue": "International Journal of Man-Machine Studies",
+  "volume": "7",
+  "issue": "1",
+  "pages": "1-13",
+  "doi": "10.1016/S0020-7373(75)80002-2"
+ },
+ "manning2008": {
+  "type": "book",
+  "authors": "Manning, C. D., Raghavan, P., & Schütze, H.",
+  "year": 2008,
+  "title": "Introduction to Information Retrieval",
+  "publisher": "Cambridge University Press"
+ },
+ "mansouri2013data": {
+  "type": "dataset",
+  "authors": "Mansouri, K., Ringsted, T., Ballabio, D., Todeschini, R., & Consonni, V.",
+  "year": 2013,
+  "title": "QSAR biodegradation [Dataset]. UCI Machine Learning Repository, ID 254",
+  "doi": "10.24432/C5H60M"
+ },
+ "matzka2020": {
+  "type": "inproceedings",
+  "authors": "Matzka, S.",
+  "year": 2020,
+  "title": "Explainable artificial intelligence for predictive maintenance applications",
+  "venue": "2020 Third International Conference on Artificial Intelligence for Industries (AI4I)",
+  "pages": "69-74",
+  "doi": "10.1109/AI4I49448.2020.00023",
+  "publisher": "IEEE"
+ },
+ "matzka2020data": {
+  "type": "dataset",
+  "authors": "Matzka, S.",
+  "year": 2020,
+  "title": "AI4I 2020 Predictive Maintenance Dataset [Dataset]. UCI Machine Learning Repository, ID 601",
+  "doi": "10.24432/C5HS5C"
+ },
+ "mccarthy2006": {
+  "type": "article",
+  "authors": "McCarthy, J., Minsky, M. L., Rochester, N., & Shannon, C. E.",
+  "year": 2006,
+  "title": "A proposal for the Dartmouth summer research project on artificial intelligence, August 31, 1955",
+  "venue": "AI Magazine",
+  "volume": "27",
+  "issue": "4",
+  "pages": "12-14",
+  "doi": "10.1609/aimag.v27i4.1904"
+ },
+ "mcculloch1943": {
+  "type": "article",
+  "authors": "McCulloch, W. S., & Pitts, W.",
+  "year": 1943,
+  "title": "A logical calculus of the ideas immanent in nervous activity",
+  "venue": "The Bulletin of Mathematical Biophysics",
+  "volume": "5",
+  "issue": "4",
+  "pages": "115-133",
+  "doi": "10.1007/BF02478259"
+ },
+ "mcdermott1982": {
+  "type": "article",
+  "authors": "McDermott, J.",
+  "year": 1982,
+  "title": "R1: A rule-based configurer of computer systems",
+  "venue": "Artificial Intelligence",
+  "volume": "19",
+  "issue": "1",
+  "pages": "39-88",
+  "doi": "10.1016/0004-3702(82)90021-2"
+ },
+ "mckinney2010": {
+  "type": "inproceedings",
+  "authors": "McKinney, W.",
+  "year": 2010,
+  "title": "Data structures for statistical computing in Python",
+  "venue": "Proceedings of the 9th Python in Science Conference",
+  "pages": "56-61",
+  "doi": "10.25080/Majora-92bf1922-00a"
+ },
+ "merchant2023": {
+  "type": "article",
+  "authors": "Merchant, A., Batzner, S., Schoenholz, S. S., et al.",
+  "year": 2023,
+  "title": "Scaling deep learning for materials discovery",
+  "venue": "Nature",
+  "volume": "624",
+  "issue": "7990",
+  "pages": "80-85",
+  "doi": "10.1038/s41586-023-06735-9"
+ },
+ "mikolov2013": {
+  "type": "arxiv",
+  "authors": "Mikolov, T., Chen, K., Corrado, G., & Dean, J.",
+  "year": 2013,
+  "title": "Efficient estimation of word representations in vector space",
+  "arxiv": "1301.3781"
+ },
+ "minsky1969": {
+  "type": "book",
+  "authors": "Minsky, M., & Papert, S.",
+  "year": 1969,
+  "title": "Perceptrons: An Introduction to Computational Geometry",
+  "publisher": "MIT Press"
+ },
+ "mnih2015": {
+  "type": "article",
+  "authors": "Mnih, V., Kavukcuoglu, K., Silver, D., et al.",
+  "year": 2015,
+  "title": "Human-level control through deep reinforcement learning",
+  "venue": "Nature",
+  "volume": "518",
+  "issue": "7540",
+  "pages": "529-533",
+  "doi": "10.1038/nature14236"
+ },
+ "mousavi2020": {
+  "type": "article",
+  "authors": "Mousavi, S. M., Ellsworth, W. L., Zhu, W., Chuang, L. Y., & Beroza, G. C.",
+  "year": 2020,
+  "title": "Earthquake transformer: An attentive deep-learning model for simultaneous earthquake detection and phase picking",
+  "venue": "Nature Communications",
+  "volume": "11",
+  "pages": "3952",
+  "doi": "10.1038/s41467-020-17591-w"
+ },
+ "nair2010": {
+  "type": "inproceedings",
+  "authors": "Nair, V., & Hinton, G. E.",
+  "year": 2010,
+  "title": "Rectified linear units improve restricted Boltzmann machines",
+  "venue": "Proceedings of the 27th International Conference on Machine Learning",
+  "pages": "807-814"
+ },
+ "nist2023": {
+  "type": "report",
+  "authors": "National Institute of Standards and Technology",
+  "year": 2023,
+  "title": "Artificial Intelligence Risk Management Framework (AI RMF 1.0), NIST AI 100-1",
+  "doi": "10.6028/NIST.AI.100-1",
+  "publisher": "NIST"
+ },
+ "noaaco2": {
+  "type": "web",
+  "authors": "Lan, X., & Keeling, R.",
+  "year": 2026,
+  "title": "Trends in atmospheric carbon dioxide: Mauna Loa CO2 monthly mean data. NOAA Global Monitoring Laboratory and Scripps Institution of Oceanography",
+  "url": "https://gml.noaa.gov/ccgg/trends/"
+ },
+ "openmeteo": {
+  "type": "web",
+  "authors": "Open-Meteo",
+  "year": 2026,
+  "title": "Open-Meteo free weather API: Historical Weather API and Elevation API (data licensed under CC BY 4.0)",
+  "url": "https://open-meteo.com"
+ },
+ "ouyang2022": {
+  "type": "inproceedings",
+  "authors": "Ouyang, L., Wu, J., Jiang, X., et al.",
+  "year": 2022,
+  "title": "Training language models to follow instructions with human feedback",
+  "venue": "Advances in Neural Information Processing Systems 35",
+  "pages": "27730-27744",
+  "arxiv": "2203.02155"
+ },
+ "paden2016": {
+  "type": "article",
+  "authors": "Paden, B., Čáp, M., Yong, S. Z., Yershov, D., & Frazzoli, E.",
+  "year": 2016,
+  "title": "A survey of motion planning and control techniques for self-driving urban vehicles",
+  "venue": "IEEE Transactions on Intelligent Vehicles",
+  "volume": "1",
+  "issue": "1",
+  "pages": "33-55",
+  "doi": "10.1109/TIV.2016.2578706"
+ },
+ "paszke2019": {
+  "type": "inproceedings",
+  "authors": "Paszke, A., Gross, S., Massa, F., et al.",
+  "year": 2019,
+  "title": "PyTorch: An imperative style, high-performance deep learning library",
+  "venue": "Advances in Neural Information Processing Systems 32",
+  "pages": "8024-8035",
+  "arxiv": "1912.01703"
+ },
+ "pearl1984": {
+  "type": "book",
+  "authors": "Pearl, J.",
+  "year": 1984,
+  "title": "Heuristics: Intelligent Search Strategies for Computer Problem Solving",
+  "publisher": "Addison-Wesley"
+ },
+ "pearson1901": {
+  "type": "article",
+  "authors": "Pearson, K.",
+  "year": 1901,
+  "title": "On lines and planes of closest fit to systems of points in space",
+  "venue": "The London, Edinburgh, and Dublin Philosophical Magazine and Journal of Science",
+  "volume": "2",
+  "issue": "11",
+  "pages": "559-572",
+  "doi": "10.1080/14786440109462720"
+ },
+ "pedregosa2011": {
+  "type": "article",
+  "authors": "Pedregosa, F., Varoquaux, G., Gramfort, A., et al.",
+  "year": 2011,
+  "title": "Scikit-learn: Machine learning in Python",
+  "venue": "Journal of Machine Learning Research",
+  "volume": "12",
+  "pages": "2825-2830"
+ },
+ "pyhistory": {
+  "type": "web",
+  "authors": "Python Software Foundation",
+  "year": 2026,
+  "title": "History and license (Python 3 documentation)",
+  "url": "https://docs.python.org/3/license.html"
+ },
+ "pytutorial": {
+  "type": "web",
+  "authors": "Python Software Foundation",
+  "year": 2026,
+  "title": "The Python Tutorial (Python 3 documentation)",
+  "url": "https://docs.python.org/3/tutorial/"
+ },
+ "quinlan1986": {
+  "type": "article",
+  "authors": "Quinlan, J. R.",
+  "year": 1986,
+  "title": "Induction of decision trees",
+  "venue": "Machine Learning",
+  "volume": "1",
+  "issue": "1",
+  "pages": "81-106",
+  "doi": "10.1007/BF00116251"
+ },
+ "radford2019": {
+  "type": "report",
+  "authors": "Radford, A., Wu, J., Child, R., Luan, D., Amodei, D., & Sutskever, I.",
+  "year": 2019,
+  "title": "Language models are unsupervised multitask learners",
+  "publisher": "OpenAI"
+ },
+ "raissi2019": {
+  "type": "article",
+  "authors": "Raissi, M., Perdikaris, P., & Karniadakis, G. E.",
+  "year": 2019,
+  "title": "Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations",
+  "venue": "Journal of Computational Physics",
+  "volume": "378",
+  "pages": "686-707",
+  "doi": "10.1016/j.jcp.2018.10.045"
+ },
+ "randall2011": {
+  "type": "article",
+  "authors": "Randall, R. B., & Antoni, J.",
+  "year": 2011,
+  "title": "Rolling element bearing diagnostics: A tutorial",
+  "venue": "Mechanical Systems and Signal Processing",
+  "volume": "25",
+  "issue": "2",
+  "pages": "485-520",
+  "doi": "10.1016/j.ymssp.2010.07.017"
+ },
+ "redmon2016": {
+  "type": "inproceedings",
+  "authors": "Redmon, J., Divvala, S., Girshick, R., & Farhadi, A.",
+  "year": 2016,
+  "title": "You only look once: Unified, real-time object detection",
+  "venue": "2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+  "pages": "779-788",
+  "doi": "10.1109/CVPR.2016.91"
+ },
+ "reimers2019": {
+  "type": "inproceedings",
+  "authors": "Reimers, N., & Gurevych, I.",
+  "year": 2019,
+  "title": "Sentence-BERT: Sentence embeddings using Siamese BERT-networks",
+  "venue": "Proceedings of EMNLP-IJCNLP 2019",
+  "pages": "3982-3992",
+  "doi": "10.18653/v1/D19-1410"
+ },
+ "reinelt1991": {
+  "type": "article",
+  "authors": "Reinelt, G.",
+  "year": 1991,
+  "title": "TSPLIB: A traveling salesman problem library",
+  "venue": "ORSA Journal on Computing",
+  "volume": "3",
+  "issue": "4",
+  "pages": "376-384",
+  "doi": "10.1287/ijoc.3.4.376"
+ },
+ "reynolds1987": {
+  "type": "article",
+  "authors": "Reynolds, C. W.",
+  "year": 1987,
+  "title": "Flocks, herds and schools: A distributed behavioral model",
+  "venue": "ACM SIGGRAPH Computer Graphics",
+  "volume": "21",
+  "issue": "4",
+  "pages": "25-34",
+  "doi": "10.1145/37402.37406"
+ },
+ "rombach2022": {
+  "type": "inproceedings",
+  "authors": "Rombach, R., Blattmann, A., Lorenz, D., Esser, P., & Ommer, B.",
+  "year": 2022,
+  "title": "High-resolution image synthesis with latent diffusion models",
+  "venue": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+  "pages": "10684-10695",
+  "doi": "10.1109/CVPR52688.2022.01042"
+ },
+ "ronneberger2015": {
+  "type": "inproceedings",
+  "authors": "Ronneberger, O., Fischer, P., & Brox, T.",
+  "year": 2015,
+  "title": "U-Net: Convolutional networks for biomedical image segmentation",
+  "venue": "Medical Image Computing and Computer-Assisted Intervention (MICCAI 2015), LNCS 9351",
+  "pages": "234-241",
+  "doi": "10.1007/978-3-319-24574-4_28",
+  "publisher": "Springer"
+ },
+ "rosenblatt1958": {
+  "type": "article",
+  "authors": "Rosenblatt, F.",
+  "year": 1958,
+  "title": "The perceptron: A probabilistic model for information storage and organization in the brain",
+  "venue": "Psychological Review",
+  "volume": "65",
+  "issue": "6",
+  "pages": "386-408",
+  "doi": "10.1037/h0042519"
+ },
+ "ross2017": {
+  "type": "book",
+  "authors": "Ross, T. J.",
+  "year": 2017,
+  "title": "Fuzzy Logic with Engineering Applications",
+  "publisher": "Wiley",
+  "edition": "4th ed."
+ },
+ "rousseeuw1987": {
+  "type": "article",
+  "authors": "Rousseeuw, P. J.",
+  "year": 1987,
+  "title": "Silhouettes: A graphical aid to the interpretation and validation of cluster analysis",
+  "venue": "Journal of Computational and Applied Mathematics",
+  "volume": "20",
+  "pages": "53-65",
+  "doi": "10.1016/0377-0427(87)90125-7"
+ },
+ "rumelhart1986": {
+  "type": "article",
+  "authors": "Rumelhart, D. E., Hinton, G. E., & Williams, R. J.",
+  "year": 1986,
+  "title": "Learning representations by back-propagating errors",
+  "venue": "Nature",
+  "volume": "323",
+  "issue": "6088",
+  "pages": "533-536",
+  "doi": "10.1038/323533a0"
+ },
+ "russell2021": {
+  "type": "book",
+  "authors": "Russell, S., & Norvig, P.",
+  "year": 2021,
+  "title": "Artificial Intelligence: A Modern Approach",
+  "publisher": "Pearson",
+  "edition": "4th ed."
+ },
+ "saito2015": {
+  "type": "article",
+  "authors": "Saito, T., & Rehmsmeier, M.",
+  "year": 2015,
+  "title": "The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets",
+  "venue": "PLOS ONE",
+  "volume": "10",
+  "issue": "3",
+  "pages": "e0118432",
+  "doi": "10.1371/journal.pone.0118432"
+ },
+ "salehi2018": {
+  "type": "article",
+  "authors": "Salehi, H., & Burgueño, R.",
+  "year": 2018,
+  "title": "Emerging artificial intelligence methods in structural engineering",
+  "venue": "Engineering Structures",
+  "volume": "171",
+  "pages": "170-189",
+  "doi": "10.1016/j.engstruct.2018.05.084"
+ },
+ "samuel1959": {
+  "type": "article",
+  "authors": "Samuel, A. L.",
+  "year": 1959,
+  "title": "Some studies in machine learning using the game of checkers",
+  "venue": "IBM Journal of Research and Development",
+  "volume": "3",
+  "issue": "3",
+  "pages": "210-229",
+  "doi": "10.1147/rd.33.0210"
+ },
+ "saxena2008": {
+  "type": "inproceedings",
+  "authors": "Saxena, A., Goebel, K., Simon, D., & Eklund, N.",
+  "year": 2008,
+  "title": "Damage propagation modeling for aircraft engine run-to-failure simulation",
+  "venue": "2008 International Conference on Prognostics and Health Management",
+  "pages": "1-9",
+  "doi": "10.1109/PHM.2008.4711414",
+  "publisher": "IEEE"
+ },
+ "selvaraju2017": {
+  "type": "inproceedings",
+  "authors": "Selvaraju, R. R., Cogswell, M., Das, A., Vedantam, R., Parikh, D., & Batra, D.",
+  "year": 2017,
+  "title": "Grad-CAM: Visual explanations from deep networks via gradient-based localization",
+  "venue": "2017 IEEE International Conference on Computer Vision (ICCV)",
+  "pages": "618-626",
+  "doi": "10.1109/ICCV.2017.74"
+ },
+ "sennrich2016": {
+  "type": "inproceedings",
+  "authors": "Sennrich, R., Haddow, B., & Birch, A.",
+  "year": 2016,
+  "title": "Neural machine translation of rare words with subword units",
+  "venue": "Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics",
+  "pages": "1715-1725",
+  "doi": "10.18653/v1/P16-1162"
+ },
+ "shi1998": {
+  "type": "inproceedings",
+  "authors": "Shi, Y., & Eberhart, R.",
+  "year": 1998,
+  "title": "A modified particle swarm optimizer",
+  "venue": "1998 IEEE International Conference on Evolutionary Computation Proceedings",
+  "pages": "69-73",
+  "doi": "10.1109/ICEC.1998.699146",
+  "publisher": "IEEE"
+ },
+ "sikora2010": {
+  "type": "article",
+  "authors": "Sikora, M., & Wróbel, Ł.",
+  "year": 2010,
+  "title": "Application of rule induction algorithms for analysis of data collected by seismic hazard monitoring systems in coal mines",
+  "venue": "Archives of Mining Sciences",
+  "volume": "55",
+  "issue": "1",
+  "pages": "91-114"
+ },
+ "sikora2010data": {
+  "type": "dataset",
+  "authors": "Sikora, M., & Wróbel, Ł.",
+  "year": 2010,
+  "title": "seismic-bumps [Dataset]. UCI Machine Learning Repository, ID 266",
+  "doi": "10.24432/C5W902"
+ },
+ "silver2016": {
+  "type": "article",
+  "authors": "Silver, D., Huang, A., Maddison, C. J., et al.",
+  "year": 2016,
+  "title": "Mastering the game of Go with deep neural networks and tree search",
+  "venue": "Nature",
+  "volume": "529",
+  "issue": "7587",
+  "pages": "484-489",
+  "doi": "10.1038/nature16961"
+ },
+ "simonyan2015": {
+  "type": "inproceedings",
+  "authors": "Simonyan, K., & Zisserman, A.",
+  "year": 2015,
+  "title": "Very deep convolutional networks for large-scale image recognition",
+  "venue": "3rd International Conference on Learning Representations (ICLR 2015)",
+  "arxiv": "1409.1556"
+ },
+ "skfuzzy": {
+  "type": "software",
+  "authors": "The scikit-fuzzy developers",
+  "year": 2026,
+  "title": "scikit-fuzzy: Fuzzy logic toolkit for SciPy [Python package]",
+  "url": "https://github.com/scikit-fuzzy/scikit-fuzzy"
+ },
+ "smith2015": {
+  "type": "article",
+  "authors": "Smith, W. A., & Randall, R. B.",
+  "year": 2015,
+  "title": "Rolling element bearing diagnostics using the Case Western Reserve University data: A benchmark study",
+  "venue": "Mechanical Systems and Signal Processing",
+  "volume": "64-65",
+  "pages": "100-131",
+  "doi": "10.1016/j.ymssp.2015.04.021"
+ },
+ "song2013": {
+  "type": "article",
+  "authors": "Song, K., & Yan, Y.",
+  "year": 2013,
+  "title": "A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects",
+  "venue": "Applied Surface Science",
+  "volume": "285",
+  "pages": "858-864",
+  "doi": "10.1016/j.apsusc.2013.09.002"
+ },
+ "sorensen2015": {
+  "type": "article",
+  "authors": "Sörensen, K.",
+  "year": 2015,
+  "title": "Metaheuristics: The metaphor exposed",
+  "venue": "International Transactions in Operational Research",
+  "volume": "22",
+  "issue": "1",
+  "pages": "3-18",
+  "doi": "10.1111/itor.12001"
+ },
+ "srivastava2014": {
+  "type": "article",
+  "authors": "Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., & Salakhutdinov, R.",
+  "year": 2014,
+  "title": "Dropout: A simple way to prevent neural networks from overfitting",
+  "venue": "Journal of Machine Learning Research",
+  "volume": "15",
+  "issue": "56",
+  "pages": "1929-1958"
+ },
+ "stallkamp2012": {
+  "type": "article",
+  "authors": "Stallkamp, J., Schlipsing, M., Salmen, J., & Igel, C.",
+  "year": 2012,
+  "title": "Man vs. computer: Benchmarking machine learning algorithms for traffic sign recognition",
+  "venue": "Neural Networks",
+  "volume": "32",
+  "pages": "323-332",
+  "doi": "10.1016/j.neunet.2012.02.016"
+ },
+ "storn1997": {
+  "type": "article",
+  "authors": "Storn, R., & Price, K.",
+  "year": 1997,
+  "title": "Differential evolution: A simple and efficient heuristic for global optimization over continuous spaces",
+  "venue": "Journal of Global Optimization",
+  "volume": "11",
+  "issue": "4",
+  "pages": "341-359",
+  "doi": "10.1023/A:1008202821328"
+ },
+ "strubell2019": {
+  "type": "inproceedings",
+  "authors": "Strubell, E., Ganesh, A., & McCallum, A.",
+  "year": 2019,
+  "title": "Energy and policy considerations for deep learning in NLP",
+  "venue": "Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics",
+  "pages": "3645-3650",
+  "doi": "10.18653/v1/P19-1355"
+ },
+ "sutton2018": {
+  "type": "book",
+  "authors": "Sutton, R. S., & Barto, A. G.",
+  "year": 2018,
+  "title": "Reinforcement Learning: An Introduction",
+  "publisher": "MIT Press",
+  "edition": "2nd ed."
+ },
+ "takagi1985": {
+  "type": "article",
+  "authors": "Takagi, T., & Sugeno, M.",
+  "year": 1985,
+  "title": "Fuzzy identification of systems and its applications to modeling and control",
+  "venue": "IEEE Transactions on Systems, Man, and Cybernetics",
+  "volume": "SMC-15",
+  "issue": "1",
+  "pages": "116-132",
+  "doi": "10.1109/TSMC.1985.6313399"
+ },
+ "tao2019": {
+  "type": "article",
+  "authors": "Tao, F., Zhang, H., Liu, A., & Nee, A. Y. C.",
+  "year": 2019,
+  "title": "Digital twin in industry: State-of-the-art",
+  "venue": "IEEE Transactions on Industrial Informatics",
+  "volume": "15",
+  "issue": "4",
+  "pages": "2405-2415",
+  "doi": "10.1109/TII.2018.2873186"
+ },
+ "tibshirani1996": {
+  "type": "article",
+  "authors": "Tibshirani, R.",
+  "year": 1996,
+  "title": "Regression shrinkage and selection via the lasso",
+  "venue": "Journal of the Royal Statistical Society: Series B (Methodological)",
+  "volume": "58",
+  "issue": "1",
+  "pages": "267-288",
+  "doi": "10.1111/j.2517-6161.1996.tb02080.x"
+ },
+ "towers2024": {
+  "type": "arxiv",
+  "authors": "Towers, M., Kwiatkowski, A., Terry, J., et al.",
+  "year": 2024,
+  "title": "Gymnasium: A standard interface for reinforcement learning environments",
+  "arxiv": "2407.17032"
+ },
+ "tr2021strategy": {
+  "type": "report",
+  "authors": "Presidency of the Republic of Türkiye Digital Transformation Office, & Ministry of Industry and Technology",
+  "year": 2021,
+  "title": "National Artificial Intelligence Strategy 2021-2025 (Ulusal Yapay Zekâ Stratejisi 2021-2025)",
+  "url": "https://www.cbddo.gov.tr/UYZS",
+  "publisher": "Ankara",
+  "note": "Action plan updated for 2024-2025"
+ },
+ "tsanas2012": {
+  "type": "article",
+  "authors": "Tsanas, A., & Xifara, A.",
+  "year": 2012,
+  "title": "Accurate quantitative estimation of energy performance of residential buildings using statistical machine learning tools",
+  "venue": "Energy and Buildings",
+  "volume": "49",
+  "pages": "560-567",
+  "doi": "10.1016/j.enbuild.2012.03.003"
+ },
+ "tufekci2014": {
+  "type": "article",
+  "authors": "Tüfekci, P.",
+  "year": 2014,
+  "title": "Prediction of full load electrical power output of a base load operated combined cycle power plant using machine learning methods",
+  "venue": "International Journal of Electrical Power & Energy Systems",
+  "volume": "60",
+  "pages": "126-140",
+  "doi": "10.1016/j.ijepes.2014.02.027"
+ },
+ "turing1950": {
+  "type": "article",
+  "authors": "Turing, A. M.",
+  "year": 1950,
+  "title": "Computing machinery and intelligence",
+  "venue": "Mind",
+  "volume": "59",
+  "issue": "236",
+  "pages": "433-460",
+  "doi": "10.1093/mind/LIX.236.433"
+ },
+ "uci": {
+  "type": "web",
+  "authors": "Kelly, M., Longjohn, R., & Nottingham, K.",
+  "year": 2026,
+  "title": "The UCI Machine Learning Repository",
+  "url": "https://archive.ics.uci.edu"
+ },
+ "usgs": {
+  "type": "web",
+  "authors": "U.S. Geological Survey",
+  "year": 2026,
+  "title": "Earthquake Catalog API (FDSN Event Web Service)",
+  "url": "https://earthquake.usgs.gov/fdsnws/event/1/"
+ },
+ "vaswani2017": {
+  "type": "inproceedings",
+  "authors": "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I.",
+  "year": 2017,
+  "title": "Attention is all you need",
+  "venue": "Advances in Neural Information Processing Systems 30",
+  "pages": "5998-6008",
+  "arxiv": "1706.03762"
+ },
+ "virtanen2020": {
+  "type": "article",
+  "authors": "Virtanen, P., Gommers, R., Oliphant, T. E., et al.",
+  "year": 2020,
+  "title": "SciPy 1.0: Fundamental algorithms for scientific computing in Python",
+  "venue": "Nature Methods",
+  "volume": "17",
+  "issue": "3",
+  "pages": "261-272",
+  "doi": "10.1038/s41592-019-0686-2"
+ },
+ "watkins1992": {
+  "type": "article",
+  "authors": "Watkins, C. J. C. H., & Dayan, P.",
+  "year": 1992,
+  "title": "Q-learning",
+  "venue": "Machine Learning",
+  "volume": "8",
+  "issue": "3-4",
+  "pages": "279-292",
+  "doi": "10.1007/BF00992698"
+ },
+ "wei2022": {
+  "type": "inproceedings",
+  "authors": "Wei, J., Wang, X., Schuurmans, D., et al.",
+  "year": 2022,
+  "title": "Chain-of-thought prompting elicits reasoning in large language models",
+  "venue": "Advances in Neural Information Processing Systems 35",
+  "pages": "24824-24837",
+  "arxiv": "2201.11903"
+ },
+ "wiener1961": {
+  "type": "book",
+  "authors": "Wiener, N.",
+  "year": 1961,
+  "title": "Cybernetics: Or Control and Communication in the Animal and the Machine",
+  "publisher": "MIT Press",
+  "edition": "2nd ed."
+ },
+ "wirth2000": {
+  "type": "inproceedings",
+  "authors": "Wirth, R., & Hipp, J.",
+  "year": 2000,
+  "title": "CRISP-DM: Towards a standard process model for data mining",
+  "venue": "Proceedings of the 4th International Conference on the Practical Applications of Knowledge Discovery and Data Mining",
+  "pages": "29-39"
+ },
+ "wolpert1997": {
+  "type": "article",
+  "authors": "Wolpert, D. H., & Macready, W. G.",
+  "year": 1997,
+  "title": "No free lunch theorems for optimization",
+  "venue": "IEEE Transactions on Evolutionary Computation",
+  "volume": "1",
+  "issue": "1",
+  "pages": "67-82",
+  "doi": "10.1109/4235.585893"
+ },
+ "wooldridge1995": {
+  "type": "article",
+  "authors": "Wooldridge, M., & Jennings, N. R.",
+  "year": 1995,
+  "title": "Intelligent agents: Theory and practice",
+  "venue": "The Knowledge Engineering Review",
+  "volume": "10",
+  "issue": "2",
+  "pages": "115-152",
+  "doi": "10.1017/S0269888900008122"
+ },
+ "wuest2016": {
+  "type": "article",
+  "authors": "Wuest, T., Weimer, D., Irgens, C., & Thoben, K.-D.",
+  "year": 2016,
+  "title": "Machine learning in manufacturing: Advantages, challenges, and applications",
+  "venue": "Production & Manufacturing Research",
+  "volume": "4",
+  "issue": "1",
+  "pages": "23-45",
+  "doi": "10.1080/21693277.2016.1192517"
+ },
+ "xiao2017": {
+  "type": "arxiv",
+  "authors": "Xiao, H., Rasul, K., & Vollgraf, R.",
+  "year": 2017,
+  "title": "Fashion-MNIST: A novel image dataset for benchmarking machine learning algorithms",
+  "arxiv": "1708.07747"
+ },
+ "yasunobu1985": {
+  "type": "incollection",
+  "authors": "Yasunobu, S., & Miyamoto, S.",
+  "year": 1985,
+  "title": "Automatic train operation system by predictive fuzzy control",
+  "venue": "Industrial Applications of Fuzzy Control (M. Sugeno, Ed.)",
+  "pages": "1-18",
+  "publisher": "North-Holland"
+ },
+ "yeh1998": {
+  "type": "article",
+  "authors": "Yeh, I.-C.",
+  "year": 1998,
+  "title": "Modeling of strength of high-performance concrete using artificial neural networks",
+  "venue": "Cement and Concrete Research",
+  "volume": "28",
+  "issue": "12",
+  "pages": "1797-1808",
+  "doi": "10.1016/S0008-8846(98)00165-3"
+ },
+ "yeh1998data": {
+  "type": "dataset",
+  "authors": "Yeh, I.-C.",
+  "year": 1998,
+  "title": "Concrete Compressive Strength [Dataset]. UCI Machine Learning Repository, ID 165",
+  "doi": "10.24432/C5PK67"
+ },
+ "yosinski2014": {
+  "type": "inproceedings",
+  "authors": "Yosinski, J., Clune, J., Bengio, Y., & Lipson, H.",
+  "year": 2014,
+  "title": "How transferable are features in deep neural networks?",
+  "venue": "Advances in Neural Information Processing Systems 27",
+  "pages": "3320-3328",
+  "arxiv": "1411.1792"
+ },
+ "zadeh1965": {
+  "type": "article",
+  "authors": "Zadeh, L. A.",
+  "year": 1965,
+  "title": "Fuzzy sets",
+  "venue": "Information and Control",
+  "volume": "8",
+  "issue": "3",
+  "pages": "338-353",
+  "doi": "10.1016/S0019-9958(65)90241-X"
+ },
+ "zadeh1973": {
+  "type": "article",
+  "authors": "Zadeh, L. A.",
+  "year": 1973,
+  "title": "Outline of a new approach to the analysis of complex systems and decision processes",
+  "venue": "IEEE Transactions on Systems, Man, and Cybernetics",
+  "volume": "SMC-3",
+  "issue": "1",
+  "pages": "28-44",
+  "doi": "10.1109/TSMC.1973.5408575"
+ }
+}

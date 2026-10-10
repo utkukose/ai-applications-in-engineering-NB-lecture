@@ -1,0 +1,671 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forecast workbench: Baselines, smoothing and honest evaluation | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+a.btn{display:inline-block;text-decoration:none}.next{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:6px;padding:2px 16px 12px;margin:2.2rem 0}.next h2,.pycorner h2{margin-top:.9rem}.next .btn,.pycorner .btn{margin:4px 6px 4px 0}.refs{margin-top:2rem}.calc{font-family:var(--mono);font-size:.84rem;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px 10px;margin:8px 0;white-space:pre-wrap;overflow-x:auto;line-height:1.55}.calc b{color:var(--accent)}.calc .hl{background:var(--band)}.calc.long{max-height:26rem;overflow-y:auto}.nin{display:flex;flex-direction:column;gap:2px;flex:0 1 190px;min-width:120px}.nin label{font-size:.86rem;color:var(--steel)}.nin input,.nin select{font:inherit;padding:.25rem .4rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);width:100%}.grid-in{display:grid;gap:4px}.grid-in input{width:100%;font:inherit;padding:.2rem;text-align:center;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--ink)}table.mini{width:auto;font-size:.86rem}table.mini td,table.mini th{padding:3px 8px;text-align:center}td.sel{background:var(--band);font-weight:700}</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 12 of 14: interactive lab</p><h1>Forecast workbench: Baselines, smoothing and honest evaluation</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-12/README.md">Week overview</a><a href="lecture.html">Lecture page</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-12/NB12_time_series_forecasting.ipynb">Colab notebook</a><a href="Week12_Lecture_Notes.pdf">PDF notes</a></nav></header>
+<p>Part A generates a monthly series with adjustable trend, seasonal amplitude, noise and an optional level shift, and compares naive, seasonal naive, moving average, trend-and-season regression and Holt-Winters exponential smoothing on a held-out final period <span class="cite" tabindex="0" data-refs="1">[1]</span>. Part B repeats the comparison over rolling origins and shows how the error grows with the horizon. Part C computes autocorrelations and differences, and Part D baselines with four error measures. Part E fits autoregressions by least squares and forecasts recursively, Part F runs exponential smoothing and Holt's method step by step, Part G unrolls a recurrent unit and an LSTM cell over a sequence, and Part H turns forecasts into intervals, quantiles and cost-optimal decisions <span class="cite" tabindex="0" data-refs="1,2,3,4,6">[1, 2, 3, 4, 6]</span>.</p><div class="tabs" role="tablist"><button aria-selected="true">Explore</button><button aria-selected="false">Check yourself</button><button aria-selected="false">Reflect and export</button></div><section class="tabpanel">
+<h2 id="part-a">Part A: One origin, five methods</h2>
+<div class="bench"><div class="row"><div class="ctl"><label for="f-m">Method</label><select id="f-m"><option value="naive">Naive</option><option value="snaive" selected>Seasonal naive</option><option value="ma">Moving average (12)</option><option value="reg">Trend and season regression</option><option value="hw">Holt-Winters (additive)</option></select></div></div>
+<div class="row" id="f-sl"></div><canvas class="paper" id="f-cv" aria-label="Series and forecast"></canvas><div class="legend" id="f-leg"></div><div id="f-ro"></div>
+<div class="tablewrap"><table id="f-tab"></table></div></div>
+<h2 id="part-b">Part B: Rolling origins</h2>
+<div class="bench"><p class="small">Twelve origins, each followed by a 12-month horizon. The chart shows the mean absolute error for every horizon step and method.</p><canvas class="paper" id="g-cv" aria-label="Error by horizon"></canvas><div class="legend" id="g-leg"></div></div>
+<h2 id="part-c">Part C: Autocorrelation and differences</h2>
+<p>The quarterly demand of the worked example is the default. The panel computes the mean, the sum of squared deviations and, for a chosen lag, every product of the numerator; the chart shows all autocorrelations with the band ±1.96/√T, and the first and seasonal differences appear below <span class="cite" tabindex="0" data-refs="1,3">[1, 3]</span>.</p>
+<div class="bench" id="w12c"><div class="row" id="w12c-ctl"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 300px;min-width:0"><canvas class="paper" id="w12c-cv" aria-label="Autocorrelation function"></canvas><div class="legend" id="w12c-leg"></div></div>
+<div style="flex:1 1 360px;min-width:0" id="w12c-calc"></div></div><div id="w12c-tab"></div></div>
+<h2 id="part-d">Part D: Baselines and four error measures</h2>
+<p>The last values of the series form the test period. Five baselines forecast it: naive, seasonal naive, seasonal naive with the mean yearly change of the training data, the drift method and the training mean. The table compares MAE, RMSE, MAPE and MASE, and the panel writes out the arithmetic for one method <span class="cite" tabindex="0" data-refs="1">[1]</span>.</p>
+<div class="bench" id="w12d"><div class="row" id="w12d-ctl"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 320px;min-width:0"><canvas class="paper" id="w12d-cv" aria-label="Series and baseline forecasts"></canvas><div class="legend" id="w12d-leg"></div></div>
+<div style="flex:1 1 380px;min-width:0" id="w12d-calc"></div></div><div id="w12d-tab"></div></div>
+<h2 id="part-e">Part E: Autoregression by least squares</h2>
+<p>An autoregression of order 1 is fitted with the sums of the worked example, or one of order 2 through the normal equations. The panel lists every recursive forecast with its terms, and the chart shows the fitted values and the forecasts approaching the mean <span class="cite" tabindex="0" data-refs="3">[3]</span>.</p>
+<div class="bench" id="w12e"><div class="row" id="w12e-ctl"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 320px;min-width:0"><canvas class="paper" id="w12e-cv" aria-label="Series, fitted values and forecasts"></canvas><div class="legend" id="w12e-leg"></div></div>
+<div style="flex:1 1 380px;min-width:0" id="w12e-calc"></div></div></div>
+<h2 id="part-f">Part F: Exponential smoothing step by step</h2>
+<p>Simple exponential smoothing or Holt's method runs through any series. The table gives the one-step forecast, the error, the new level and the new trend of every step, and the panel the forecasts and the sum of squared one-step errors, which a good choice of α and β makes small <span class="cite" tabindex="0" data-refs="1">[1]</span>.</p>
+<div class="bench" id="w12f"><div class="row" id="w12f-ctl"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 320px;min-width:0"><canvas class="paper" id="w12f-cv" aria-label="Series, levels and forecasts"></canvas><div class="legend" id="w12f-leg"></div></div>
+<div style="flex:1 1 380px;min-width:0" id="w12f-calc"></div></div><div id="w12f-tab"></div></div>
+<h2 id="part-g">Part G: A recurrent unit and an LSTM cell over a sequence</h2>
+<p>The first panel unrolls a simple recurrent unit and multiplies the derivatives from step to step, which shows the vanishing or exploding gradient. The second runs an LSTM cell, by default for the one step of the worked example; a longer input sequence shows how the cell state carries information while the forget gates stay close to 1 <span class="cite" tabindex="0" data-refs="2,4,5">[2, 4, 5]</span>.</p>
+<div class="bench" id="w12g"><h3 style="margin-top:0">A simple recurrent unit</h3><div class="row" id="w12g-r"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 300px;min-width:0"><canvas class="paper" id="w12g-rcv" aria-label="Hidden state and gradient of the recurrent unit"></canvas><div class="legend" id="w12g-rleg"></div></div><div style="flex:1 1 380px;min-width:0" id="w12g-rc"></div></div>
+<h3>An LSTM cell</h3><div class="row" id="w12g-l"></div><div class="row" id="w12g-lw"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 300px;min-width:0"><canvas class="paper" id="w12g-lcv" aria-label="States and gates of the LSTM cell"></canvas><div class="legend" id="w12g-lleg"></div></div><div style="flex:1 1 380px;min-width:0" id="w12g-lc"></div></div></div>
+<h2 id="part-h">Part H: Intervals, quantiles and decisions</h2>
+<p>The first panel widens a prediction interval with the square root of the horizon, the second scores quantile forecasts with the pinball loss, and the third finds the planned value that minimises the expected cost of shortfalls and surpluses for a normal forecast distribution <span class="cite" tabindex="0" data-refs="1,6">[1, 6]</span>.</p>
+<div class="bench" id="w12h"><h3 style="margin-top:0">Intervals that widen with the horizon</h3><div class="row" id="w12h-i"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 300px;min-width:0"><canvas class="paper" id="w12h-icv" aria-label="Forecast with prediction intervals"></canvas></div><div style="flex:1 1 380px;min-width:0" id="w12h-ic"></div></div>
+<h3>Pinball loss of quantile forecasts</h3><div class="row" id="w12h-q"></div><div id="w12h-qc"></div>
+<h3>The quantile that minimises the expected cost</h3><div class="row" id="w12h-c"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 300px;min-width:0"><canvas class="paper" id="w12h-ccv" aria-label="Expected cost of each planned value"></canvas></div><div style="flex:1 1 380px;min-width:0" id="w12h-cc"></div></div></div>
+</section><section class="tabpanel" hidden><p>Six questions with instant feedback. Rate your confidence before checking each answer.</p><div id="quiz"></div></section><section class="tabpanel" hidden><p>Answers are saved in this browser only. The export creates a Markdown learning log for your portfolio.</p><div id="reflect"></div><p class="small">After the export, continue with the <a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-12/README.md#discipline-challenges">discipline challenge</a> and the <a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-12/README.md#weekly-task">weekly task</a> in the week overview.</p></section>
+<section class="refs"><h2 id="references">References</h2><div class="small"><p>[1] Hyndman, R. J., &amp; Athanasopoulos, G. (2021). <i>Forecasting: Principles and Practice</i> (3rd ed.). OTexts. <a href="https://otexts.com/fpp3/">https://otexts.com/fpp3/</a></p><p>[2] Hochreiter, S., &amp; Schmidhuber, J. (1997). Long short-term memory. <i>Neural Computation</i>, <i>9</i>(8), 1735-1780. <a href="https://doi.org/10.1162/neco.1997.9.8.1735">https://doi.org/10.1162/neco.1997.9.8.1735</a></p><p>[3] Box, G. E. P., Jenkins, G. M., Reinsel, G. C., &amp; Ljung, G. M. (2015). <i>Time Series Analysis: Forecasting and Control</i> (5th ed.). Wiley.</p><p>[4] Elman, J. L. (1990). Finding structure in time. <i>Cognitive Science</i>, <i>14</i>(2), 179-211. <a href="https://doi.org/10.1207/s15516709cog1402_1">https://doi.org/10.1207/s15516709cog1402_1</a></p><p>[5] Bengio, Y., Simard, P., &amp; Frasconi, P. (1994). Learning long-term dependencies with gradient descent is difficult. <i>IEEE Transactions on Neural Networks</i>, <i>5</i>(2), 157-166. <a href="https://doi.org/10.1109/72.279181">https://doi.org/10.1109/72.279181</a></p><p>[6] Hong, T., Pinson, P., Fan, S., Zareipour, H., Troccoli, A., &amp; Hyndman, R. J. (2016). Probabilistic energy forecasting: Global Energy Forecasting Competition 2014 and beyond. <i>International Journal of Forecasting</i>, <i>32</i>(3), 896-913. <a href="https://doi.org/10.1016/j.ijforecast.2016.02.001">https://doi.org/10.1016/j.ijforecast.2016.02.001</a></p></div></section>
+<script type="application/json" id="refdata">{"1": "Hyndman, R. J., &amp; Athanasopoulos, G. (2021). <i>Forecasting: Principles and Practice</i> (3rd ed.). OTexts. <a href=\"https://otexts.com/fpp3/\">https://otexts.com/fpp3/</a>", "2": "Hochreiter, S., &amp; Schmidhuber, J. (1997). Long short-term memory. <i>Neural Computation</i>, <i>9</i>(8), 1735-1780. <a href=\"https://doi.org/10.1162/neco.1997.9.8.1735\">https://doi.org/10.1162/neco.1997.9.8.1735</a>", "3": "Box, G. E. P., Jenkins, G. M., Reinsel, G. C., &amp; Ljung, G. M. (2015). <i>Time Series Analysis: Forecasting and Control</i> (5th ed.). Wiley.", "4": "Elman, J. L. (1990). Finding structure in time. <i>Cognitive Science</i>, <i>14</i>(2), 179-211. <a href=\"https://doi.org/10.1207/s15516709cog1402_1\">https://doi.org/10.1207/s15516709cog1402_1</a>", "5": "Bengio, Y., Simard, P., &amp; Frasconi, P. (1994). Learning long-term dependencies with gradient descent is difficult. <i>IEEE Transactions on Neural Networks</i>, <i>5</i>(2), 157-166. <a href=\"https://doi.org/10.1109/72.279181\">https://doi.org/10.1109/72.279181</a>", "6": "Hong, T., Pinson, P., Fan, S., Zareipour, H., Troccoli, A., &amp; Hyndman, R. J. (2016). Probabilistic energy forecasting: Global Energy Forecasting Competition 2014 and beyond. <i>International Journal of Forecasting</i>, <i>32</i>(3), 896-913. <a href=\"https://doi.org/10.1016/j.ijforecast.2016.02.001\">https://doi.org/10.1016/j.ijforecast.2016.02.001</a>"}</script>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: October 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.keys(st).filter(i => st[i] && +i < n).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLab(12,"Learning from Sequences: Time Series, Forecasting and Recurrent Networks",[{"q": "What does the seasonal naive forecast predict for next July in a monthly series?", "options": ["The mean of the whole series", "The value of last July", "The value of last month", "Zero"], "answer": 1, "why": "It repeats the value from one season earlier [1]."}, {"q": "What is rolling-origin evaluation?", "options": ["Shuffling the data before each fold", "Training up to several successive origins and testing on the following horizon each time", "Testing on the training data", "Removing the seasonal component"], "answer": 1, "why": "It mimics repeated real forecasting and averages errors over origins."}, {"q": "A series has 500 values. How many windows of length 25 does sliding_window_view create?", "options": ["20", "475", "476", "500"], "answer": 2, "why": "N - L + 1 = 500 - 25 + 1 = 476."}, {"q": "In a recursive multi-step forecast, what is used as the lag input for step 3?", "options": ["The true observations of steps 1 and 2", "The model's own forecasts for steps 1 and 2", "Random numbers", "The seasonal mean"], "answer": 1, "why": "Future observations are unknown at the origin, so the model's forecasts replace them, and errors can accumulate."}, {"q": "Which gate of an LSTM decides how much of the previous cell state is kept?", "options": ["Input gate", "Forget gate", "Output gate", "Attention gate"], "answer": 1, "why": "The forget gate scales the previous cell state [2]."}, {"q": "In pandas, `s.shift(12)` on a monthly series returns", "options": ["the series moved forward by 12 months, so each row holds the value from a year earlier", "the 12 largest values", "a rolling mean over 12 months", "the series without the first 12 rows"], "answer": 0, "why": "shift moves values down by the given number of rows and fills the start with missing values."}],["Which series in your field would you like to forecast, at what horizon, and what decision would the forecast support?", "Did the LSTM beat the regression with Fourier terms on the carbon dioxide data? What does the answer say about model choice for small series?", "Where could a random split of time series data hide a leak in a project you know?"]);</script><script>(function(){
+const P={trend:0.15,amp:3,noise:0.6,shift:0,h:24,a:0.3,b:0.05,g:0.2}; let y=[];
+const sl=$('#f-sl');
+slider(sl,{label:'Trend per month',min:-0.1,max:0.5,step:0.01,value:P.trend},v=>{P.trend=v;gen();});
+slider(sl,{label:'Seasonal amplitude',min:0,max:8,step:0.2,value:P.amp},v=>{P.amp=v;gen();});
+slider(sl,{label:'Noise',min:0.1,max:3,step:0.1,value:P.noise},v=>{P.noise=v;gen();});
+slider(sl,{label:'Level shift in the last 30 months',min:-8,max:8,step:0.5,value:P.shift},v=>{P.shift=v;gen();});
+slider(sl,{label:'Holt-Winters alpha',min:0.05,max:0.95,step:0.05,value:P.a},v=>{P.a=v;upd();});
+slider(sl,{label:'Holt-Winters beta',min:0,max:0.5,step:0.01,value:P.b},v=>{P.b=v;upd();});
+slider(sl,{label:'Holt-Winters gamma',min:0,max:0.9,step:0.05,value:P.g},v=>{P.g=v;upd();});
+legend($('#f-leg'),[['observed (training)',0],['observed (test)',4],['forecast',1]]); const ro=readout($('#f-ro'),['test MAE','test RMSE']);
+const N=180, m=12;
+function gen(){ const r=RNG(31); y=[]; for(let t=0;t<N;t++) y.push(10+P.trend*t+P.amp*Math.sin(2*Math.PI*t/m)+P.noise*r.normal()+(t>=N-30?P.shift:0)); upd(); }
+function forecast(meth,tr,h){ const n=tr.length, out=[];
+  if(meth==='naive') for(let k=0;k<h;k++) out.push(tr[n-1]);
+  if(meth==='snaive') for(let k=0;k<h;k++) out.push(tr[n-m+(k%m)]);
+  if(meth==='ma'){ const v=tr.slice(-12).reduce((s,x)=>s+x,0)/12; for(let k=0;k<h;k++) out.push(v); }
+  if(meth==='reg'){ const X=[], Y=[]; for(let t=0;t<n;t++){ X.push([1,t/100,Math.sin(2*Math.PI*t/m),Math.cos(2*Math.PI*t/m),Math.sin(4*Math.PI*t/m),Math.cos(4*Math.PI*t/m)]); Y.push(tr[t]); }
+    const p=6, A=Array.from({length:p},()=>Array(p).fill(0)), b=Array(p).fill(0); X.forEach((x,i)=>{ for(let a=0;a<p;a++){ b[a]+=x[a]*Y[i]; for(let c=0;c<p;c++) A[a][c]+=x[a]*x[c]; } });
+    for(let i=0;i<p;i++){ let q=i; for(let rr=i+1;rr<p;rr++) if(Math.abs(A[rr][i])>Math.abs(A[q][i])) q=rr; [A[i],A[q]]=[A[q],A[i]]; [b[i],b[q]]=[b[q],b[i]]; for(let rr=i+1;rr<p;rr++){ const f=A[rr][i]/A[i][i]; for(let c=i;c<p;c++) A[rr][c]-=f*A[i][c]; b[rr]-=f*b[i]; } }
+    const w=Array(p).fill(0); for(let i=p-1;i>=0;i--){ let s=b[i]; for(let c=i+1;c<p;c++) s-=A[i][c]*w[c]; w[i]=s/A[i][i]; }
+    for(let k=0;k<h;k++){ const t=n+k; const x=[1,t/100,Math.sin(2*Math.PI*t/m),Math.cos(2*Math.PI*t/m),Math.sin(4*Math.PI*t/m),Math.cos(4*Math.PI*t/m)]; out.push(x.reduce((s,v,i)=>s+v*w[i],0)); } }
+  if(meth==='hw'){ let L=tr.slice(0,m).reduce((s,x)=>s+x,0)/m, B=(tr.slice(m,2*m).reduce((s,x)=>s+x,0)-tr.slice(0,m).reduce((s,x)=>s+x,0))/(m*m); const S=tr.slice(0,m).map(x=>x-L);
+    for(let t=m;t<n;t++){ const Lp=L; L=P.a*(tr[t]-S[t%m])+(1-P.a)*(L+B); B=P.b*(L-Lp)+(1-P.b)*B; S[t%m]=P.g*(tr[t]-L)+(1-P.g)*S[t%m]; }
+    for(let k=1;k<=h;k++) out.push(L+k*B+S[(n+k-1)%m]); }
+  return out; }
+let fc=[];
+function upd(){ const tr=y.slice(0,N-P.h), te=y.slice(N-P.h); fc=forecast($('#f-m').value,tr,P.h); const e=te.map((v,i)=>v-fc[i]);
+  ro('test MAE',(e.reduce((s,v)=>s+Math.abs(v),0)/e.length).toFixed(3)); ro('test RMSE',Math.sqrt(e.reduce((s,v)=>s+v*v,0)/e.length).toFixed(3));
+  const tb=$('#f-tab'); tb.innerHTML=''; tb.append(h('tr',{},h('th',{},'method'),h('th',{},'test MAE')));
+  ['naive','snaive','ma','reg','hw'].forEach(k=>{ const f=forecast(k,tr,P.h); const mae=te.reduce((s,v,i)=>s+Math.abs(v-f[i]),0)/te.length; tb.append(h('tr',{},h('td',{},$('#f-m').querySelector(`option[value=${k}]`).textContent),h('td',{},mae.toFixed(3)))); });
+  st.redraw(); roll(); }
+const st=stage($('#f-cv'),0.4,(c,w,h)=>{ c.clearRect(0,0,w,h); if(!y.length) return; const C=COL(); const all=[...y,...fc]; const f=frame(c,w,h,{x0:0,x1:N,y0:Math.min(...all)-1,y1:Math.max(...all)+1,xlabel:'month',ticks:9});
+  polyline(c,y.slice(0,N-P.h+1).map((v,i)=>[f.X(i),f.Y(v)]),C.c[0],1.5); polyline(c,y.slice(N-P.h).map((v,i)=>[f.X(N-P.h+i),f.Y(v)]),C.c[4],1.5); polyline(c,fc.map((v,i)=>[f.X(N-P.h+i),f.Y(v)]),C.c[1],2.2); });
+let RE=null;
+function roll(){ const methods=['naive','snaive','ma','reg','hw'], H=12, origins=[]; for(let k=0;k<12;k++) origins.push(N-H-k*6); const err={}; methods.forEach(mm=>err[mm]=Array(H).fill(0));
+  origins.forEach(o=>{ const tr=y.slice(0,o), te=y.slice(o,o+H); methods.forEach(mm=>{ const f=forecast(mm,tr,H); te.forEach((v,i)=>err[mm][i]+=Math.abs(v-f[i])/origins.length); }); }); RE=err; gs.redraw(); }
+legend($('#g-leg'),[['naive',0],['seasonal naive',1],['moving average',2],['regression',3],['Holt-Winters',4]]);
+const gs=stage($('#g-cv'),0.4,(c,w,h)=>{ c.clearRect(0,0,w,h); if(!RE) return; const C=COL(); const mx=Math.max(...Object.values(RE).flat())*1.05; const f=frame(c,w,h,{x0:1,x1:12,y0:0,y1:mx,xlabel:'horizon (months)',ylabel:'MAE',ticks:11});
+  Object.values(RE).forEach((e,i)=>polyline(c,e.map((v,k)=>[f.X(k+1),f.Y(v)]),C.c[i],2)); });
+$('#f-m').onchange=upd; gen();
+})();</script><script>(function(){
+var names=["explore","check","reflect"],tabs=document.querySelectorAll(".tabs button");
+tabs.forEach(function(b,i){b.addEventListener("click",function(){if(history.replaceState)history.replaceState(null,"","#"+names[i]);});});
+function go(){var i=names.indexOf(location.hash.slice(1));if(i<0||!tabs[i])return;tabs[i].click();document.querySelector(".tabs").scrollIntoView({block:"start"});}
+go();window.addEventListener("hashchange",go);
+var refs=JSON.parse((document.getElementById("refdata")||{textContent:"{}"}).textContent||"{}"),pop=null;
+document.addEventListener("click",function(e){var c=e.target.closest(".cite");if(pop){pop.remove();pop=null;}if(!c)return;
+pop=document.createElement("div");pop.className="pop";pop.setAttribute("role","note");
+c.dataset.refs.split(",").forEach(function(k){var p=document.createElement("p");p.innerHTML="["+k+"] "+(refs[k]||"");pop.append(p);});
+document.body.append(pop);var r=c.getBoundingClientRect();
+pop.style.left=Math.max(8,Math.min(window.scrollX+r.left,window.scrollX+document.documentElement.clientWidth-440))+"px";
+pop.style.top=(window.scrollY+r.bottom+6)+"px";});
+})();</script><script>/* Lab kit: number inputs, step-by-step calculation boxes and small tables. */
+const LK = {
+  f(x, d) { if (d === undefined) d = 4; if (!isFinite(x)) return String(x); let s = (Math.abs(x) < 0.5 * Math.pow(10, -d) ? 0 : x).toFixed(d);
+    if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, ''); if (s === '-0') s = '0'; return s.replace('-', '−'); },
+  p(x, d) { const s = LK.f(x, d); return s.charAt(0) === '−' ? '(' + s + ')' : s; },
+  num(parent, label, value, step, on, o) { o = o || {}; const inp = h('input', {type: 'number', value: value, step: step, 'aria-label': label});
+    if (o.min !== undefined) inp.min = o.min; if (o.max !== undefined) inp.max = o.max;
+    inp.addEventListener('input', () => { const v = parseFloat(inp.value); if (isFinite(v)) on(v); });
+    parent.append(h('div', {class: 'nin'}, h('label', {}, label), inp)); return inp; },
+  pick(parent, label, options, value, on) { const sel = h('select', {'aria-label': label}, options.map(([v, t]) => h('option', {value: v}, t)));
+    sel.value = value; sel.addEventListener('change', () => on(sel.value)); parent.append(h('div', {class: 'nin'}, h('label', {}, label), sel)); return sel; },
+  calc(parent, long) { const box = h('div', {class: long ? 'calc long' : 'calc', 'aria-live': 'polite'}); parent.append(box);
+    return {el: box, set(lines) { box.innerHTML = ''; lines.forEach(l => { const row = h('div', {}); if (Array.isArray(l)) { row.append(h('b', {}, l[0] + ' '), l[1]); } else row.append(l); box.append(row); });
+      if (long) box.scrollTop = box.scrollHeight; }}; },
+  table(parent, head, rows, cls) { const t = h('table', {class: 'mini ' + (cls || '')}, h('thead', {}, h('tr', {}, head.map(x => h('th', {}, x)))),
+    h('tbody', {}, rows.map(r => h('tr', {}, r.map(c => (c && c.nodeType) ? c : h('td', {}, c)))))); const wrap = h('div', {class: 'tablewrap'}, t);
+    parent.append(wrap); return wrap; }
+};
+
+(function(){
+const root=$('#w12c');
+const nums = t => t.trim().split(/[\s,;]+/).filter(v => v.length).map(v => Number(v.replace('−', '-'))).filter(isFinite);
+const R6 = v => +v.toFixed(6), f = LK.f, p = LK.p;
+const tk = n => [6, 5, 4, 3, 2].find(t => n % t === 0) || 1;
+const S = {txt: '52 40 45 60 56 43 48 64', K: 6, k: 4, m: 4}, ctl = $('#w12c-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'series'}); inp.addEventListener('input', () => { S.txt = inp.value; run(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 320px'}, h('label', {}, 'Series, oldest value first'), inp));
+LK.num(ctl, 'Largest lag', S.K, 1, v => { if (v >= 1 && v <= 40) { S.K = Math.round(v); run(); } }, {min: 1, max: 40});
+LK.num(ctl, 'Lag to write out', S.k, 1, v => { if (v >= 1) { S.k = Math.round(v); run(); } }, {min: 1});
+LK.num(ctl, 'Season m', S.m, 1, v => { if (v >= 1) { S.m = Math.round(v); run(); } }, {min: 1});
+legend($('#w12c-leg', root), [['autocorrelation r_k', 0], ['band ±1.96/√T', 1]]);
+const calc = LK.calc($('#w12c-calc', root));
+let rk = [], band = 0;
+function run() { const y = nums(S.txt), n = y.length, tb = $('#w12c-tab', root); tb.innerHTML = '';
+  if (n < 3) { calc.set([['Series:', 'enter at least three values']]); rk = []; cv.redraw(); return; }
+  const mean = R6(y.reduce((a, v) => a + v, 0) / n), d = y.map(v => R6(v - mean)), den = R6(d.reduce((a, v) => a + v * v, 0)), K = Math.min(S.K, n - 1), k = Math.min(S.k, n - 1);
+  rk = []; for (let L = 1; L <= K; L++) { let s = 0; for (let t = L; t < n; t++) s += d[t] * d[t - L]; rk.push(R6(R6(s) / den)); }
+  band = R6(1.96 / Math.sqrt(n)); const pr = []; for (let t = k; t < n; t++) pr.push(R6(d[t] * d[t - k])); const num = R6(pr.reduce((a, v) => a + v, 0));
+  const sd = []; for (let t = S.m; t < n; t++) sd.push(R6(y[t] - y[t - S.m])); const fd = []; for (let t = 1; t < n; t++) fd.push(R6(y[t] - y[t - 1]));
+  calc.set([['Mean:', '(' + y.map(v => f(v, 6)).join(' + ') + ')/' + n + ' = ' + f(mean, 6)], ['Squared deviations:', d.map(v => '(' + f(v, 6) + ')²').join(' + ') + ' = ' + f(den, 6)],
+    ['Lag ' + k + ':', 'products ' + pr.map(v => f(v, 6)).join(', ') + '; sum ' + f(num, 6) + ', r' + k + ' = ' + f(num, 6) + '/' + f(den, 6) + ' = ' + f(rk[k - 1], 6)],
+    ['Band:', '±1.96/√' + n + ' = ±' + f(band, 6) + '; lags outside it: ' + (rk.map((r, i) => Math.abs(r) > band ? String(i + 1) : '').filter(Boolean).join(', ') || 'none')],
+    ['First differences:', fd.map(v => f(v, 6)).join(', ')], ['Seasonal differences, m = ' + S.m + ':', sd.length ? sd.map(v => f(v, 6)).join(', ') + ', with the mean ' + f(R6(sd.reduce((a, v) => a + v, 0) / sd.length), 6) : 'the series is shorter than one season']]);
+  LK.table(tb, ['t', 'y_t', 'd_t', 'd_t²', 'd_t d_(t−' + k + ')'], y.map((v, t) => [t + 1, f(v, 6), f(d[t], 6), f(R6(d[t] * d[t]), 6), t >= k ? f(R6(d[t] * d[t - k]), 6) : '']));
+  cv.redraw(); }
+const cv = stage($('#w12c-cv', root), 0.55, (c, W, H) => { c.clearRect(0, 0, W, H); if (!rk.length) return; const C = COL(), K = rk.length, top = Math.ceil(K / 5) * 5 || 5;
+  const fr = frame(c, W, H, {x0: 0, x1: top, y0: -1, y1: 1, xlabel: 'lag k', ylabel: 'r_k', ticks: 5});
+  polyline(c, [[fr.X(0), fr.Y(0)], [fr.X(top), fr.Y(0)]], C.line, 1); [band, -band].forEach(b => polyline(c, [[fr.X(0), fr.Y(b)], [fr.X(top), fr.Y(b)]], C.c[1], 1.2, [5, 4]));
+  const bw = Math.max(3, (fr.X(1) - fr.X(0)) * 0.4); rk.forEach((r, i) => { c.fillStyle = C.c[0]; const y0 = fr.Y(0), y1 = fr.Y(r); c.fillRect(fr.X(i + 1) - bw / 2, Math.min(y0, y1), bw, Math.abs(y1 - y0)); }); });
+run();
+
+})();
+(function(){
+const root=$('#w12d');
+const nums = t => t.trim().split(/[\s,;]+/).filter(v => v.length).map(v => Number(v.replace('−', '-'))).filter(isFinite);
+const R6 = v => +v.toFixed(6), f = LK.f, p = LK.p;
+const tk = n => [6, 5, 4, 3, 2].find(t => n % t === 0) || 1;
+const S = {txt: '52 40 45 60 56 43 48 64 59 47 51 68', h: 4, m: 4, show: 'naive'}, ctl = $('#w12d-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'series'}); inp.addEventListener('input', () => { S.txt = inp.value; run(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 340px'}, h('label', {}, 'Series, the last values form the test period'), inp));
+LK.num(ctl, 'Test values', S.h, 1, v => { if (v >= 1) { S.h = Math.round(v); run(); } }, {min: 1});
+LK.num(ctl, 'Season m', S.m, 1, v => { if (v >= 1) { S.m = Math.round(v); run(); } }, {min: 1});
+const NM = {naive: 'naive', snaive: 'seasonal naive', sdrift: 'seasonal naive with drift', drift: 'drift', mean: 'mean'};
+LK.pick(ctl, 'Write out the measures of', Object.entries(NM), S.show, v => { S.show = v; run(); });
+legend($('#w12d-leg', root), [['training', 'var(--steel)'], ['test', 'var(--ink)'], ['naive', 0], ['seasonal naive', 1], ['with drift', 2], ['drift', 3], ['mean', 4]]);
+const calc = LK.calc($('#w12d-calc', root));
+let st = null;
+function run() { const y = nums(S.txt), H = S.h, m = S.m, T = y.length - H, tb = $('#w12d-tab', root); tb.innerHTML = '';
+  if (T < Math.max(2, m + 1) || H < 1) { calc.set([['Series:', 'the training part needs more than one season']]); st = null; cv.redraw(); return; }
+  const tr = y.slice(0, T), te = y.slice(T), sdiff = []; for (let t = m; t < T; t++) sdiff.push(Math.abs(tr[t] - tr[t - m]));
+  const scale = R6(sdiff.reduce((a, v) => a + v, 0) / sdiff.length), sgn = []; for (let t = m; t < T; t++) sgn.push(tr[t] - tr[t - m]); const gr = R6(sgn.reduce((a, v) => a + v, 0) / sgn.length);
+  const sl = R6((tr[T - 1] - tr[0]) / (T - 1)), mean = R6(tr.reduce((a, v) => a + v, 0) / T);
+  const FC = {naive: te.map(() => tr[T - 1]), snaive: te.map((v, i) => tr[T - m + (i % m)]), sdrift: te.map((v, i) => R6(tr[T - m + (i % m)] + gr * (Math.floor(i / m) + 1))), drift: te.map((v, i) => R6(tr[T - 1] + (i + 1) * sl)), mean: te.map(() => mean)};
+  const M = {}; Object.keys(FC).forEach(k => { const e = te.map((v, i) => R6(v - FC[k][i])), ae = e.map(Math.abs), mae = R6(ae.reduce((a, v) => a + v, 0) / H), mse = R6(e.reduce((a, v) => a + v * v, 0) / H);
+    const ape = e.map((v, i) => R6(Math.abs(v) / Math.abs(te[i]))), mape = R6(100 / H * R6(ape.reduce((a, v) => a + v, 0)));
+    M[k] = {e, mae, mse, rmse: R6(Math.sqrt(mse)), ape, mape, mase: R6(mae / scale)}; });
+  st = {y, T, FC};
+  const k = S.show, q = M[k];
+  calc.set([['Training:', T + ' values; seasonal differences ' + sgn.map(v => f(v, 6)).join(', ') + ' with the mean ' + f(gr, 6) + '; their absolute values have the mean ' + f(scale, 6) + ', the scale of MASE'],
+    ['Forecasts, ' + NM[k] + ':', FC[k].map(v => f(v, 6)).join(', ') + (k === 'drift' ? ' (slope (' + f(tr[T - 1]) + ' − ' + p(tr[0]) + ')/' + (T - 1) + ' = ' + f(sl, 6) + ')' : k === 'mean' ? ' (training mean)' : '')],
+    ['Errors:', q.e.map(v => f(v, 6)).join(', ')], ['MAE:', '(' + q.e.map(v => f(Math.abs(v), 6)).join(' + ') + ')/' + H + ' = ' + f(q.mae, 6)],
+    ['RMSE:', '√((' + q.e.map(v => f(R6(v * v), 6)).join(' + ') + ')/' + H + ') = √' + f(q.mse, 6) + ' = ' + f(q.rmse, 6)],
+    ['MAPE:', '100/' + H + ' × (' + q.ape.map(v => f(v, 6)).join(' + ') + ') = ' + f(q.mape, 6) + '%'], ['MASE:', f(q.mae, 6) + '/' + f(scale, 6) + ' = ' + f(q.mase, 6)]]);
+  LK.table(tb, ['method', 'forecasts', 'MAE', 'RMSE', 'MAPE (%)', 'MASE'], Object.keys(FC).map(k2 => [NM[k2], FC[k2].map(v => f(v, 4)).join(', '), f(M[k2].mae, 4), f(M[k2].rmse, 4), f(M[k2].mape, 4), f(M[k2].mase, 4)]));
+  cv.redraw(); }
+const cv = stage($('#w12d-cv', root), 0.55, (c, W, H) => { c.clearRect(0, 0, W, H); if (!st) return; const C = COL(), n = st.y.length, all = st.y.concat(...Object.values(st.FC)), lo = Math.min(...all), hi = Math.max(...all), pad = 0.1 * (hi - lo || 1);
+  const fr = frame(c, W, H, {x0: 0, x1: n, y0: lo - pad, y1: hi + pad, xlabel: 't', ylabel: 'y', ticks: tk(n)});
+  polyline(c, st.y.slice(0, st.T).map((v, i) => [fr.X(i + 1), fr.Y(v)]), C.steel, 2); polyline(c, st.y.slice(st.T - 1).map((v, i) => [fr.X(st.T + i), fr.Y(v)]), C.ink, 2);
+  Object.values(st.FC).forEach((F, j) => polyline(c, F.map((v, i) => [fr.X(st.T + 1 + i), fr.Y(v)]), C.c[j], 1.8, [5, 3])); });
+run();
+
+})();
+(function(){
+const root=$('#w12e');
+const nums = t => t.trim().split(/[\s,;]+/).filter(v => v.length).map(v => Number(v.replace('−', '-'))).filter(isFinite);
+const R6 = v => +v.toFixed(6), f = LK.f, p = LK.p;
+const tk = n => [6, 5, 4, 3, 2].find(t => n % t === 0) || 1;
+const S = {txt: '20 23 22 25 24 26 25', p: 1, h: 3}, ctl = $('#w12e-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'series'}); inp.addEventListener('input', () => { S.txt = inp.value; run(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 320px'}, h('label', {}, 'Series, oldest value first'), inp));
+LK.pick(ctl, 'Order p', [['1', '1'], ['2', '2']], '1', v => { S.p = +v; run(); });
+LK.num(ctl, 'Forecast steps', S.h, 1, v => { if (v >= 1 && v <= 50) { S.h = Math.round(v); run(); } }, {min: 1, max: 50});
+legend($('#w12e-leg', root), [['series', 0], ['fitted one step ahead', 2], ['recursive forecasts', 1], ['mean μ', 'var(--steel)']]);
+const calc = LK.calc($('#w12e-calc', root));
+let st = null;
+function solve(A, b) { const n = b.length, M = A.map((r, i) => r.concat([b[i]]));
+  for (let i = 0; i < n; i++) { let q = i; for (let r = i + 1; r < n; r++) if (Math.abs(M[r][i]) > Math.abs(M[q][i])) q = r; [M[i], M[q]] = [M[q], M[i]]; if (Math.abs(M[i][i]) < 1e-12) return null;
+    for (let r = i + 1; r < n; r++) { const fct = M[r][i] / M[i][i]; for (let c = i; c <= n; c++) M[r][c] -= fct * M[i][c]; } }
+  const x = new Array(n).fill(0); for (let i = n - 1; i >= 0; i--) { let s = M[i][n]; for (let c = i + 1; c < n; c++) s -= M[i][c] * x[c]; x[i] = s / M[i][i]; } return x; }
+function run() { const y = nums(S.txt), P = S.p, n = y.length - P;
+  if (n < P + 2) { calc.set([['Series:', 'enter more values for this order']]); st = null; cv.redraw(); return; }
+  const L = []; let c, ph;
+  if (P === 1) { const xs = y.slice(0, -1), ys = y.slice(1), sx = xs.reduce((a, v) => a + v, 0), sy = ys.reduce((a, v) => a + v, 0), sxy = xs.reduce((a, v, i) => a + v * ys[i], 0), sxx = xs.reduce((a, v) => a + v * v, 0);
+    const Sxy = sxy - sx * sy / n, Sxx = sxx - sx * sx / n; if (Math.abs(Sxx) < 1e-12) { calc.set([['Series:', 'the lagged values do not vary']]); st = null; cv.redraw(); return; }
+    ph = [Sxy / Sxx]; c = sy / n - ph[0] * sx / n;
+    L.push(['Pairs:', n + ' pairs (y_t−1, y_t); Σx = ' + f(sx, 6) + ', Σy = ' + f(sy, 6) + ', Σx² = ' + f(sxx, 6) + ', Σxy = ' + f(sxy, 6)]);
+    L.push(['Least squares:', 'Sxy = ' + f(sxy, 6) + ' − ' + f(sx, 6) + ' × ' + f(sy, 6) + '/' + n + ' = ' + f(Sxy, 6) + ', Sxx = ' + f(sxx, 6) + ' − ' + f(sx, 6) + '²/' + n + ' = ' + f(Sxx, 6)]);
+    L.push(['Coefficients:', 'φ = ' + f(Sxy, 6) + '/' + f(Sxx, 6) + ' = ' + f(ph[0], 10) + ', c = ' + f(sy, 6) + '/' + n + ' − ' + f(ph[0], 10) + ' × ' + f(sx, 6) + '/' + n + ' = ' + f(c, 6) + ', both used without rounding']); }
+  else { const X = [], Yv = []; for (let t = 2; t < y.length; t++) { X.push([1, y[t - 1], y[t - 2]]); Yv.push(y[t]); }
+    const A = [0, 1, 2].map(i => [0, 1, 2].map(j => X.reduce((a, r) => a + r[i] * r[j], 0))), b = [0, 1, 2].map(i => X.reduce((a, r, k) => a + r[i] * Yv[k], 0)), sol = solve(A, b);
+    if (!sol) { calc.set([['Series:', 'the normal equations are singular']]); st = null; cv.redraw(); return; } c = sol[0]; ph = [sol[1], sol[2]];
+    L.push(['Normal equations:', 'rows [' + A.map((r, i) => r.map(v => f(v, 6)).join(', ') + ' | ' + f(b[i], 6)).join('], [') + '] for (c, φ1, φ2)']);
+    L.push(['Coefficients:', 'c = ' + f(c, 10) + ', φ1 = ' + f(ph[0], 10) + ', φ2 = ' + f(ph[1], 10)]); }
+  const hist = y.slice(), fc = [];
+  for (let k = 1; k <= S.h; k++) { const lags = ph.map((q, j) => hist[hist.length - 1 - j]), terms = ph.map((q, j) => R6(q * lags[j])), v = R6(c + terms.reduce((a, t) => a + t, 0));
+    if (k <= 6) L.push(['Step ' + k + ':', 'ŷ = ' + f(c, 6) + ph.map((q, j) => ' + ' + p(q, 10) + ' × ' + p(lags[j], 6)).join('') + ' = ' + f(c, 6) + terms.map(t => (t < 0 ? ' − ' + f(-t, 6) : ' + ' + f(t, 6))).join('') + ' = ' + f(v, 6)]);
+    hist.push(v); fc.push(v); }
+  const sphi = ph.reduce((a, v) => a + v, 0), mu = Math.abs(1 - sphi) > 1e-9 ? R6(c / (1 - sphi)) : NaN;
+  L.push(['Mean:', isFinite(mu) ? 'μ = ' + f(c, 6) + '/(1 − ' + f(sphi, 10) + ') = ' + f(mu, 6) + (Math.abs(sphi) < 1 ? ', which the forecasts approach' : '; the coefficients sum to 1 or more, so the forecasts do not settle') : 'not defined']);
+  const fit = y.map((v, t) => t < P ? null : R6(c + ph.reduce((a, q, j) => a + q * y[t - 1 - j], 0)));
+  st = {y, fc, fit, mu}; calc.set(L); cv.redraw(); }
+const cv = stage($('#w12e-cv', root), 0.55, (c, W, H) => { c.clearRect(0, 0, W, H); if (!st) return; const C = COL(), n = st.y.length, all = st.y.concat(st.fc, isFinite(st.mu) ? [st.mu] : []), lo = Math.min(...all), hi = Math.max(...all), pad = 0.1 * (hi - lo || 1);
+  const N = n + st.fc.length, fr = frame(c, W, H, {x0: 0, x1: N, y0: lo - pad, y1: hi + pad, xlabel: 't', ylabel: 'y', ticks: tk(N)});
+  if (isFinite(st.mu)) polyline(c, [[fr.X(1), fr.Y(st.mu)], [fr.X(N), fr.Y(st.mu)]], C.steel, 1, [4, 4]);
+  polyline(c, st.y.map((v, i) => [fr.X(i + 1), fr.Y(v)]), C.c[0], 2); st.y.forEach((v, i) => dot(c, fr.X(i + 1), fr.Y(v), 3, C.c[0]));
+  const fp = st.fit.map((v, i) => v === null ? null : [fr.X(i + 1), fr.Y(v)]).filter(Boolean); polyline(c, fp, C.c[2], 1.5, [4, 3]);
+  polyline(c, [[fr.X(n), fr.Y(st.y[n - 1])]].concat(st.fc.map((v, i) => [fr.X(n + 1 + i), fr.Y(v)])), C.c[1], 2); st.fc.forEach((v, i) => dot(c, fr.X(n + 1 + i), fr.Y(v), 3, C.c[1])); });
+run();
+
+})();
+(function(){
+const root=$('#w12f');
+const nums = t => t.trim().split(/[\s,;]+/).filter(v => v.length).map(v => Number(v.replace('−', '-'))).filter(isFinite);
+const R6 = v => +v.toFixed(6), f = LK.f, p = LK.p;
+const tk = n => [6, 5, 4, 3, 2].find(t => n % t === 0) || 1;
+const S = {txt: '30 32 31 35 37', a: 0.5, b: 0.3, h: 3, meth: 'holt'}, ctl = $('#w12f-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'series'}); inp.addEventListener('input', () => { S.txt = inp.value; run(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 280px'}, h('label', {}, 'Series, oldest value first'), inp));
+LK.pick(ctl, 'Method', [['ses', 'simple exponential smoothing'], ['holt', 'Holt, level and trend']], S.meth, v => { S.meth = v; run(); });
+LK.num(ctl, 'α', S.a, 0.05, v => { if (v > 0 && v <= 1) { S.a = v; run(); } }, {min: 0.01, max: 1});
+LK.num(ctl, 'β', S.b, 0.05, v => { if (v >= 0 && v <= 1) { S.b = v; run(); } }, {min: 0, max: 1});
+LK.num(ctl, 'Forecast steps', S.h, 1, v => { if (v >= 1 && v <= 30) { S.h = Math.round(v); run(); } }, {min: 1, max: 30});
+legend($('#w12f-leg', root), [['series', 0], ['level', 2], ['one-step forecasts', 4], ['forecasts', 1]]);
+const calc = LK.calc($('#w12f-calc', root));
+let st = null;
+function run() { const y = nums(S.txt), n = y.length, holt = S.meth === 'holt', tb = $('#w12f-tab', root); tb.innerHTML = '';
+  if (n < (holt ? 3 : 2)) { calc.set([['Series:', 'enter more values']]); st = null; cv.redraw(); return; }
+  const lev = [y[0]], tr = [holt ? y[1] - y[0] : 0], one = [null], rows = [], sq = [];
+  for (let t = 1; t < n; t++) { const pred = R6(lev[t - 1] + tr[t - 1]); one.push(pred); const e = R6(y[t] - pred); sq.push(R6(e * e));
+    const l = R6(S.a * y[t] + (1 - S.a) * pred), b = holt ? R6(S.b * R6(l - lev[t - 1]) + (1 - S.b) * tr[t - 1]) : 0; lev.push(l); tr.push(b);
+    rows.push([t + 1, f(y[t], 6), f(pred, 6), f(e, 6), f(S.a, 6) + ' × ' + f(y[t], 6) + ' + ' + f(R6(1 - S.a), 6) + ' × ' + p(pred, 6) + ' = ' + f(l, 6),
+      holt ? f(S.b, 6) + ' × (' + f(l, 6) + ' − ' + p(lev[t - 1], 6) + ') + ' + f(R6(1 - S.b), 6) + ' × ' + p(tr[t - 1], 6) + ' = ' + f(b, 6) : '']); }
+  const lT = lev[n - 1], bT = tr[n - 1], fc = []; for (let k = 1; k <= S.h; k++) fc.push(R6(lT + k * bT));
+  const sse = R6(sq.reduce((a, v) => a + v, 0));
+  calc.set([['Start:', 'ℓ1 = ' + f(y[0], 6) + (holt ? ', b1 = ' + f(y[1], 6) + ' − ' + p(y[0], 6) + ' = ' + f(tr[0], 6) : '')],
+    ['Final state:', 'ℓ' + n + ' = ' + f(lT, 6) + (holt ? ', b' + n + ' = ' + f(bT, 6) : '')],
+    ['Forecasts:', fc.slice(0, 8).map((v, k) => 'ŷ' + (n + k + 1) + ' = ' + f(lT, 6) + (holt ? ' + ' + (k + 1) + ' × ' + p(bT, 6) : '') + ' = ' + f(v, 6)).join('; ') + (fc.length > 8 ? '; …' : '')],
+    ['One-step errors:', 'sum of squares ' + sq.map(v => f(v, 6)).join(' + ') + ' = ' + f(sse, 6)]]);
+  LK.table(tb, ['t', 'y_t', 'forecast ℓ + b', 'error', 'level ℓ_t = αy_t + (1 − α)(ℓ + b)', holt ? 'trend b_t = β(ℓ_t − ℓ_t−1) + (1 − β)b' : ''], rows);
+  st = {y, lev, one, fc}; cv.redraw(); }
+const cv = stage($('#w12f-cv', root), 0.55, (c, W, H) => { c.clearRect(0, 0, W, H); if (!st) return; const C = COL(), n = st.y.length, all = st.y.concat(st.lev, st.fc), lo = Math.min(...all), hi = Math.max(...all), pad = 0.1 * (hi - lo || 1);
+  const N = n + st.fc.length, fr = frame(c, W, H, {x0: 0, x1: N, y0: lo - pad, y1: hi + pad, xlabel: 't', ylabel: 'y', ticks: tk(N)});
+  polyline(c, st.y.map((v, i) => [fr.X(i + 1), fr.Y(v)]), C.c[0], 2); st.y.forEach((v, i) => dot(c, fr.X(i + 1), fr.Y(v), 3, C.c[0]));
+  polyline(c, st.lev.map((v, i) => [fr.X(i + 1), fr.Y(v)]), C.c[2], 1.5, [4, 3]); st.one.forEach((v, i) => { if (v !== null) dot(c, fr.X(i + 1), fr.Y(v), 3, C.c[4]); });
+  polyline(c, [[fr.X(n), fr.Y(st.lev[n - 1])]].concat(st.fc.map((v, i) => [fr.X(n + 1 + i), fr.Y(v)])), C.c[1], 2); });
+run();
+
+})();
+(function(){
+const root=$('#w12g');
+const nums = t => t.trim().split(/[\s,;]+/).filter(v => v.length).map(v => Number(v.replace('−', '-'))).filter(isFinite);
+const R6 = v => +v.toFixed(6), f = LK.f, p = LK.p;
+const tk = n => [6, 5, 4, 3, 2].find(t => n % t === 0) || 1;
+const RS = {x: '1 0.5 -1', wx: 0.5, wh: 0.8, b: 0, h0: 0}, rb = $('#w12g-r', root), rc = LK.calc($('#w12g-rc', root), true);
+const ri = h('input', {type: 'text', value: RS.x, 'aria-label': 'input sequence'}); ri.addEventListener('input', () => { RS.x = ri.value; rnn(); });
+rb.append(h('div', {class: 'nin', style: 'flex:1 1 240px'}, h('label', {}, 'Inputs x1, x2, …'), ri));
+[['wx', 'w_x'], ['wh', 'w_h'], ['b', 'bias b'], ['h0', 'start h0']].forEach(([k, l]) => LK.num(rb, l, RS[k], 0.1, v => { RS[k] = v; rnn(); }));
+legend($('#w12g-rleg', root), [['hidden state h_t', 0], ['∂h_T/∂h_t', 1]]);
+let RH = [], RG = [];
+function rnn() { const x = nums(RS.x), L = []; RH = [RS.h0]; RG = [];
+  if (!x.length) { rc.set([['Inputs:', 'enter a sequence']]); rcv.redraw(); return; }
+  x.forEach((v, t) => { const a = R6(RS.wx * v), bb = R6(RS.wh * RH[t]), z = R6(a + bb + RS.b), hh = R6(Math.tanh(z)); RH.push(hh);
+    L.push(['h' + (t + 1) + ':', 'tanh(' + f(RS.wx) + ' × ' + p(v, 6) + ' + ' + f(RS.wh) + ' × ' + p(RH[t], 6) + ' + ' + p(RS.b) + ') = tanh(' + f(z, 6) + ') = ' + f(hh, 6)]); });
+  const T = x.length, fac = []; for (let t = 2; t <= T; t++) fac.push(R6(RS.wh * R6(1 - R6(RH[t] * RH[t]))));
+  let prod = 1; RG = new Array(T).fill(1); for (let t = T - 1; t >= 1; t--) { prod = R6(prod * fac[t - 1]); RG[t - 1] = prod; }
+  if (T > 1) { L.push(['Factors:', fac.map((q, i) => '∂h' + (i + 2) + '/∂h' + (i + 1) + ' = ' + f(RS.wh) + ' × (1 − ' + f(R6(RH[i + 2] * RH[i + 2]), 6) + ') = ' + f(q, 6)).join('; ')]);
+    L.push(['Product:', '∂h' + T + '/∂h1 = ' + fac.map(q => f(q, 6)).join(' × ') + ' = ' + f(RG[0], 6)]); }
+  rc.set(L); rcv.redraw(); }
+const rcv = stage($('#w12g-rcv', root), 0.55, (c, W, H) => { c.clearRect(0, 0, W, H); if (RH.length < 2) return; const C = COL(), T = RH.length - 1;
+  const fr = frame(c, W, H, {x0: 0, x1: Math.max(1, T), y0: -1, y1: 1, xlabel: 'step t', ylabel: 'value', ticks: Math.min(T, 5) || 1});
+  polyline(c, [[fr.X(0), fr.Y(0)], [fr.X(T), fr.Y(0)]], C.line, 1); polyline(c, RH.map((v, i) => [fr.X(i), fr.Y(v)]), C.c[0], 2); RH.forEach((v, i) => dot(c, fr.X(i), fr.Y(v), 3, C.c[0]));
+  polyline(c, RG.map((v, i) => [fr.X(i + 1), fr.Y(clamp(v, -1, 1))]), C.c[1], 2, [5, 3]); });
+rnn();
+const LS = {x: '1', h0: 0.2, c0: 0.5, W: {i: [0.5, -0.3, 0], f: [0.8, 0.4, 1], g: [1.2, 0.6, -0.2], o: [0.9, -0.5, 0.1]}}, lb = $('#w12g-l', root), lw = $('#w12g-lw', root), lc = LK.calc($('#w12g-lc', root), true);
+const li = h('input', {type: 'text', value: LS.x, 'aria-label': 'input sequence'}); li.addEventListener('input', () => { LS.x = li.value; lstm(); });
+lb.append(h('div', {class: 'nin', style: 'flex:1 1 240px'}, h('label', {}, 'Inputs x1, x2, …'), li));
+LK.num(lb, 'start h0', LS.h0, 0.1, v => { LS.h0 = v; lstm(); }); LK.num(lb, 'start c0', LS.c0, 0.1, v => { LS.c0 = v; lstm(); });
+const GN = {i: 'input gate', f: 'forget gate', g: 'candidate', o: 'output gate'};
+Object.keys(LS.W).forEach(k => { const t = h('input', {type: 'text', value: LS.W[k].join(' '), 'aria-label': GN[k] + ' w u b'}); t.addEventListener('input', () => { const v = nums(t.value); if (v.length === 3) { LS.W[k] = v; lstm(); } });
+  lw.append(h('div', {class: 'nin', style: 'flex:1 1 150px'}, h('label', {}, GN[k] + ': w u b'), t)); });
+legend($('#w12g-lleg', root), [['hidden state h_t', 0], ['cell state c_t', 1], ['forget gate f_t', 2]]);
+let LH = [], LC = [], LF = [];
+const sg = z => R6(1 / (1 + Math.exp(-z)));
+function lstm() { const x = nums(LS.x), L = []; LH = [LS.h0]; LC = [LS.c0]; LF = [];
+  if (!x.length) { lc.set([['Inputs:', 'enter a sequence']]); lcv.redraw(); return; }
+  x.forEach((v, t) => { const hp = LH[t], cp = LC[t], G = {};
+    Object.keys(LS.W).forEach(k => { const [w, u, b] = LS.W[k], z = R6(R6(w * v) + R6(u * hp) + b); G[k] = {z, v: k === 'g' ? R6(Math.tanh(z)) : sg(z)}; });
+    const fc = R6(G.f.v * cp), ig = R6(G.i.v * G.g.v), cn = R6(fc + ig), tc = R6(Math.tanh(cn)), hn = R6(G.o.v * tc); LH.push(hn); LC.push(cn); LF.push(G.f.v);
+    L.push(['Step ' + (t + 1) + ', gates:', Object.keys(G).map(k => k + ' = ' + (k === 'g' ? 'tanh' : 'σ') + '(' + f(LS.W[k][0]) + ' × ' + p(v, 6) + ' + ' + p(LS.W[k][1]) + ' × ' + p(hp, 6) + ' + ' + p(LS.W[k][2]) + ') = ' + (k === 'g' ? 'tanh' : 'σ') + '(' + f(G[k].z, 6) + ') = ' + f(G[k].v, 6)).join('; ')]);
+    L.push(['Step ' + (t + 1) + ', states:', 'c = ' + f(G.f.v, 6) + ' × ' + p(cp, 6) + ' + ' + f(G.i.v, 6) + ' × ' + p(G.g.v, 6) + ' = ' + f(fc, 6) + (ig < 0 ? ' − ' + f(-ig, 6) : ' + ' + f(ig, 6)) + ' = ' + f(cn, 6) + '; h = ' + f(G.o.v, 6) + ' × tanh(' + f(cn, 6) + ') = ' + f(G.o.v, 6) + ' × ' + p(tc, 6) + ' = ' + f(hn, 6)]); });
+  if (LF.length > 1) L.push(['Through the cell:', 'the product of the forget gates is ' + LF.map(q => f(q, 6)).join(' × ') + ' = ' + f(LF.reduce((a, q) => R6(a * q), 1), 6)]);
+  lc.set(L); lcv.redraw(); }
+const lcv = stage($('#w12g-lcv', root), 0.55, (c, W, H) => { c.clearRect(0, 0, W, H); if (LH.length < 2) return; const C = COL(), T = LH.length - 1, all = LH.concat(LC, LF, [1, -1]), lo = Math.min(...all), hi = Math.max(...all);
+  const fr = frame(c, W, H, {x0: 0, x1: Math.max(1, T), y0: lo, y1: hi, xlabel: 'step t', ylabel: 'value', ticks: Math.min(T, 5) || 1});
+  polyline(c, [[fr.X(0), fr.Y(0)], [fr.X(T), fr.Y(0)]], C.line, 1); [[LH, 0, 0], [LC, 1, 0], [LF, 2, 1]].forEach(([A, j, off]) => { polyline(c, A.map((v, i) => [fr.X(i + off), fr.Y(v)]), C.c[j], 2); A.forEach((v, i) => dot(c, fr.X(i + off), fr.Y(v), 3, C.c[j])); }); });
+lstm();
+
+})();
+(function(){
+const root=$('#w12h');
+const nums = t => t.trim().split(/[\s,;]+/).filter(v => v.length).map(v => Number(v.replace('−', '-'))).filter(isFinite);
+const R6 = v => +v.toFixed(6), f = LK.f, p = LK.p;
+const tk = n => [6, 5, 4, 3, 2].find(t => n % t === 0) || 1;
+const erf = x => { const s = Math.sign(x), a = Math.abs(x), t = 1 / (1 + 0.3275911 * a), y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-a * a); return s * y; };
+const Phi = z => 0.5 * (1 + erf(z / Math.SQRT2)), phi = z => Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI);
+const zq = q => { let lo = -10, hi = 10; for (let k = 0; k < 80; k++) { const m = (lo + hi) / 2; if (Phi(m) < q) lo = m; else hi = m; } return (lo + hi) / 2; };
+const I = {y: 48, s: 2, lev: 95, H: 6}, ib = $('#w12h-i', root), ic = LK.calc($('#w12h-ic', root));
+LK.num(ib, 'Point forecast', I.y, 1, v => { I.y = v; iv(); }); LK.num(ib, 'One-step error sd σ', I.s, 0.1, v => { if (v > 0) { I.s = v; iv(); } }, {min: 0.001});
+LK.pick(ib, 'Level', [['80', '80%'], ['90', '90%'], ['95', '95%'], ['99', '99%']], '95', v => { I.lev = +v; iv(); });
+LK.num(ib, 'Horizons shown', I.H, 1, v => { if (v >= 1 && v <= 24) { I.H = Math.round(v); iv(); } }, {min: 1, max: 24});
+let IV = [];
+function iv() { const z = +zq(0.5 + I.lev / 200).toFixed(2), L = [['Multiplier:', 'z = ' + f(z) + ' for ' + I.lev + '%, rounded to two decimals']]; IV = [];
+  for (let k = 1; k <= I.H; k++) { const sh = R6(I.s * Math.sqrt(k)), w = R6(z * sh); IV.push([I.y - w, I.y + w]); if (k <= 6) L.push(['h = ' + k + ':', 'σ_h = ' + f(I.s) + ' × √' + k + ' = ' + f(sh, 6) + ', interval ' + f(I.y) + ' ± ' + f(z) + ' × ' + f(sh, 6) + ' = ' + f(I.y) + ' ± ' + f(w, 6) + ', from ' + f(R6(I.y - w), 6) + ' to ' + f(R6(I.y + w), 6)]); }
+  ic.set(L); icv.redraw(); }
+const icv = stage($('#w12h-icv', root), 0.55, (c, W, H) => { c.clearRect(0, 0, W, H); if (!IV.length) return; const C = COL(), lo = Math.min(...IV.map(q => q[0])), hi = Math.max(...IV.map(q => q[1])), pad = 0.08 * (hi - lo || 1);
+  const fr = frame(c, W, H, {x0: 0, x1: I.H, y0: lo - pad, y1: hi + pad, xlabel: 'horizon h', ylabel: 'forecast', ticks: Math.min(I.H, 6)});
+  c.beginPath(); c.moveTo(fr.X(0), fr.Y(I.y)); IV.forEach((q, i) => c.lineTo(fr.X(i + 1), fr.Y(q[1]))); for (let i = IV.length - 1; i >= 0; i--) c.lineTo(fr.X(i + 1), fr.Y(IV[i][0])); c.closePath(); c.fillStyle = 'rgba(201,133,16,0.2)'; c.fill();
+  polyline(c, [[fr.X(0), fr.Y(I.y)], [fr.X(I.H), fr.Y(I.y)]], C.c[0], 2); });
+iv();
+const Q = {txt: '0.1:45 0.5:50 0.9:56', y: 53}, qb = $('#w12h-q', root), qc = LK.calc($('#w12h-qc', root));
+const qi = h('input', {type: 'text', value: Q.txt, 'aria-label': 'quantile forecasts'}); qi.addEventListener('input', () => { Q.txt = qi.value; pin(); });
+qb.append(h('div', {class: 'nin', style: 'flex:1 1 300px'}, h('label', {}, 'Quantile forecasts "level:value"'), qi));
+LK.num(qb, 'Observation y', Q.y, 1, v => { Q.y = v; pin(); });
+function pin() { const pr = Q.txt.trim().split(/[\s,;]+/).map(s => s.split(':').map(v => Number(v.replace('−', '-')))).filter(a => a.length === 2 && a.every(isFinite) && a[0] > 0 && a[0] < 1);
+  if (!pr.length) { qc.set([['Forecasts:', 'enter pairs such as 0.5:50']]); return; }
+  const L = pr.map(([t, q]) => { const l = Q.y >= q ? R6(t * (Q.y - q)) : R6((1 - t) * (q - Q.y));
+    return ['τ = ' + f(t) + ':', Q.y >= q ? f(t) + ' × (' + f(Q.y) + ' − ' + p(q) + ') = ' + f(l, 6) + ', the observation lies above the quantile' : '(1 − ' + f(t) + ') × (' + f(q) + ' − ' + p(Q.y) + ') = ' + f(l, 6) + ', the observation lies below the quantile', l]; });
+  const mean = R6(L.reduce((a, r) => a + r[2], 0) / L.length);
+  qc.set(L.map(r => [r[0], r[1]]).concat([['Mean pinball loss:', '(' + L.map(r => f(r[2], 6)).join(' + ') + ')/' + L.length + ' = ' + f(mean, 6)]])); }
+pin();
+const CO = {cu: 60, co: 20, mu: 50, s: 4}, cb = $('#w12h-c', root), cc = LK.calc($('#w12h-cc', root));
+LK.num(cb, 'Cost of a shortfall c_u', CO.cu, 5, v => { if (v > 0) { CO.cu = v; cost(); } }, {min: 0.01}); LK.num(cb, 'Cost of a surplus c_o', CO.co, 5, v => { if (v > 0) { CO.co = v; cost(); } }, {min: 0.01});
+LK.num(cb, 'Forecast mean', CO.mu, 1, v => { CO.mu = v; cost(); }); LK.num(cb, 'Forecast sd', CO.s, 0.5, v => { if (v > 0) { CO.s = v; cost(); } }, {min: 0.001});
+const ecost = q => { const z = (q - CO.mu) / CO.s; return CO.cu * CO.s * (phi(z) - z * (1 - Phi(z))) + CO.co * CO.s * (phi(z) + z * Phi(z)); };
+let QS = null;
+function cost() { const tau = R6(CO.cu / (CO.cu + CO.co)), z = +zq(tau).toFixed(4), q = R6(CO.mu + z * CO.s);
+  QS = {q}; cc.set([['Level:', 'c_u/(c_u + c_o) = ' + f(CO.cu) + '/(' + f(CO.cu) + ' + ' + f(CO.co) + ') = ' + f(tau, 6)], ['Quantile:', 'z = ' + f(z, 4) + ', q* = ' + f(CO.mu) + ' + ' + p(z, 4) + ' × ' + f(CO.s) + ' = ' + f(q, 6)],
+    ['Expected cost:', f(R6(ecost(q)), 4) + ' at q*, ' + f(R6(ecost(CO.mu)), 4) + ' at the mean forecast ' + f(CO.mu)]]); ccv.redraw(); }
+const ccv = stage($('#w12h-ccv', root), 0.55, (c, W, H) => { c.clearRect(0, 0, W, H); if (!QS) return; const C = COL(), lo = CO.mu - 3 * CO.s, hi = CO.mu + 3 * CO.s, pts = []; let top = 0;
+  for (let k = 0; k <= 120; k++) { const q = lo + (hi - lo) * k / 120, v = ecost(q); top = Math.max(top, v); pts.push([q, v]); }
+  const fr = frame(c, W, H, {x0: lo, x1: hi, y0: 0, y1: top * 1.05, xlabel: 'planned value q', ylabel: 'expected cost', ticks: 6});
+  polyline(c, pts.map(([q, v]) => [fr.X(q), fr.Y(v)]), C.c[0], 2); polyline(c, [[fr.X(QS.q), fr.Y(0)], [fr.X(QS.q), fr.Y(top * 1.05)]], C.c[1], 1.5, [5, 4]);
+  polyline(c, [[fr.X(CO.mu), fr.Y(0)], [fr.X(CO.mu), fr.Y(top * 1.05)]], C.steel, 1, [2, 3]); });
+cost();
+
+})();</script></body></html>

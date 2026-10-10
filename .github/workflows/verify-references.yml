@@ -1,0 +1,27 @@
+name: verify-references
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 1 * *"
+  push:
+    branches: [main]
+    paths:
+      - "references/**"
+      - "tools/verify_references.py"
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check every reference against Crossref, arXiv and OpenAlex
+        run: python tools/verify_references.py --report references/VERIFICATION_REPORT.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-report
+          path: references/VERIFICATION_REPORT.md

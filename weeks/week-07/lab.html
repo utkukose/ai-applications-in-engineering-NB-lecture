@@ -1,0 +1,616 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Regression studio: Complexity, validation and leakage | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+a.btn{display:inline-block;text-decoration:none}.next{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:6px;padding:2px 16px 12px;margin:2.2rem 0}.next h2,.pycorner h2{margin-top:.9rem}.next .btn,.pycorner .btn{margin:4px 6px 4px 0}.refs{margin-top:2rem}.calc{font-family:var(--mono);font-size:.84rem;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px 10px;margin:8px 0;white-space:pre-wrap;overflow-x:auto;line-height:1.55}.calc b{color:var(--accent)}.calc .hl{background:var(--band)}.calc.long{max-height:26rem;overflow-y:auto}.nin{display:flex;flex-direction:column;gap:2px;flex:0 1 190px;min-width:120px}.nin label{font-size:.86rem;color:var(--steel)}.nin input,.nin select{font:inherit;padding:.25rem .4rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);width:100%}.grid-in{display:grid;gap:4px}.grid-in input{width:100%;font:inherit;padding:.2rem;text-align:center;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--ink)}table.mini{width:auto;font-size:.86rem}table.mini td,table.mini th{padding:3px 8px;text-align:center}td.sel{background:var(--band);font-weight:700}</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 7 of 14: interactive lab</p><h1>Regression studio: Complexity, validation and leakage</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-07/README.md">Week overview</a><a href="lecture.html">Lecture page</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-07/NB07_ml_workflow_regression.ipynb">Colab notebook</a><a href="Week07_Lecture_Notes.pdf">PDF notes</a></nav></header>
+<p>Part A generates strength data from a known law, shaped after Abrams' water-cement rule <span class="cite" tabindex="0" data-refs="1">[1]</span>, adds noise, and lets polynomial, nearest-neighbour and tree regressors fit it; training error, error on new data and a five-fold validation curve show where overfitting starts <span class="cite" tabindex="0" data-refs="2">[2]</span>. Part B is a leakage detective with six candidate features from engineering projects <span class="cite" tabindex="0" data-refs="3">[3]</span>. Part C fits a least-squares line by hand and shows how ridge and the lasso shrink it. Part D computes MAE, RMSE and R² term by term with a parity plot, Part E compares nearest neighbours with and without standardised inputs, Part F searches tree splits and adds gradient-boosting stumps, and Part G estimates bias and variance by repeated sampling <span class="cite" tabindex="0" data-refs="2,7,9,10">[2, 7, 9, 10]</span>.</p><div class="tabs" role="tablist"><button aria-selected="true">Explore</button><button aria-selected="false">Check yourself</button><button aria-selected="false">Reflect and export</button></div><section class="tabpanel">
+<h2 id="part-a">Part A: Fit, validate, compare</h2>
+<div class="bench"><div class="row"><div class="ctl"><label for="r-model">Model</label><select id="r-model"><option value="poly">Polynomial</option><option value="knn">k nearest neighbours</option><option value="tree">Regression tree</option></select></div></div>
+<div class="row" id="r-sl"></div>
+<div style="display:grid;grid-template-columns:1.3fr 1fr;gap:10px"><div><canvas class="paper" id="r-cv" aria-label="Data and fitted model"></canvas><div class="legend" id="r-leg"></div></div><div><canvas class="paper" id="r-vc" aria-label="Validation curve"></canvas><p class="small">Five-fold validation curve over the complexity setting of the chosen model. The dashed line marks the current setting.</p></div></div>
+<div id="r-ro"></div></div>
+<h2 id="part-b">Part B: Leakage detective</h2><div id="lk"></div>
+<h2 id="part-c">Part C: Least squares, ridge and lasso by hand</h2>
+<p>The table computes every deviation, product and square of the least-squares formulas for the pairs entered above, and the chart draws the line with its residuals. The two sliders shrink the slope with the ridge and lasso formulas of the lecture; the lasso slope becomes exactly zero once λ reaches twice the magnitude of S_xy. The defaults are the five mixes of the worked example <span class="cite" tabindex="0" data-refs="4,6">[4, 6]</span>.</p>
+<div class="bench" id="w7c"><div class="row" id="w7c-ctl"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 340px;min-width:0"><canvas class="paper" id="w7c-cv" aria-label="Data, least-squares, ridge and lasso lines"></canvas><div class="legend" id="w7c-leg"></div></div>
+<div style="flex:1 1 360px;min-width:0" id="w7c-calc"></div></div><div id="w7c-tab"></div></div>
+<h2 id="part-d">Part D: Error metrics and the parity plot</h2>
+<p>Measured and predicted values give MAE, RMSE and R² with every term shown. Adding one large error raises RMSE much more than MAE and lowers R², and the parity plot shows the point far from the diagonal <span class="cite" tabindex="0" data-refs="7">[7]</span>.</p>
+<div class="bench" id="w7d"><div class="row" id="w7d-ctl"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 320px;min-width:0;max-width:480px"><canvas class="paper" id="w7d-cv" aria-label="Parity plot"></canvas><div class="legend" id="w7d-leg"></div></div>
+<div style="flex:1 1 360px;min-width:0" id="w7d-calc"></div></div><div id="w7d-tab"></div></div>
+<h2 id="part-e">Part E: Nearest neighbours with and without scaling</h2>
+<p>Six mixes with a water-cement ratio, an age and a strength form the training data of the worked example. Moving the query shows the raw and the standardised distances side by side; in raw units the age decides alone, and after standardisation both inputs count <span class="cite" tabindex="0" data-refs="8">[8]</span>.</p>
+<div class="bench" id="w7e"><div class="row" id="w7e-ctl"></div><div class="row" id="w7e-ctl2"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 320px;min-width:0;max-width:500px"><canvas class="paper" id="w7e-cv" aria-label="Training mixes and the query"></canvas><div class="legend" id="w7e-leg"></div></div>
+<div style="flex:1 1 360px;min-width:0" id="w7e-calc"></div></div><div id="w7e-tab"></div></div>
+<h2 id="part-f">Part F: Tree splits and gradient-boosting stumps</h2>
+<p>The table evaluates every candidate threshold of a regression tree with the summed squared error of its two children and marks the best one. Each press of the button fits a one-split tree to the current residuals and adds it, scaled by the learning rate, so that the boosted model approaches the data step by step <span class="cite" tabindex="0" data-refs="9,10">[9, 10]</span>.</p>
+<div class="bench" id="w7f"><div class="row" id="w7f-ctl"></div>
+<div class="row"><button class="btn" id="w7f-add" type="button">Add a boosting stump</button><button class="btn ghost" id="w7f-reset" type="button">Reset boosting</button></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 340px;min-width:0"><canvas class="paper" id="w7f-cv" aria-label="Data, best split and boosted model"></canvas><div class="legend" id="w7f-leg"></div></div>
+<div style="flex:1 1 360px;min-width:0" id="w7f-tab"></div></div><div id="w7f-calc"></div></div>
+<h2 id="part-g">Part G: Bias and variance by repeated sampling</h2>
+<p>Two hundred training sets are drawn from the same law with noise, and a polynomial is fitted to each. At the point x0, the mean of the predictions gives the bias and their spread the variance; the second chart shows how the two terms trade off over the degree, as in the decomposition of the lecture <span class="cite" tabindex="0" data-refs="2">[2]</span>.</p>
+<div class="bench" id="w7g"><div class="row" id="w7g-ctl"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 340px;min-width:0"><canvas class="paper" id="w7g-cv" aria-label="Models fitted to repeated samples"></canvas><div class="legend" id="w7g-leg"></div></div>
+<div style="flex:1 1 340px;min-width:0"><canvas class="paper" id="w7g-cv2" aria-label="Bias squared and variance against the degree"></canvas><div class="legend" id="w7g-leg2"></div></div></div><div id="w7g-calc"></div></div>
+</section><section class="tabpanel" hidden><p>Six questions with instant feedback. Rate your confidence before checking each answer.</p><div id="quiz"></div></section><section class="tabpanel" hidden><p>Answers are saved in this browser only. The export creates a Markdown learning log for your portfolio.</p><div id="reflect"></div><p class="small">After the export, continue with the <a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-07/README.md#discipline-challenges">discipline challenge</a> and the <a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-07/README.md#weekly-task">weekly task</a> in the week overview.</p></section>
+<section class="refs"><h2 id="references">References</h2><div class="small"><p>[1] Abrams, D. A. (1918). <i>Design of Concrete Mixtures (Bulletin 1)</i>. Structural Materials Research Laboratory, Lewis Institute, Chicago.</p><p>[2] Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</i> (2nd ed.). Springer. <a href="https://doi.org/10.1007/978-0-387-84858-7">https://doi.org/10.1007/978-0-387-84858-7</a></p><p>[3] Kaufman, S., Rosset, S., Perlich, C., &amp; Stitelman, O. (2012). Leakage in data mining: Formulation, detection, and avoidance. <i>ACM Transactions on Knowledge Discovery from Data</i>, <i>6</i>(4), 15. <a href="https://doi.org/10.1145/2382577.2382579">https://doi.org/10.1145/2382577.2382579</a></p><p>[4] Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge regression: Biased estimation for nonorthogonal problems. <i>Technometrics</i>, <i>12</i>(1), 55-67. <a href="https://doi.org/10.1080/00401706.1970.10488634">https://doi.org/10.1080/00401706.1970.10488634</a></p><p>[5] Breiman, L. (2001). Random forests. <i>Machine Learning</i>, <i>45</i>(1), 5-32. <a href="https://doi.org/10.1023/A:1010933404324">https://doi.org/10.1023/A:1010933404324</a></p><p>[6] Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. <i>Journal of the Royal Statistical Society: Series B (Methodological)</i>, <i>58</i>(1), 267-288. <a href="https://doi.org/10.1111/j.2517-6161.1996.tb02080.x">https://doi.org/10.1111/j.2517-6161.1996.tb02080.x</a></p><p>[7] James, G., Witten, D., Hastie, T., &amp; Tibshirani, R. (2021). <i>An Introduction to Statistical Learning</i> (2nd ed.). Springer. <a href="https://doi.org/10.1007/978-1-0716-1418-1">https://doi.org/10.1007/978-1-0716-1418-1</a></p><p>[8] Cover, T., &amp; Hart, P. (1967). Nearest neighbor pattern classification. <i>IEEE Transactions on Information Theory</i>, <i>13</i>(1), 21-27. <a href="https://doi.org/10.1109/TIT.1967.1053964">https://doi.org/10.1109/TIT.1967.1053964</a></p><p>[9] Breiman, L., Friedman, J. H., Olshen, R. A., &amp; Stone, C. J. (1984). <i>Classification and Regression Trees</i>. Wadsworth.</p><p>[10] Chen, T., &amp; Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In <i>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</i> (pp. 785-794). <a href="https://doi.org/10.1145/2939672.2939785">https://doi.org/10.1145/2939672.2939785</a></p></div></section>
+<script type="application/json" id="refdata">{"1": "Abrams, D. A. (1918). <i>Design of Concrete Mixtures (Bulletin 1)</i>. Structural Materials Research Laboratory, Lewis Institute, Chicago.", "2": "Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</i> (2nd ed.). Springer. <a href=\"https://doi.org/10.1007/978-0-387-84858-7\">https://doi.org/10.1007/978-0-387-84858-7</a>", "3": "Kaufman, S., Rosset, S., Perlich, C., &amp; Stitelman, O. (2012). Leakage in data mining: Formulation, detection, and avoidance. <i>ACM Transactions on Knowledge Discovery from Data</i>, <i>6</i>(4), 15. <a href=\"https://doi.org/10.1145/2382577.2382579\">https://doi.org/10.1145/2382577.2382579</a>", "4": "Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge regression: Biased estimation for nonorthogonal problems. <i>Technometrics</i>, <i>12</i>(1), 55-67. <a href=\"https://doi.org/10.1080/00401706.1970.10488634\">https://doi.org/10.1080/00401706.1970.10488634</a>", "5": "Breiman, L. (2001). Random forests. <i>Machine Learning</i>, <i>45</i>(1), 5-32. <a href=\"https://doi.org/10.1023/A:1010933404324\">https://doi.org/10.1023/A:1010933404324</a>", "6": "Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. <i>Journal of the Royal Statistical Society: Series B (Methodological)</i>, <i>58</i>(1), 267-288. <a href=\"https://doi.org/10.1111/j.2517-6161.1996.tb02080.x\">https://doi.org/10.1111/j.2517-6161.1996.tb02080.x</a>", "7": "James, G., Witten, D., Hastie, T., &amp; Tibshirani, R. (2021). <i>An Introduction to Statistical Learning</i> (2nd ed.). Springer. <a href=\"https://doi.org/10.1007/978-1-0716-1418-1\">https://doi.org/10.1007/978-1-0716-1418-1</a>", "8": "Cover, T., &amp; Hart, P. (1967). Nearest neighbor pattern classification. <i>IEEE Transactions on Information Theory</i>, <i>13</i>(1), 21-27. <a href=\"https://doi.org/10.1109/TIT.1967.1053964\">https://doi.org/10.1109/TIT.1967.1053964</a>", "9": "Breiman, L., Friedman, J. H., Olshen, R. A., &amp; Stone, C. J. (1984). <i>Classification and Regression Trees</i>. Wadsworth.", "10": "Chen, T., &amp; Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In <i>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</i> (pp. 785-794). <a href=\"https://doi.org/10.1145/2939672.2939785\">https://doi.org/10.1145/2939672.2939785</a>"}</script>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: October 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.keys(st).filter(i => st[i] && +i < n).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLab(7,"Learning from Data: The Machine Learning Workflow and Regression",[{"q": "What is the purpose of the test set?", "options": ["To choose hyperparameters", "To estimate once, at the end, how the final model performs on new data", "To train the final model", "To fill in missing values"], "answer": 1, "why": "Using the test set for choices makes its estimate optimistic; choices belong to validation or cross-validation."}, {"q": "Ridge regression differs from ordinary least squares by", "options": ["using absolute errors", "adding a penalty on the squared size of the coefficients", "fitting a tree", "removing the intercept"], "answer": 1, "why": "The penalty shrinks coefficients and stabilises the fit with correlated inputs [4]."}, {"q": "Why does a random forest usually predict better than a single deep tree?", "options": ["It uses deeper trees", "Averaging many decorrelated trees reduces variance", "It fits a linear model in every leaf", "It never overfits"], "answer": 1, "why": "Bootstrap samples and random feature subsets make the trees differ, and averaging cancels much of their variance [5]."}, {"q": "A feature scaler is fitted on the full dataset before splitting. What is the risk?", "options": ["None, scaling is harmless", "Information from the test data leaks into training", "The model cannot be trained", "The target is rescaled"], "answer": 1, "why": "Statistics of the test data influence the training features; pipelines fitted inside each fold avoid this [3]."}, {"q": "R-squared of 0 means", "options": ["perfect predictions", "predictions no better than always predicting the mean", "negative correlation", "the model has no parameters"], "answer": 1, "why": "R-squared compares the squared error of the model with that of the constant mean prediction."}, {"q": "In pandas, what does `df.groupby('age')['strength'].mean()` return?", "options": ["The mean age", "The mean strength for each age value", "A sorted DataFrame", "The number of rows per age"], "answer": 1, "why": "groupby splits the rows by age, selects the strength column and averages it within each group."}],["Which quantity in your department would you like to predict from data, and what data would honestly be available at prediction time?", "Look at the residual plots of your model. Which pattern would make you distrust a good R-squared?", "What did pandas make easier compared with the lists of the first weeks, and what still feels unfamiliar?"]);</script><script>(function(){
+const R={n:60,noise:4,deg:3,k:5,depth:3}; let data=[], test=[];
+const law=wc=>110/Math.pow(8.5,wc);
+const sl=$('#r-sl');
+slider(sl,{label:'Samples',min:15,max:200,step:5,value:R.n},v=>{R.n=v;gen();});
+slider(sl,{label:'Noise (MPa)',min:0.5,max:12,step:0.5,value:R.noise},v=>{R.noise=v;gen();});
+slider(sl,{label:'Polynomial degree',min:0,max:12,step:1,value:R.deg},v=>{R.deg=v;upd();});
+slider(sl,{label:'k (neighbours)',min:1,max:40,step:1,value:R.k},v=>{R.k=v;upd();});
+slider(sl,{label:'Tree depth',min:1,max:8,step:1,value:R.depth},v=>{R.depth=v;upd();});
+legend($('#r-leg'),[['training data',0],['new data',1],['model',2],['true law',4]]);
+const ro=readout($('#r-ro'),['train MAE','train R²','new-data MAE','new-data R²']);
+function gen(){ const r=RNG(Math.floor(Math.random()*1e6)); const mk=m=>Array.from({length:m},()=>{ const x=r.uniform(0.28,0.85); return [x,law(x)+R.noise*r.normal()]; }); data=mk(R.n); test=mk(300); upd(); }
+const z=x=>(x-0.565)/0.285;
+function polyFit(pts,d){ d=Math.min(d,pts.length-1); const m=d+1, A=Array.from({length:m},()=>Array(m).fill(0)), b=Array(m).fill(0);
+  pts.forEach(([x,y])=>{ const t=[1]; for(let i=1;i<m;i++) t.push(t[i-1]*z(x)); for(let i=0;i<m;i++){ b[i]+=t[i]*y; for(let j=0;j<m;j++) A[i][j]+=t[i]*t[j]; } }); for(let i=0;i<m;i++) A[i][i]+=1e-8;
+  for(let i=0;i<m;i++){ let p=i; for(let r=i+1;r<m;r++) if(Math.abs(A[r][i])>Math.abs(A[p][i])) p=r; [A[i],A[p]]=[A[p],A[i]]; [b[i],b[p]]=[b[p],b[i]]; for(let r=i+1;r<m;r++){ const f=A[r][i]/A[i][i]; for(let c=i;c<m;c++) A[r][c]-=f*A[i][c]; b[r]-=f*b[i]; } }
+  const w=Array(m).fill(0); for(let i=m-1;i>=0;i--){ let s=b[i]; for(let c=i+1;c<m;c++) s-=A[i][c]*w[c]; w[i]=s/A[i][i]; } return x=>{ let s=0,t=1; for(let i=0;i<m;i++){ s+=w[i]*t; t*=z(x); } return s; }; }
+function knnFit(pts,k){ return x=>{ const d=pts.map(p=>[Math.abs(p[0]-x),p[1]]).sort((a,b)=>a[0]-b[0]).slice(0,Math.min(k,pts.length)); return d.reduce((s,q)=>s+q[1],0)/d.length; }; }
+function treeFit(pts,depth){ const node=(P,dep)=>{ const mean=P.reduce((s,p)=>s+p[1],0)/P.length; if(dep===0||P.length<4) return {v:mean};
+    const S=[...P].sort((a,b)=>a[0]-b[0]); let best=null; let sl=0,sl2=0; const tot=S.reduce((s,p)=>s+p[1],0), tot2=S.reduce((s,p)=>s+p[1]*p[1],0);
+    for(let i=1;i<S.length;i++){ sl+=S[i-1][1]; sl2+=S[i-1][1]**2; if(S[i][0]===S[i-1][0]) continue; const nl=i,nr=S.length-i; const sse=(sl2-sl*sl/nl)+((tot2-sl2)-(tot-sl)**2/nr); if(!best||sse<best.sse) best={sse,t:(S[i][0]+S[i-1][0])/2,i}; }
+    if(!best) return {v:mean}; return {t:best.t,l:node(S.slice(0,best.i),dep-1),r:node(S.slice(best.i),dep-1)}; };
+  const root=node(pts,depth); return x=>{ let q=root; while(q.v===undefined) q= x<q.t?q.l:q.r; return q.v; }; }
+function fitModel(pts,kind,val){ return kind==='poly'?polyFit(pts,val):kind==='knn'?knnFit(pts,val):treeFit(pts,val); }
+const cur=()=>{ const k=$('#r-model').value; return [k, k==='poly'?R.deg:k==='knn'?R.k:R.depth]; };
+const mae=(f,P)=>P.reduce((s,[x,y])=>s+Math.abs(f(x)-y),0)/P.length; const r2=(f,P)=>{ const m=P.reduce((s,p)=>s+p[1],0)/P.length; return 1-P.reduce((s,[x,y])=>s+(f(x)-y)**2,0)/P.reduce((s,[x,y])=>s+(y-m)**2,0); };
+let model=null, vc=null;
+function upd(){ const [kind,val]=cur(); model=fitModel(data,kind,val); ro('train MAE',mae(model,data).toFixed(2)+' MPa'); ro('train R²',r2(model,data).toFixed(3)); ro('new-data MAE',mae(model,test).toFixed(2)+' MPa'); ro('new-data R²',r2(model,test).toFixed(3));
+  const vals= kind==='poly'?[0,1,2,3,4,5,6,7,8,9,10,11,12]: kind==='knn'?[1,2,3,5,8,12,20,30,40]:[1,2,3,4,5,6,7,8];
+  const folds=5, idx=data.map((_,i)=>i); vc={kind,vals,err:vals.map(v=>{ let e=0; for(let f=0;f<folds;f++){ const tr=data.filter((_,i)=>i%folds!==f), va=data.filter((_,i)=>i%folds===f); if(!va.length||tr.length<2) continue; e+=mae(fitModel(tr,kind,v),va); } return e/folds; }),cur:val};
+  a.redraw(); b.redraw(); }
+const a=stage($('#r-cv'),0.7,(c,w,h)=>{ c.clearRect(0,0,w,h); const C=COL(); const f=frame(c,w,h,{x0:0.25,x1:0.9,y0:0,y1:90,xlabel:'water-cement ratio',ylabel:'strength (MPa)'});
+  test.slice(0,120).forEach(([x,y])=>dot(c,f.X(x),f.Y(y),2,C.c[1]+'77')); data.forEach(([x,y])=>dot(c,f.X(x),f.Y(y),3.5,C.c[0],C.ink));
+  const tl=[], ml=[]; for(let k=0;k<=200;k++){ const x=0.28+0.57*k/200; tl.push([f.X(x),f.Y(law(x))]); if(model) ml.push([f.X(x),f.Y(clamp(model(x),-5,95))]); } polyline(c,tl,C.c[4],1.5,[5,4]); polyline(c,ml,C.c[2],2.5); });
+const b=stage($('#r-vc'),0.9,(c,w,h)=>{ c.clearRect(0,0,w,h); if(!vc) return; const C=COL(); const mx=Math.min(30,Math.max(...vc.err)*1.1); const f=frame(c,w,h,{x0:vc.vals[0],x1:vc.vals.at(-1),y0:0,y1:mx,xlabel:vc.kind==='poly'?'degree':vc.kind==='knn'?'k':'depth',ylabel:'validation MAE',ticks:4});
+  polyline(c,vc.err.map((e,i)=>[f.X(vc.vals[i]),f.Y(Math.min(e,mx))]),C.c[0],2); vc.err.forEach((e,i)=>dot(c,f.X(vc.vals[i]),f.Y(Math.min(e,mx)),3,C.c[0])); polyline(c,[[f.X(vc.cur),f.Y(0)],[f.X(vc.cur),f.Y(mx)]],C.ink,1,[3,3]); });
+$('#r-model').onchange=upd; gen();
+const LK=[['Cement content of the mix, known before casting','no','Mix proportions are fixed before the specimen is cast, so they are legitimate inputs.'],
+ ['Strength class (C25, C30, ...) assigned after testing the same specimen','yes','The class is computed from the measured strength, the target itself.'],
+ ['Motor current measured one minute after the failure that the model should predict','yes','The value is recorded after the event and cannot be available at prediction time.'],
+ ['Ambient temperature recorded when a power plant measurement was taken','no','It is measured together with the inputs and is available when the prediction is made.'],
+ ['Z-score scaling fitted on all rows before the train-test split','yes','The scaler has seen test data, so information leaks from test to training.'],
+ ['Specimen ID that repeats because cubes from the same batch appear in both train and test sets','yes','Near-duplicates across the split make the test set too easy; split by batch instead.']];
+const box=$('#lk'); LK.forEach(([t,ans,why],i)=>{ const fb=h('div',{class:'fb'}); const mk=(lab,v)=>h('button',{class:'btn ghost',type:'button',onclick:()=>{ const ok=v===ans; fb.className='fb '+(ok?'ok':'bad'); fb.textContent=(ok?'Correct. ':'Not quite. ')+why; }},lab);
+  box.append(h('div',{class:'kc'},h('p',{class:'q'},(i+1)+'. '+t),h('div',{class:'row'},mk('Leaks','yes'),mk('Does not leak','no')),fb)); });
+})();</script><script>(function(){
+var names=["explore","check","reflect"],tabs=document.querySelectorAll(".tabs button");
+tabs.forEach(function(b,i){b.addEventListener("click",function(){if(history.replaceState)history.replaceState(null,"","#"+names[i]);});});
+function go(){var i=names.indexOf(location.hash.slice(1));if(i<0||!tabs[i])return;tabs[i].click();document.querySelector(".tabs").scrollIntoView({block:"start"});}
+go();window.addEventListener("hashchange",go);
+var refs=JSON.parse((document.getElementById("refdata")||{textContent:"{}"}).textContent||"{}"),pop=null;
+document.addEventListener("click",function(e){var c=e.target.closest(".cite");if(pop){pop.remove();pop=null;}if(!c)return;
+pop=document.createElement("div");pop.className="pop";pop.setAttribute("role","note");
+c.dataset.refs.split(",").forEach(function(k){var p=document.createElement("p");p.innerHTML="["+k+"] "+(refs[k]||"");pop.append(p);});
+document.body.append(pop);var r=c.getBoundingClientRect();
+pop.style.left=Math.max(8,Math.min(window.scrollX+r.left,window.scrollX+document.documentElement.clientWidth-440))+"px";
+pop.style.top=(window.scrollY+r.bottom+6)+"px";});
+})();</script><script>/* Lab kit: number inputs, step-by-step calculation boxes and small tables. */
+const LK = {
+  f(x, d) { if (d === undefined) d = 4; if (!isFinite(x)) return String(x); let s = (Math.abs(x) < 0.5 * Math.pow(10, -d) ? 0 : x).toFixed(d);
+    if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, ''); if (s === '-0') s = '0'; return s.replace('-', '−'); },
+  p(x, d) { const s = LK.f(x, d); return s.charAt(0) === '−' ? '(' + s + ')' : s; },
+  num(parent, label, value, step, on, o) { o = o || {}; const inp = h('input', {type: 'number', value: value, step: step, 'aria-label': label});
+    if (o.min !== undefined) inp.min = o.min; if (o.max !== undefined) inp.max = o.max;
+    inp.addEventListener('input', () => { const v = parseFloat(inp.value); if (isFinite(v)) on(v); });
+    parent.append(h('div', {class: 'nin'}, h('label', {}, label), inp)); return inp; },
+  pick(parent, label, options, value, on) { const sel = h('select', {'aria-label': label}, options.map(([v, t]) => h('option', {value: v}, t)));
+    sel.value = value; sel.addEventListener('change', () => on(sel.value)); parent.append(h('div', {class: 'nin'}, h('label', {}, label), sel)); return sel; },
+  calc(parent, long) { const box = h('div', {class: long ? 'calc long' : 'calc', 'aria-live': 'polite'}); parent.append(box);
+    return {el: box, set(lines) { box.innerHTML = ''; lines.forEach(l => { const row = h('div', {}); if (Array.isArray(l)) { row.append(h('b', {}, l[0] + ' '), l[1]); } else row.append(l); box.append(row); });
+      if (long) box.scrollTop = box.scrollHeight; }}; },
+  table(parent, head, rows, cls) { const t = h('table', {class: 'mini ' + (cls || '')}, h('thead', {}, h('tr', {}, head.map(x => h('th', {}, x)))),
+    h('tbody', {}, rows.map(r => h('tr', {}, r.map(c => (c && c.nodeType) ? c : h('td', {}, c)))))); const wrap = h('div', {class: 'tablewrap'}, t);
+    parent.append(wrap); return wrap; }
+};
+
+(function(){
+const root=$('#w7c');
+
+const S = {txt: '0.40 48; 0.45 43; 0.50 40; 0.55 35; 0.60 31', lr: 0.025, ll: 2};
+const f = LK.f, ctl = $('#w7c-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'data pairs x y separated by semicolons'});
+inp.addEventListener('input', () => { S.txt = inp.value; run(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 360px'}, h('label', {}, 'Pairs "x y" (water-cement ratio, strength), separated by semicolons'), inp));
+slider(ctl, {label: 'Ridge λ', min: 0, max: 0.1, step: 0.005, value: S.lr, fmt: v => v.toFixed(3)}, v => { S.lr = v; run(); });
+slider(ctl, {label: 'Lasso λ', min: 0, max: 6, step: 0.1, value: S.ll, fmt: v => v.toFixed(1)}, v => { S.ll = v; run(); });
+legend($('#w7c-leg', root), [['data', 4], ['least squares', 0], ['ridge', 1], ['lasso', 2], ['residuals', 'var(--steel)']]);
+const calc = LK.calc($('#w7c-calc', root));
+let D = [], fit = null;
+function run() {
+  D = S.txt.split(';').map(t => t.trim().replace(/−/g, '-').split(/[\s,]+/).map(Number)).filter(p => p.length === 2 && p.every(isFinite));
+  const tb = $('#w7c-tab', root); tb.innerHTML = '';
+  if (D.length < 2) { calc.set([['Data:', 'enter at least two pairs']]); fit = null; cv.redraw(); return; }
+  const n = D.length, xb = D.reduce((s, p) => s + p[0], 0) / n, yb = D.reduce((s, p) => s + p[1], 0) / n;
+  const rows = D.map(([x, y]) => ({x: x, y: y, dx: x - xb, dy: y - yb})); const sxy = rows.reduce((s, r) => s + r.dx * r.dy, 0), sxx = rows.reduce((s, r) => s + r.dx * r.dx, 0);
+  if (sxx === 0) { calc.set([['Data:', 'all x values are equal, so no slope can be fitted']]); fit = null; cv.redraw(); return; }
+  const b1 = sxy / sxx, b0 = yb - b1 * xb, br = sxy / (sxx + S.lr), bl = Math.sign(sxy) * Math.max(Math.abs(sxy) - S.ll / 2, 0) / sxx;
+  let ssr = 0, sst = 0; rows.forEach(r => { r.yh = b0 + b1 * r.x; r.e = r.y - r.yh; ssr += r.e * r.e; sst += r.dy * r.dy; });
+  fit = {b0: b0, b1: b1, xb: xb, yb: yb, br: br, bl: bl, rows: rows};
+  calc.set([['Means:', 'x̄ = (' + D.map(p => f(p[0])).join(' + ') + ')/' + n + ' = ' + f(xb) + ', ȳ = (' + D.map(p => f(p[1])).join(' + ') + ')/' + n + ' = ' + f(yb)],
+    ['Sums:', 'S_xy = Σ (x − x̄)(y − ȳ) = ' + f(sxy, 6) + ', S_xx = Σ (x − x̄)² = ' + f(sxx, 6)],
+    ['Least squares:', 'β1 = ' + f(sxy, 6) + '/' + f(sxx, 6) + ' = ' + f(b1) + ', β0 = ' + f(yb) + ' − ' + LK.p(b1) + ' × ' + f(xb) + ' = ' + f(b0)],
+    ['Ridge:', 'β1 = ' + f(sxy, 6) + '/(' + f(sxx, 6) + ' + ' + f(S.lr, 3) + ') = ' + f(br) + ', β0 = ' + f(yb - br * xb)],
+    ['Lasso:', 'β1 = sign(S_xy) × max(|' + f(sxy, 6) + '| − ' + f(S.ll) + '/2, 0)/' + f(sxx, 6) + ' = ' + f(bl) + (bl === 0 ? ', the input is dropped' : '') + ', β0 = ' + f(yb - bl * xb)],
+    ['Fit:', 'SS_res = ' + f(ssr) + ', SS_tot = ' + f(sst) + ', R² = 1 − ' + f(ssr) + '/' + f(sst) + ' = ' + f(sst > 0 ? 1 - ssr / sst : NaN)]]);
+  LK.table(tb, ['x', 'y', 'x − x̄', 'y − ȳ', '(x − x̄)(y − ȳ)', '(x − x̄)²', 'ŷ', 'y − ŷ'], rows.map(r => [f(r.x), f(r.y), f(r.dx), f(r.dy), f(r.dx * r.dy, 6), f(r.dx * r.dx, 6), f(r.yh), f(r.e)]));
+  cv.redraw();
+}
+const cv = stage($('#w7c-cv', root), 0.68, (c, w, hh) => {
+  c.clearRect(0, 0, w, hh); if (!fit) return; const C = COL(); const xs = D.map(p => p[0]), ys = D.map(p => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), pad = (x1 - x0) * 0.1 || 0.1, y0 = Math.floor(Math.min(...ys) / 5) * 5 - 5, y1 = Math.ceil(Math.max(...ys) / 5) * 5 + 5;
+  const fr = frame(c, w, hh, {x0: x0 - pad, x1: x1 + pad, y0: y0, y1: y1, xlabel: 'x', ylabel: 'y', ticks: 4});
+  const line = (b, col, dash) => polyline(c, [[fr.X(x0 - pad), fr.Y(fit.yb + b * (x0 - pad - fit.xb))], [fr.X(x1 + pad), fr.Y(fit.yb + b * (x1 + pad - fit.xb))]], col, 2, dash);
+  fit.rows.forEach(r => polyline(c, [[fr.X(r.x), fr.Y(r.y)], [fr.X(r.x), fr.Y(r.yh)]], C.steel, 1));
+  line(fit.b1, C.c[0]); line(fit.br, C.c[1], [6, 4]); line(fit.bl, C.c[2], [2, 3]);
+  D.forEach(([x, y]) => dot(c, fr.X(x), fr.Y(y), 5, C.c[4], C.ink));
+});
+run();
+
+})();
+(function(){
+const root=$('#w7d');
+
+const DEF = '48 47.8; 43 43.6; 40 39.4; 35 35.2; 31 31';
+const S = {txt: DEF};
+const f = LK.f, ctl = $('#w7d-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'pairs of measured and predicted values separated by semicolons'});
+inp.addEventListener('input', () => { S.txt = inp.value; run(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 380px'}, h('label', {}, 'Pairs "measured predicted", separated by semicolons'), inp));
+const b1 = h('button', {class: 'btn ghost', type: 'button'}, 'Add one large error'), b2 = h('button', {class: 'btn ghost', type: 'button'}, 'Default');
+b1.onclick = () => { inp.value = S.txt = S.txt + '; 45 30'; run(); }; b2.onclick = () => { inp.value = S.txt = DEF; run(); }; ctl.append(b1, b2);
+legend($('#w7d-leg', root), [['examples', 0], ['perfect prediction', 4]]);
+const calc = LK.calc($('#w7d-calc', root));
+let D = [];
+function run() {
+  D = S.txt.split(';').map(t => t.trim().replace(/−/g, '-').split(/[\s,]+/).map(Number)).filter(p => p.length === 2 && p.every(isFinite));
+  const tb = $('#w7d-tab', root); tb.innerHTML = ''; if (!D.length) { calc.set([['Data:', 'enter pairs']]); cv.redraw(); return; }
+  const n = D.length, yb = D.reduce((s, p) => s + p[0], 0) / n, e = D.map(([y, yh]) => y - yh);
+  const sa = e.reduce((s, v) => s + Math.abs(v), 0), ss = e.reduce((s, v) => s + v * v, 0), st = D.reduce((s, [y]) => s + (y - yb) * (y - yb), 0);
+  LK.table(tb, ['measured y', 'predicted ŷ', 'e = y − ŷ', '|e|', 'e²', 'y − ȳ', '(y − ȳ)²'], D.map(([y, yh], i) => [f(y), f(yh), f(e[i]), f(Math.abs(e[i])), f(e[i] * e[i]), f(y - yb), f((y - yb) * (y - yb))]));
+  calc.set([['MAE:', '(' + e.map(v => f(Math.abs(v))).join(' + ') + ')/' + n + ' = ' + f(sa) + '/' + n + ' = ' + f(sa / n)],
+    ['RMSE:', '√((' + e.map(v => f(v * v)).join(' + ') + ')/' + n + ') = √(' + f(ss) + '/' + n + ') = ' + f(Math.sqrt(ss / n))],
+    ['Mean:', 'ȳ = ' + f(yb) + ', SS_tot = ' + f(st)], ['R²:', '1 − ' + f(ss) + '/' + f(st) + ' = ' + f(st > 0 ? 1 - ss / st : NaN)],
+    ['Ratio:', 'RMSE/MAE = ' + f(Math.sqrt(ss / n) / (sa / n || NaN), 3) + '; values well above 1 point to a few large errors']]);
+  cv.redraw();
+}
+const cv = stage($('#w7d-cv', root), 1, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!D.length) return; const C = COL(); const all = D.flat(), lo = Math.floor(Math.min(...all) / 5) * 5, hi = Math.ceil(Math.max(...all) / 5) * 5;
+  const fr = frame(c, w, hh, {x0: lo, x1: hi, y0: lo, y1: hi, xlabel: 'measured', ylabel: 'predicted', ticks: 4});
+  polyline(c, [[fr.X(lo), fr.Y(lo)], [fr.X(hi), fr.Y(hi)]], C.c[4], 1.5, [5, 4]); D.forEach(([y, yh]) => dot(c, fr.X(y), fr.Y(yh), 5, C.c[0], C.ink)); });
+run();
+
+})();
+(function(){
+const root=$('#w7e');
+
+const S = {txt: '0.40 7 35; 0.45 28 43; 0.50 28 40; 0.55 90 41; 0.60 28 31; 0.42 90 55', qw: 0.48, qa: 28, k: 3, scale: true};
+const f = LK.f, ctl = $('#w7e-ctl', root), ctl2 = $('#w7e-ctl2', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'training mixes: ratio age strength separated by semicolons'});
+inp.addEventListener('input', () => { S.txt = inp.value; run(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 420px'}, h('label', {}, 'Training mixes "ratio age strength", separated by semicolons'), inp));
+slider(ctl2, {label: 'Query ratio', min: 0.3, max: 0.7, step: 0.01, value: S.qw, fmt: v => v.toFixed(2)}, v => { S.qw = v; run(); });
+slider(ctl2, {label: 'Query age (days)', min: 1, max: 120, step: 1, value: S.qa}, v => { S.qa = v; run(); });
+LK.num(ctl2, 'k', S.k, 1, v => { if (v >= 1) { S.k = Math.round(v); run(); } }, {min: 1});
+LK.pick(ctl2, 'Distance', [['1', 'standardised inputs'], ['0', 'raw inputs']], '1', v => { S.scale = v === '1'; run(); });
+legend($('#w7e-leg', root), [['training mixes', 0], ['query', 4], ['neighbours (chosen distance)', 3], ['neighbours (other distance)', 'var(--steel)']]);
+const calc = LK.calc($('#w7e-calc', root));
+let T = [], nbS = [], nbR = [];
+function run() {
+  T = S.txt.split(';').map(t => t.trim().split(/\s+/).map(Number)).filter(p => p.length === 3 && p.every(isFinite));
+  const tb = $('#w7e-tab', root); tb.innerHTML = ''; const n = T.length; if (n < 1) { calc.set([['Data:', 'enter mixes']]); cv.redraw(); return; }
+  const k = Math.min(S.k, n), mw = T.reduce((s, t) => s + t[0], 0) / n, ma = T.reduce((s, t) => s + t[1], 0) / n;
+  const sw = Math.sqrt(T.reduce((s, t) => s + (t[0] - mw) ** 2, 0) / n) || 1, sa = Math.sqrt(T.reduce((s, t) => s + (t[1] - ma) ** 2, 0) / n) || 1;
+  const rows = T.map((t, i) => { const rw = Math.hypot(t[0] - S.qw, t[1] - S.qa), zw = (t[0] - S.qw) / sw, za = (t[1] - S.qa) / sa; return {i: i, t: t, raw: rw, zw: zw, za: za, z: Math.hypot(zw, za)}; });
+  nbR = rows.slice().sort((a, b) => a.raw - b.raw).slice(0, k).map(r => r.i); nbS = rows.slice().sort((a, b) => a.z - b.z).slice(0, k).map(r => r.i);
+  const pR = nbR.reduce((s, i) => s + T[i][2], 0) / k, pS = nbS.reduce((s, i) => s + T[i][2], 0) / k;
+  LK.table(tb, ['mix', 'ratio', 'age', 'strength', 'raw distance', '(ratio − q)/σ', '(age − q)/σ', 'scaled distance'], rows.map(r => [r.i + 1, f(r.t[0]), f(r.t[1]), f(r.t[2]), f(r.raw), f(r.zw), f(r.za), f(r.z)]));
+  calc.set([['Scaling:', 'ratio: μ = ' + f(mw, 5) + ', σ = ' + f(sw, 5) + '; age: μ = ' + f(ma) + ', σ = ' + f(sa)],
+    ['Raw neighbours:', nbR.map(i => i + 1).join(', ') + ', prediction (' + nbR.map(i => f(T[i][2])).join(' + ') + ')/' + k + ' = ' + f(pR)],
+    ['Scaled neighbours:', nbS.map(i => i + 1).join(', ') + ', prediction (' + nbS.map(i => f(T[i][2])).join(' + ') + ')/' + k + ' = ' + f(pS)],
+    ['Example:', 'mix 1 scaled: √(' + f(rows[0].zw) + '² + ' + f(rows[0].za) + '²) = ' + f(rows[0].z)]]);
+  cv.redraw();
+}
+const cv = stage($('#w7e-cv', root), 0.9, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!T.length) return; const C = COL();
+  const fr = frame(c, w, hh, {x0: 0.3, x1: 0.7, y0: 0, y1: 120, xlabel: 'water-cement ratio', ylabel: 'age (days)', ticks: 4});
+  const chosen = S.scale ? nbS : nbR, other = S.scale ? nbR : nbS;
+  other.forEach(i => polyline(c, [[fr.X(S.qw), fr.Y(S.qa)], [fr.X(T[i][0]), fr.Y(T[i][1])]], C.steel, 1, [3, 3]));
+  chosen.forEach(i => polyline(c, [[fr.X(S.qw), fr.Y(S.qa)], [fr.X(T[i][0]), fr.Y(T[i][1])]], C.c[3], 2.2));
+  T.forEach((t, i) => { dot(c, fr.X(t[0]), fr.Y(t[1]), 6, C.c[0], C.ink); c.fillStyle = C.ink; c.font = '11px ' + cssv('--sans'); c.fillText((i + 1) + ': ' + t[2], fr.X(t[0]) + 7, fr.Y(t[1]) - 6); });
+  dot(c, fr.X(S.qw), fr.Y(S.qa), 7, C.c[4], C.ink); });
+run();
+
+})();
+(function(){
+const root=$('#w7f');
+
+const S = {txt: '0.40 48; 0.45 43; 0.50 40; 0.55 35; 0.60 31', nu: 0.5};
+const f = LK.f, ctl = $('#w7f-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'data pairs x y'});
+inp.addEventListener('input', () => { S.txt = inp.value; reset(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 360px'}, h('label', {}, 'Pairs "x y", separated by semicolons'), inp));
+slider(ctl, {label: 'Learning rate ν', min: 0.1, max: 1, step: 0.05, value: S.nu, fmt: v => v.toFixed(2)}, v => { S.nu = v; });
+legend($('#w7f-leg', root), [['data', 4], ['best single split', 1], ['boosted model', 0]]);
+const calc = LK.calc($('#w7f-calc', root), true);
+let D = [], Fm = [], stumps = [], base = 0, best = null;
+function splits(ys) {
+  const out = []; for (let k = 1; k < D.length; k++) { if (D[k][0] === D[k - 1][0]) continue; const L = ys.slice(0, k), Rr = ys.slice(k), mL = L.reduce((a, b) => a + b, 0) / L.length, mR = Rr.reduce((a, b) => a + b, 0) / Rr.length;
+    const sL = L.reduce((a, y) => a + (y - mL) ** 2, 0), sR = Rr.reduce((a, y) => a + (y - mR) ** 2, 0); out.push({t: (D[k - 1][0] + D[k][0]) / 2, k: k, mL: mL, mR: mR, sL: sL, sR: sR, tot: sL + sR}); }
+  return out; }
+function reset() {
+  D = S.txt.split(';').map(t => t.trim().replace(/−/g, '-').split(/[\s,]+/).map(Number)).filter(p => p.length === 2 && p.every(isFinite)).sort((a, b) => a[0] - b[0]);
+  const tb = $('#w7f-tab', root); tb.innerHTML = ''; if (D.length < 2) { calc.set([['Data:', 'enter at least two pairs']]); best = null; cv.redraw(); return; }
+  const ys = D.map(p => p[1]), C = splits(ys); best = C.reduce((a, b) => (!a || b.tot < a.tot) ? b : a, null);
+  LK.table(tb, ['threshold', 'left mean', 'left SSE', 'right mean', 'right SSE', 'total SSE'], C.map(s => [f(s.t), f(s.mL), f(s.sL), f(s.mR), f(s.sR), s === best ? h('td', {class: 'sel'}, f(s.tot)) : f(s.tot)]));
+  base = ys.reduce((a, b) => a + b, 0) / ys.length; Fm = ys.map(() => base); stumps = [];
+  calc.set([['Start:', 'F0 = mean = ' + f(base) + ' for every example; MSE = ' + f(mse())]]); cv.redraw();
+}
+const mse = () => D.reduce((s, [x, y], i) => s + (y - Fm[i]) ** 2, 0) / D.length;
+function addStump() {
+  if (D.length < 2) return; const r = D.map(([x, y], i) => y - Fm[i]), C = splits(r); if (!C.length) return; const b = C.reduce((a, c) => (!a || c.tot < a.tot) ? c : a, null);
+  const before = mse(); Fm = Fm.map((v, i) => v + S.nu * (i < b.k ? b.mL : b.mR)); stumps.push({t: b.t, l: S.nu * b.mL, r: S.nu * b.mR});
+  calc.set([['Stump ' + stumps.length + ':', 'residuals ' + r.map(v => f(v)).join(', ')], ['', '  best threshold ' + f(b.t) + ': left mean ' + f(b.mL) + ', right mean ' + f(b.mR)],
+    ['', '  F' + stumps.length + ' = F' + (stumps.length - 1) + ' + ' + f(S.nu) + ' × (' + f(b.mL) + ' left, ' + f(b.mR) + ' right) gives ' + Fm.map(v => f(v)).join(', ')],
+    ['', '  MSE ' + f(before) + ' → ' + f(mse())]]);
+  cv.redraw();
+}
+const cv = stage($('#w7f-cv', root), 0.62, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!best) return; const C = COL(); const xs = D.map(p => p[0]), ys = D.map(p => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), pad = (x1 - x0) * 0.1 || 0.1, y0 = Math.floor(Math.min(...ys) / 5) * 5 - 5, y1 = Math.ceil(Math.max(...ys) / 5) * 5 + 5;
+  const fr = frame(c, w, hh, {x0: x0 - pad, x1: x1 + pad, y0: y0, y1: y1, xlabel: 'x', ylabel: 'y', ticks: 4});
+  polyline(c, [[fr.X(x0 - pad), fr.Y(best.mL)], [fr.X(best.t), fr.Y(best.mL)], [fr.X(best.t), fr.Y(best.mR)], [fr.X(x1 + pad), fr.Y(best.mR)]], C.c[1], 1.5, [5, 4]);
+  const pred = x => stumps.reduce((s, st) => s + (x < st.t ? st.l : st.r), base); const pts = []; for (let i = 0; i <= 300; i++) { const x = x0 - pad + (x1 - x0 + 2 * pad) * i / 300; pts.push([fr.X(x), fr.Y(pred(x))]); }
+  polyline(c, pts, C.c[0], 2.2); D.forEach(([x, y]) => dot(c, fr.X(x), fr.Y(y), 5, C.c[4], C.ink)); });
+$('#w7f-add', root).onclick = addStump; $('#w7f-reset', root).onclick = reset;
+reset();
+
+})();
+(function(){
+const root=$('#w7g');
+
+const law = wc => 110 / Math.pow(8.5, wc);
+const S = {n: 20, noise: 4, deg: 3, x0: 0.7, sets: 200, seed: 1};
+const f = LK.f, ctl = $('#w7g-ctl', root);
+slider(ctl, {label: 'Mixes per training set', min: 6, max: 80, step: 1, value: S.n}, v => { S.n = v; run(); });
+slider(ctl, {label: 'Noise σ (MPa)', min: 0.5, max: 10, step: 0.5, value: S.noise, fmt: v => v.toFixed(1)}, v => { S.noise = v; run(); });
+slider(ctl, {label: 'Polynomial degree', min: 0, max: 8, step: 1, value: S.deg}, v => { S.deg = v; run(); });
+slider(ctl, {label: 'Evaluation point x0', min: 0.3, max: 0.85, step: 0.01, value: S.x0, fmt: v => v.toFixed(2)}, v => { S.x0 = v; run(); });
+legend($('#w7g-leg', root), [['20 of the fitted models', 'var(--steel)'], ['mean of 200 models', 0], ['true law', 4], ['x0', 1]]);
+legend($('#w7g-leg2', root), [['bias²', 2], ['variance', 3], ['bias² + variance + σ²', 0]]);
+const calc = LK.calc($('#w7g-calc', root));
+const z = x => (x - 0.565) / 0.285;
+function polyFit(P, d) { d = Math.min(d, P.length - 1); const m = d + 1, A = Array.from({length: m}, () => Array(m).fill(0)), b = Array(m).fill(0);
+  P.forEach(([x, y]) => { const t = [1]; for (let i = 1; i < m; i++) t.push(t[i - 1] * z(x)); for (let i = 0; i < m; i++) { b[i] += t[i] * y; for (let j = 0; j < m; j++) A[i][j] += t[i] * t[j]; } });
+  for (let i = 0; i < m; i++) A[i][i] += 1e-9;
+  for (let i = 0; i < m; i++) { let p = i; for (let r = i + 1; r < m; r++) if (Math.abs(A[r][i]) > Math.abs(A[p][i])) p = r; [A[i], A[p]] = [A[p], A[i]]; [b[i], b[p]] = [b[p], b[i]];
+    for (let r = i + 1; r < m; r++) { const q = A[r][i] / A[i][i]; for (let c = i; c < m; c++) A[r][c] -= q * A[i][c]; b[r] -= q * b[i]; } }
+  const wv = Array(m).fill(0); for (let i = m - 1; i >= 0; i--) { let s = b[i]; for (let c = i + 1; c < m; c++) s -= A[i][c] * wv[c]; wv[i] = s / A[i][i]; }
+  return x => { let s = 0, t = 1; for (let i = 0; i < m; i++) { s += wv[i] * t; t *= z(x); } return s; }; }
+function sets() { const r = RNG(S.seed * 9973); return Array.from({length: S.sets}, () => Array.from({length: S.n}, () => { const x = r.uniform(0.3, 0.85); return [x, law(x) + S.noise * r.normal()]; })); }
+function decomp(deg, data) { const preds = data.map(P => polyFit(P, deg)(S.x0)), m = preds.reduce((a, b) => a + b, 0) / preds.length, b = m - law(S.x0), v = preds.reduce((a, p) => a + (p - m) ** 2, 0) / preds.length;
+  return {m: m, b2: b * b, b: b, v: v}; }
+let models = [], curve = [], data = null, allModels = [];
+function run() {
+  data = sets(); models = data.slice(0, 20).map(P => polyFit(P, S.deg)); const all = data.map(P => polyFit(P, S.deg));
+  const r = decomp(S.deg, data); curve = []; for (let d = 0; d <= 8; d++) curve.push(decomp(d, data));
+  const fx = law(S.x0);
+  calc.set([['Truth:', 'f(x0) = 110/8.5^' + f(S.x0) + ' = ' + f(fx)], ['Mean model:', 'E[f̂(x0)] over ' + S.sets + ' training sets = ' + f(r.m)],
+    ['Bias:', f(r.m) + ' − ' + f(fx) + ' = ' + f(r.b) + ', bias² = ' + f(r.b2)], ['Variance:', 'mean of (f̂(x0) − ' + f(r.m) + ')² = ' + f(r.v)],
+    ['Expected error:', f(r.b2) + ' + ' + f(r.v) + ' + ' + f(S.noise) + '² = ' + f(r.b2 + r.v + S.noise * S.noise)]]);
+  allModels = all; cv.redraw(); cv2.redraw();
+}
+const cv = stage($('#w7g-cv', root), 0.62, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!data) return; const C = COL(); const fr = frame(c, w, hh, {x0: 0.3, x1: 0.9, y0: 0, y1: 90, xlabel: 'water-cement ratio', ylabel: 'strength (MPa)', ticks: 6});
+  const xs = []; for (let i = 0; i <= 110; i++) xs.push(0.3 + 0.55 * i / 110);
+  models.forEach(m => polyline(c, xs.map(x => [fr.X(x), fr.Y(clamp(m(x), -10, 90))]), C.steel + '88', 1));
+  const all = allModels; if (all.length) polyline(c, xs.map(x => [fr.X(x), fr.Y(clamp(all.reduce((s, m) => s + m(x), 0) / all.length, -10, 90))]), C.c[0], 2.4);
+  polyline(c, xs.map(x => [fr.X(x), fr.Y(law(x))]), C.c[4], 2, [6, 4]); polyline(c, [[fr.X(S.x0), fr.Y(0)], [fr.X(S.x0), fr.Y(90)]], C.c[1], 1, [3, 3]); });
+const cv2 = stage($('#w7g-cv2', root), 0.62, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!curve.length) return; const C = COL(); const tot = curve.map(r => r.b2 + r.v + S.noise * S.noise), raw = Math.max(...tot) / 8, mag = Math.pow(10, Math.floor(Math.log10(raw))), top = 8 * mag * [1, 2, 2.5, 5, 10].find(m => m * mag >= raw);
+  const fr = frame(c, w, hh, {x0: 0, x1: 8, y0: 0, y1: top, xlabel: 'polynomial degree', ylabel: 'squared error at x0', ticks: 8});
+  polyline(c, curve.map((r, d) => [fr.X(d), fr.Y(r.b2)]), C.c[2], 2); polyline(c, curve.map((r, d) => [fr.X(d), fr.Y(r.v)]), C.c[3], 2); polyline(c, tot.map((t, d) => [fr.X(d), fr.Y(t)]), C.c[0], 2.4);
+  dot(c, fr.X(S.deg), fr.Y(tot[S.deg]), 5, C.c[0], C.ink); });
+run();
+
+})();</script></body></html>

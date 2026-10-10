@@ -1,0 +1,623 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swarm lab: Particles, a motor controller and an ant colony | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+a.btn{display:inline-block;text-decoration:none}.next{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:6px;padding:2px 16px 12px;margin:2.2rem 0}.next h2,.pycorner h2{margin-top:.9rem}.next .btn,.pycorner .btn{margin:4px 6px 4px 0}.refs{margin-top:2rem}.calc{font-family:var(--mono);font-size:.84rem;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px 10px;margin:8px 0;white-space:pre-wrap;overflow-x:auto;line-height:1.55}.calc b{color:var(--accent)}.calc .hl{background:var(--band)}.calc.long{max-height:26rem;overflow-y:auto}.nin{display:flex;flex-direction:column;gap:2px;flex:0 1 190px;min-width:120px}.nin label{font-size:.86rem;color:var(--steel)}.nin input,.nin select{font:inherit;padding:.25rem .4rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);width:100%}.grid-in{display:grid;gap:4px}.grid-in input{width:100%;font:inherit;padding:.2rem;text-align:center;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--ink)}table.mini{width:auto;font-size:.86rem}table.mini td,table.mini th{padding:3px 8px;text-align:center}td.sel{background:var(--band);font-weight:700}</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 6 of 14: interactive lab</p><h1>Swarm lab: Particles, a motor controller and an ant colony</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-06/README.md">Week overview</a><a href="lecture.html">Lecture page</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-06/NB06_swarm_intelligence.ipynb">Colab notebook</a><a href="Week06_Lecture_Notes.pdf">PDF notes</a></nav></header>
+<p>Part A shows a particle swarm on a two-dimensional landscape with controls for inertia, cognitive and social coefficients <span class="cite" tabindex="0" data-refs="1,2">[1, 2]</span>. Part B tunes the PID speed controller of a DC motor with the parameters of the Control Tutorials for MATLAB and Simulink and a 24-volt limit, and compares the swarm's gains with a reference tuning <span class="cite" tabindex="0" data-refs="3">[3]</span>. Part C runs an ant colony on a drilling sequence and shows pheromone trails forming <span class="cite" tabindex="0" data-refs="4">[4]</span>. Part D decomposes every velocity update of a small particle swarm into inertia, cognitive and social terms and computes the constriction factor. Part E evaluates the decision probabilities and pheromone updates of the Ant System, Part F runs the PID loop of the DC motor sample by sample, and Part G performs the three phases of the artificial bee colony <span class="cite" tabindex="0" data-refs="1,4,5,7">[1, 4, 5, 7]</span>.</p><div class="tabs" role="tablist"><button aria-selected="true">Explore</button><button aria-selected="false">Check yourself</button><button aria-selected="false">Reflect and export</button></div><section class="tabpanel">
+<h2 id="part-a">Part A: The swarm on a landscape</h2>
+<div class="bench"><div class="row" id="s-sl"></div><canvas class="paper" id="s-cv" aria-label="Particle swarm"></canvas><div id="s-ro"></div>
+<div class="row"><button class="btn" id="s-play" type="button">Play</button><button class="btn ghost" id="s-reset" type="button">New swarm</button></div></div>
+<h2 id="part-b">Part B: PID tuning of a DC motor</h2>
+<div class="bench"><div class="row" id="m-sl"></div><canvas class="paper" id="m-cv" aria-label="Step responses"></canvas><div class="legend" id="m-leg"></div><div id="m-ro"></div>
+<div class="row"><button class="btn" id="m-run" type="button">Run particle swarm</button></div></div>
+<h2 id="part-c">Part C: Ant colony for a drilling sequence</h2>
+<div class="bench"><div class="row" id="a-sl"></div><canvas class="paper" id="a-cv" aria-label="Pheromone trails and best tour"></canvas><div id="a-ro"></div>
+<div class="row"><button class="btn" id="a-play" type="button">Play</button><button class="btn ghost" id="a-reset" type="button">New board</button></div></div>
+<h2 id="part-d">Part D: Inside one particle swarm update</h2>
+<p>A small swarm searches a two-dimensional function. Each press moves one particle and lists the random numbers, the inertia, cognitive and social terms of both velocity components, the new position and the update of the personal and global best; the chart draws the three terms as arrows that add up to the new velocity. The panel below computes the constriction factor for any coefficients <span class="cite" tabindex="0" data-refs="1,7">[1, 7]</span>.</p>
+<div class="bench" id="w6d"><div class="row" id="w6d-ctl"></div>
+<div class="row"><button class="btn" id="w6d-one" type="button">Next particle</button><button class="btn ghost" id="w6d-it" type="button">Finish the iteration</button><button class="btn ghost" id="w6d-run" type="button">Run 20 iterations</button><button class="btn ghost" id="w6d-reset" type="button">Reset</button></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 340px;min-width:0;max-width:520px"><canvas class="paper" id="w6d-cv" aria-label="Swarm and the three terms of one velocity update"></canvas><div class="legend" id="w6d-leg"></div></div>
+<div style="flex:1 1 300px;min-width:0" id="w6d-calc"></div></div>
+<h3>Constriction factor</h3><div class="row" id="w6d-chi"></div><div id="w6d-chic"></div></div>
+<h2 id="part-e">Part E: Ant decisions and pheromone updates</h2>
+<p>The holes of the worked example form the default instance, and any coordinates can be entered. The table gives the decision probabilities of an ant at the chosen hole with every factor. The first button lets the ants build complete tours with their random numbers, and the second applies evaporation and deposit to every edge; the width of each edge in the chart shows its pheromone <span class="cite" tabindex="0" data-refs="4,8">[4, 8]</span>.</p>
+<div class="bench" id="w6e"><div class="row" id="w6e-ctl"></div><div class="row" id="w6e-ctl2"></div>
+<div class="row"><button class="btn" id="w6e-ants" type="button">Let the ants build tours</button><button class="btn ghost" id="w6e-upd" type="button">Evaporate and deposit</button><button class="btn ghost" id="w6e-reset" type="button">Reset pheromone</button></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 300px;min-width:0;max-width:460px"><canvas class="paper" id="w6e-cv" aria-label="Holes and pheromone on the edges"></canvas></div>
+<div style="flex:1 1 340px;min-width:0" id="w6e-tab"></div></div><div id="w6e-calc"></div></div>
+<h2 id="part-f">Part F: The PID loop of the DC motor, sample by sample</h2>
+<p>The controller and motor of Part B are computed one sample at a time with the formulas of the lecture: the error, the running integral, the filtered derivative, the limited voltage, the two motor equations and the growing ITAE sum. The first two samples reproduce the worked example, and the chart shows the response as it builds up <span class="cite" tabindex="0" data-refs="3,9">[3, 9]</span>.</p>
+<div class="bench" id="w6f"><div class="row" id="w6f-ctl"></div>
+<div class="row"><button class="btn" id="w6f-one" type="button">Next sample</button><button class="btn ghost" id="w6f-50" type="button">Next 50 samples</button><button class="btn ghost" id="w6f-end" type="button">Run to 2 s</button><button class="btn ghost" id="w6f-reset" type="button">Reset</button></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 360px;min-width:0"><canvas class="paper" id="w6f-cv" aria-label="Speed and voltage"></canvas><div class="legend" id="w6f-leg"></div></div>
+<div style="flex:1 1 340px;min-width:0" id="w6f-calc"></div></div><div id="w6f-tab"></div></div>
+<h2 id="part-g">Part G: The three phases of the artificial bee colony</h2>
+<p>The buttons run the employed, onlooker and scout phases separately on the function x1² + x2². Every candidate shows the chosen component, the partner, the random factor φ and the greedy decision; the table holds the fitness, the selection probability and the trial counter of each source <span class="cite" tabindex="0" data-refs="5">[5]</span>.</p>
+<div class="bench" id="w6g"><div class="row" id="w6g-ctl"></div>
+<div class="row"><button class="btn" id="w6g-emp" type="button">Employed bees</button><button class="btn ghost" id="w6g-onl" type="button">Onlooker bees</button><button class="btn ghost" id="w6g-sct" type="button">Scout</button><button class="btn ghost" id="w6g-cyc" type="button">Run 20 cycles</button><button class="btn ghost" id="w6g-reset" type="button">Reset</button></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 300px;min-width:0;max-width:440px"><canvas class="paper" id="w6g-cv" aria-label="Food sources"></canvas><div class="legend" id="w6g-leg"></div></div>
+<div style="flex:1 1 340px;min-width:0" id="w6g-tab"></div></div><div id="w6g-calc"></div></div>
+</section><section class="tabpanel" hidden><p>Six questions with instant feedback. Rate your confidence before checking each answer.</p><div id="quiz"></div></section><section class="tabpanel" hidden><p>Answers are saved in this browser only. The export creates a Markdown learning log for your portfolio.</p><div id="reflect"></div><p class="small">After the export, continue with the <a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-06/README.md#discipline-challenges">discipline challenge</a> and the <a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-06/README.md#weekly-task">weekly task</a> in the week overview.</p></section>
+<section class="refs"><h2 id="references">References</h2><div class="small"><p>[1] Kennedy, J., &amp; Eberhart, R. (1995). Particle swarm optimization. In <i>Proceedings of ICNN'95, International Conference on Neural Networks</i>, Vol. 4 (pp. 1942-1948). IEEE. <a href="https://doi.org/10.1109/ICNN.1995.488968">https://doi.org/10.1109/ICNN.1995.488968</a></p><p>[2] Shi, Y., &amp; Eberhart, R. (1998). A modified particle swarm optimizer. In <i>1998 IEEE International Conference on Evolutionary Computation Proceedings</i> (pp. 69-73). IEEE. <a href="https://doi.org/10.1109/ICEC.1998.699146">https://doi.org/10.1109/ICEC.1998.699146</a></p><p>[3] University of Michigan, Carnegie Mellon University, &amp; University of Detroit Mercy (2026). <i>Control Tutorials for MATLAB and Simulink: DC motor speed, system modeling</i>. <a href="https://ctms.engin.umich.edu">https://ctms.engin.umich.edu</a></p><p>[4] Dorigo, M., Maniezzo, V., &amp; Colorni, A. (1996). Ant system: Optimization by a colony of cooperating agents. <i>IEEE Transactions on Systems, Man, and Cybernetics, Part B</i>, <i>26</i>(1), 29-41. <a href="https://doi.org/10.1109/3477.484436">https://doi.org/10.1109/3477.484436</a></p><p>[5] Karaboga, D., &amp; Basturk, B. (2007). A powerful and efficient algorithm for numerical function optimization: Artificial bee colony (ABC) algorithm. <i>Journal of Global Optimization</i>, <i>39</i>(3), 459-471. <a href="https://doi.org/10.1007/s10898-007-9149-x">https://doi.org/10.1007/s10898-007-9149-x</a></p><p>[6] Sörensen, K. (2015). Metaheuristics: The metaphor exposed. <i>International Transactions in Operational Research</i>, <i>22</i>(1), 3-18. <a href="https://doi.org/10.1111/itor.12001">https://doi.org/10.1111/itor.12001</a></p><p>[7] Clerc, M., &amp; Kennedy, J. (2002). The particle swarm: Explosion, stability, and convergence in a multidimensional complex space. <i>IEEE Transactions on Evolutionary Computation</i>, <i>6</i>(1), 58-73. <a href="https://doi.org/10.1109/4235.985692">https://doi.org/10.1109/4235.985692</a></p><p>[8] Dorigo, M., &amp; Stützle, T. (2004). <i>Ant Colony Optimization</i>. MIT Press.</p><p>[9] Åström, K. J., &amp; Hägglund, T. (1995). <i>PID Controllers: Theory, Design, and Tuning</i> (2nd ed.). Instrument Society of America.</p></div></section>
+<script type="application/json" id="refdata">{"1": "Kennedy, J., &amp; Eberhart, R. (1995). Particle swarm optimization. In <i>Proceedings of ICNN'95, International Conference on Neural Networks</i>, Vol. 4 (pp. 1942-1948). IEEE. <a href=\"https://doi.org/10.1109/ICNN.1995.488968\">https://doi.org/10.1109/ICNN.1995.488968</a>", "2": "Shi, Y., &amp; Eberhart, R. (1998). A modified particle swarm optimizer. In <i>1998 IEEE International Conference on Evolutionary Computation Proceedings</i> (pp. 69-73). IEEE. <a href=\"https://doi.org/10.1109/ICEC.1998.699146\">https://doi.org/10.1109/ICEC.1998.699146</a>", "3": "University of Michigan, Carnegie Mellon University, &amp; University of Detroit Mercy (2026). <i>Control Tutorials for MATLAB and Simulink: DC motor speed, system modeling</i>. <a href=\"https://ctms.engin.umich.edu\">https://ctms.engin.umich.edu</a>", "4": "Dorigo, M., Maniezzo, V., &amp; Colorni, A. (1996). Ant system: Optimization by a colony of cooperating agents. <i>IEEE Transactions on Systems, Man, and Cybernetics, Part B</i>, <i>26</i>(1), 29-41. <a href=\"https://doi.org/10.1109/3477.484436\">https://doi.org/10.1109/3477.484436</a>", "5": "Karaboga, D., &amp; Basturk, B. (2007). A powerful and efficient algorithm for numerical function optimization: Artificial bee colony (ABC) algorithm. <i>Journal of Global Optimization</i>, <i>39</i>(3), 459-471. <a href=\"https://doi.org/10.1007/s10898-007-9149-x\">https://doi.org/10.1007/s10898-007-9149-x</a>", "6": "Sörensen, K. (2015). Metaheuristics: The metaphor exposed. <i>International Transactions in Operational Research</i>, <i>22</i>(1), 3-18. <a href=\"https://doi.org/10.1111/itor.12001\">https://doi.org/10.1111/itor.12001</a>", "7": "Clerc, M., &amp; Kennedy, J. (2002). The particle swarm: Explosion, stability, and convergence in a multidimensional complex space. <i>IEEE Transactions on Evolutionary Computation</i>, <i>6</i>(1), 58-73. <a href=\"https://doi.org/10.1109/4235.985692\">https://doi.org/10.1109/4235.985692</a>", "8": "Dorigo, M., &amp; Stützle, T. (2004). <i>Ant Colony Optimization</i>. MIT Press.", "9": "Åström, K. J., &amp; Hägglund, T. (1995). <i>PID Controllers: Theory, Design, and Tuning</i> (2nd ed.). Instrument Society of America."}</script>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: October 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.keys(st).filter(i => st[i] && +i < n).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLab(6,"Swarm Intelligence: Particles, Ants and Bees",[{"q": "Which PSO parameter mainly controls how much of its previous motion a particle keeps?", "options": ["c1", "c2", "The inertia weight w", "The swarm size"], "answer": 2, "why": "w scales the previous velocity; large values favour exploration, small values exploitation [2]."}, {"q": "What does ITAE measure in a step response?", "options": ["The integral of time-weighted absolute error", "The maximum overshoot only", "The steady-state gain", "The number of oscillations"], "answer": 0, "why": "ITAE integrates t |e(t)|, so errors that persist late in the response are penalised strongly."}, {"q": "In ant colony optimisation, the probability of moving from city i to city j grows with", "options": ["the distance between i and j", "the pheromone on edge (i, j) and the inverse distance", "the number of ants", "the evaporation rate only"], "answer": 1, "why": "Ants combine learned desirability (pheromone) with a heuristic (inverse distance) [4]."}, {"q": "Which phase of the artificial bee colony algorithm acts as a restart mechanism?", "options": ["Employed bees", "Onlooker bees", "Scout bees", "The waggle dance"], "answer": 2, "why": "Scouts replace sources that have not improved for a number of trials with random new ones [5]."}, {"q": "What is the fair basis for comparing two metaheuristics on an engineering problem?", "options": ["The same number of iterations, one run each", "The same budget of function evaluations and many independent runs with statistics", "The more interesting metaphor", "The algorithm with more parameters"], "answer": 1, "why": "Evaluations measure computational cost; many runs capture the randomness of the algorithms [6]."}, {"q": "In a Python class, what is `self`?", "options": ["A reserved name for the class itself", "The object on which a method is called, which holds its attributes", "A global variable", "The return value of __init__"], "answer": 1, "why": "Methods receive the object as their first parameter; attributes such as self.x live on that object."}],["Which parameter of your own field is tuned today by trial and error and could be tuned by a swarm? What would the cost function be?", "The PID cost function in the notebook contains an overshoot penalty. How did changing it change the gains, and what does that say about who is responsible for the result?", "How did writing the swarm as a class help you, compared with the functions of earlier weeks?"]);</script><script>(function(){
+// Part A
+const f=(x,y)=>20+x*x+y*y-10*(Math.cos(2*Math.PI*x)+Math.cos(2*Math.PI*y)); const B=5.12; const S={n:25,w:0.7298,c1:1.49618,c2:1.49618};
+let sw=null, it=0; const sro=readout($('#s-ro'),['iteration','global best','mean speed']);
+slider($('#s-sl'),{label:'Swarm size',min:5,max:80,step:5,value:S.n},v=>{S.n=v;init();});
+slider($('#s-sl'),{label:'Inertia w',min:0,max:1.2,step:0.02,value:S.w},v=>S.w=v);
+slider($('#s-sl'),{label:'Cognitive c1',min:0,max:3,step:0.05,value:S.c1},v=>S.c1=v);
+slider($('#s-sl'),{label:'Social c2',min:0,max:3,step:0.05,value:S.c2},v=>S.c2=v);
+function init(){ const r=RNG(Math.floor(Math.random()*1e6)); sw={r,x:[],v:[],p:[],pf:[],g:null,gf:Infinity}; for(let i=0;i<S.n;i++){ const x=[r.uniform(-B,B),r.uniform(-B,B)]; sw.x.push(x); sw.v.push([r.uniform(-1,1),r.uniform(-1,1)]); sw.p.push(x.slice()); const fv=f(...x); sw.pf.push(fv); if(fv<sw.gf){sw.gf=fv;sw.g=x.slice();} } it=0; ss.redraw(); }
+function step(){ const r=sw.r; let spd=0; for(let i=0;i<S.n;i++){ for(let k=0;k<2;k++){ sw.v[i][k]=clamp(S.w*sw.v[i][k]+S.c1*r()*(sw.p[i][k]-sw.x[i][k])+S.c2*r()*(sw.g[k]-sw.x[i][k]),-2,2); sw.x[i][k]=clamp(sw.x[i][k]+sw.v[i][k],-B,B); }
+  spd+=Math.hypot(...sw.v[i]); const fv=f(...sw.x[i]); if(fv<sw.pf[i]){ sw.pf[i]=fv; sw.p[i]=sw.x[i].slice(); if(fv<sw.gf){sw.gf=fv;sw.g=sw.x[i].slice();} } } it++; sro('iteration',it); sro('global best',sw.gf.toFixed(4)); sro('mean speed',(spd/S.n).toFixed(3)); }
+const ss=stage($('#s-cv'),0.62,(c,w,h)=>{ c.clearRect(0,0,w,h); if(!sw) return; const C=COL(); const fr=frame(c,w,h,{x0:-B,x1:B,y0:-B,y1:B,ticks:5}); const n=70;
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++){ const x=-B+2*B*(i+0.5)/n, y=-B+2*B*(j+0.5)/n; c.fillStyle=`rgba(31,95,139,${0.05+0.4*(1-Math.min(1,f(x,y)/80))})`; c.fillRect(fr.X(x)-w/n/2,fr.Y(y)-h/n/2,w/n+1,h/n+1); }
+  sw.x.forEach((x,i)=>{ polyline(c,[[fr.X(x[0]),fr.Y(x[1])],[fr.X(x[0]-sw.v[i][0]),fr.Y(x[1]-sw.v[i][1])]],C.steel,1); dot(c,fr.X(x[0]),fr.Y(x[1]),4,C.c[1],C.ink); }); dot(c,fr.X(sw.g[0]),fr.Y(sw.g[1]),7,null,C.bad); });
+const slp=loop(()=>{ step(); ss.redraw(); if(it>=200){slp.stop();$('#s-play').textContent='Play';} },90);
+$('#s-play').onclick=()=>{ if(slp.running){slp.stop();$('#s-play').textContent='Play';} else {slp.start();$('#s-play').textContent='Pause';} };
+$('#s-reset').onclick=()=>{ slp.stop(); $('#s-play').textContent='Play'; init(); }; init();
+// Part B
+const M={J:0.01,b:0.1,K:0.01,R:1,L:0.5,vmax:24}; const T={pen:20,n:20,iters:40};
+slider($('#m-sl'),{label:'Overshoot penalty',min:0,max:100,step:5,value:T.pen},v=>T.pen=v);
+slider($('#m-sl'),{label:'Particles',min:5,max:40,step:5,value:T.n},v=>T.n=v);
+slider($('#m-sl'),{label:'Iterations',min:5,max:80,step:5,value:T.iters},v=>T.iters=v);
+legend($('#m-leg'),[['swarm gains',0],['reference gains (100, 200, 10)',1],['set point',4]]);
+const mro=readout($('#m-ro'),['Kp, Ki, Kd (swarm)','cost (swarm)','cost (reference)','overshoot (swarm)']);
+function simPID(g,keep){ const [Kp,Ki,Kd]=g; const dt=0.002, n=1000; let w=0,i=0,I=0,ep=1,df=0,cost=0,mx=0; const out=keep?[]:null;
+  for(let k=0;k<n;k++){ const e=1-w; I+=e*dt; const d=(e-ep)/dt; ep=e; df+=(d-df)*dt/0.01; const v=clamp(Kp*e+Ki*I+Kd*df,-M.vmax,M.vmax);
+    const dw=(M.K*i-M.b*w)/M.J, di=(v-M.R*i-M.K*w)/M.L; w+=dw*dt; i+=di*dt; cost+=(k*dt)*Math.abs(e)*dt; mx=Math.max(mx,w); if(keep) out.push(w); }
+  return {cost:cost+T.pen*Math.max(0,mx-1.02), os:Math.max(0,mx-1), out}; }
+let best=null, ref=null;
+const ms=stage($('#m-cv'),0.45,(c,w,h)=>{ c.clearRect(0,0,w,h); const C=COL(); const f=frame(c,w,h,{x0:0,x1:2,y0:0,y1:1.4,xlabel:'time (s)',ylabel:'speed (rad/s)'});
+  polyline(c,[[f.X(0),f.Y(1)],[f.X(2),f.Y(1)]],C.c[4],1,[5,4]); if(ref) polyline(c,ref.out.map((v,k)=>[f.X(k*0.002),f.Y(v)]),C.c[1],1.6); if(best) polyline(c,best.r.out.map((v,k)=>[f.X(k*0.002),f.Y(v)]),C.c[0],2.2); });
+function tune(){ const r=RNG(Math.floor(Math.random()*1e6)); const lo=[0,0,0], hi=[300,600,30]; const n=T.n; const x=[],v=[],p=[],pf=[]; let g=null,gf=Infinity;
+  for(let i=0;i<n;i++){ const xi=lo.map((l,k)=>r.uniform(l,hi[k])); x.push(xi); v.push([0,0,0]); p.push(xi.slice()); const c=simPID(xi).cost; pf.push(c); if(c<gf){gf=c;g=xi.slice();} }
+  for(let t=0;t<T.iters;t++) for(let i=0;i<n;i++){ for(let k=0;k<3;k++){ v[i][k]=0.7298*v[i][k]+1.49618*r()*(p[i][k]-x[i][k])+1.49618*r()*(g[k]-x[i][k]); x[i][k]=clamp(x[i][k]+v[i][k],lo[k],hi[k]); }
+    const c=simPID(x[i]).cost; if(c<pf[i]){pf[i]=c;p[i]=x[i].slice(); if(c<gf){gf=c;g=x[i].slice();}} }
+  best={g,r:simPID(g,true)}; ref=simPID([100,200,10],true);
+  mro('Kp, Ki, Kd (swarm)',g.map(v=>v.toFixed(1)).join(', ')); mro('cost (swarm)',best.r.cost.toFixed(4)); mro('cost (reference)',ref.cost.toFixed(4)); mro('overshoot (swarm)',(100*best.r.os).toFixed(1)+' %'); ms.redraw(); }
+$('#m-run').onclick=tune; ref=simPID([100,200,10],true); ms.redraw(); tune();
+// Part C
+const A={n:30,alpha:1,beta:3,rho:0.3,ants:20}; let pts=[], D=[], tau=[], bestT=null, bestL=Infinity, nnL=0, iter=0;
+slider($('#a-sl'),{label:'Pheromone weight alpha',min:0,max:3,step:0.1,value:A.alpha},v=>A.alpha=v);
+slider($('#a-sl'),{label:'Distance weight beta',min:0,max:6,step:0.2,value:A.beta},v=>A.beta=v);
+slider($('#a-sl'),{label:'Evaporation rho',min:0.02,max:0.9,step:0.02,value:A.rho},v=>A.rho=v);
+const aro=readout($('#a-ro'),['iteration','best tour','nearest neighbour tour']);
+function board(){ const r=RNG(Math.floor(Math.random()*1e6)); pts=[]; for(let i=0;i<A.n;i++){ const cl=r.int(3); const cx=[0.25,0.7,0.5][cl], cy=[0.3,0.35,0.75][cl]; pts.push([clamp(cx+0.14*r.normal(),0.03,0.97),clamp(cy+0.12*r.normal(),0.03,0.97)]); }
+  D=pts.map(a=>pts.map(b=>Math.hypot(a[0]-b[0],a[1]-b[1])+1e-9)); tau=pts.map(()=>pts.map(()=>1)); bestT=null; bestL=Infinity; iter=0;
+  const vis=new Set([0]); let cur=0; nnL=0; while(vis.size<A.n){ let bj=-1,bd=1e9; for(let j=0;j<A.n;j++) if(!vis.has(j)&&D[cur][j]<bd){bd=D[cur][j];bj=j;} nnL+=bd; vis.add(bj); cur=bj; } nnL+=D[cur][0]; aro('nearest neighbour tour',nnL.toFixed(3)); as.redraw(); }
+const len=t=>t.reduce((s,c,i)=>s+D[c][t[(i+1)%t.length]],0);
+function colony(){ const r=RNG(iter*7+1), tours=[]; for(let a=0;a<A.ants;a++){ const start=r.int(A.n), t=[start], vis=new Set(t); while(t.length<A.n){ const i=t.at(-1); let s=0; const w=[];
+      for(let j=0;j<A.n;j++){ const q=vis.has(j)?0:Math.pow(tau[i][j],A.alpha)*Math.pow(1/D[i][j],A.beta); w.push(q); s+=q; } let u=r()*s, j=0; while(j<A.n-1&&(u-=w[j])>0) j++; while(vis.has(j)) j=(j+1)%A.n; t.push(j); vis.add(j); } tours.push(t); }
+  for(let i=0;i<A.n;i++) for(let j=0;j<A.n;j++) tau[i][j]*=1-A.rho;
+  tours.forEach(t=>{ const L=len(t); if(L<bestL){bestL=L;bestT=t.slice();} t.forEach((c,i)=>{ const d=t[(i+1)%A.n]; tau[c][d]+=1/L; tau[d][c]+=1/L; }); }); iter++; aro('iteration',iter); aro('best tour',bestL.toFixed(3)); }
+const as=stage($('#a-cv'),0.6,(c,w,h)=>{ c.clearRect(0,0,w,h); if(!pts.length||!tau.length) return; const C=COL(); let mx=0; tau.forEach(r=>r.forEach(v=>mx=Math.max(mx,v)));
+  for(let i=0;i<A.n;i++) for(let j=i+1;j<A.n;j++){ const a=tau[i][j]/mx; if(a>0.08){ c.strokeStyle=`rgba(14,122,120,${a})`; c.lineWidth=1+3*a; c.beginPath(); c.moveTo(pts[i][0]*w,pts[i][1]*h); c.lineTo(pts[j][0]*w,pts[j][1]*h); c.stroke(); } }
+  if(bestT) polyline(c,[...bestT,bestT[0]].map(k=>[pts[k][0]*w,pts[k][1]*h]),C.c[1],1.5,[4,3]); pts.forEach(p=>dot(c,p[0]*w,p[1]*h,4,C.ink)); });
+const alp=loop(()=>{ colony(); as.redraw(); if(iter>=150){alp.stop();$('#a-play').textContent='Play';} },80);
+$('#a-play').onclick=()=>{ if(alp.running){alp.stop();$('#a-play').textContent='Play';} else {alp.start();$('#a-play').textContent='Pause';} };
+$('#a-reset').onclick=()=>{ alp.stop(); $('#a-play').textContent='Play'; board(); }; board(); for(let k=0;k<5;k++) colony(); as.redraw();
+})();</script><script>(function(){
+var names=["explore","check","reflect"],tabs=document.querySelectorAll(".tabs button");
+tabs.forEach(function(b,i){b.addEventListener("click",function(){if(history.replaceState)history.replaceState(null,"","#"+names[i]);});});
+function go(){var i=names.indexOf(location.hash.slice(1));if(i<0||!tabs[i])return;tabs[i].click();document.querySelector(".tabs").scrollIntoView({block:"start"});}
+go();window.addEventListener("hashchange",go);
+var refs=JSON.parse((document.getElementById("refdata")||{textContent:"{}"}).textContent||"{}"),pop=null;
+document.addEventListener("click",function(e){var c=e.target.closest(".cite");if(pop){pop.remove();pop=null;}if(!c)return;
+pop=document.createElement("div");pop.className="pop";pop.setAttribute("role","note");
+c.dataset.refs.split(",").forEach(function(k){var p=document.createElement("p");p.innerHTML="["+k+"] "+(refs[k]||"");pop.append(p);});
+document.body.append(pop);var r=c.getBoundingClientRect();
+pop.style.left=Math.max(8,Math.min(window.scrollX+r.left,window.scrollX+document.documentElement.clientWidth-440))+"px";
+pop.style.top=(window.scrollY+r.bottom+6)+"px";});
+})();</script><script>/* Lab kit: number inputs, step-by-step calculation boxes and small tables. */
+const LK = {
+  f(x, d) { if (d === undefined) d = 4; if (!isFinite(x)) return String(x); let s = (Math.abs(x) < 0.5 * Math.pow(10, -d) ? 0 : x).toFixed(d);
+    if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, ''); if (s === '-0') s = '0'; return s.replace('-', '−'); },
+  p(x, d) { const s = LK.f(x, d); return s.charAt(0) === '−' ? '(' + s + ')' : s; },
+  num(parent, label, value, step, on, o) { o = o || {}; const inp = h('input', {type: 'number', value: value, step: step, 'aria-label': label});
+    if (o.min !== undefined) inp.min = o.min; if (o.max !== undefined) inp.max = o.max;
+    inp.addEventListener('input', () => { const v = parseFloat(inp.value); if (isFinite(v)) on(v); });
+    parent.append(h('div', {class: 'nin'}, h('label', {}, label), inp)); return inp; },
+  pick(parent, label, options, value, on) { const sel = h('select', {'aria-label': label}, options.map(([v, t]) => h('option', {value: v}, t)));
+    sel.value = value; sel.addEventListener('change', () => on(sel.value)); parent.append(h('div', {class: 'nin'}, h('label', {}, label), sel)); return sel; },
+  calc(parent, long) { const box = h('div', {class: long ? 'calc long' : 'calc', 'aria-live': 'polite'}); parent.append(box);
+    return {el: box, set(lines) { box.innerHTML = ''; lines.forEach(l => { const row = h('div', {}); if (Array.isArray(l)) { row.append(h('b', {}, l[0] + ' '), l[1]); } else row.append(l); box.append(row); });
+      if (long) box.scrollTop = box.scrollHeight; }}; },
+  table(parent, head, rows, cls) { const t = h('table', {class: 'mini ' + (cls || '')}, h('thead', {}, h('tr', {}, head.map(x => h('th', {}, x)))),
+    h('tbody', {}, rows.map(r => h('tr', {}, r.map(c => (c && c.nodeType) ? c : h('td', {}, c)))))); const wrap = h('div', {class: 'tablewrap'}, t);
+    parent.append(wrap); return wrap; }
+};
+
+(function(){
+const root=$('#w6d');
+
+const FUN = {sphere: {f: ([x, y]) => x * x + y * y, B: 4}, rastrigin: {f: ([x, y]) => 20 + x * x + y * y - 10 * (Math.cos(2 * Math.PI * x) + Math.cos(2 * Math.PI * y)), B: 5.12}};
+const S = {fun: 'sphere', N: 5, w: 0.7298, c1: 1.49618, c2: 1.49618, seed: 4, p1: 2.05, p2: 2.05};
+const f = LK.f, ctl = $('#w6d-ctl', root);
+LK.pick(ctl, 'Objective', [['sphere', 'sphere'], ['rastrigin', 'Rastrigin']], S.fun, v => { S.fun = v; reset(); });
+LK.num(ctl, 'Particles N', S.N, 1, v => { if (v >= 2 && v <= 30) { S.N = Math.round(v); reset(); } }, {min: 2, max: 30});
+LK.num(ctl, 'Inertia w', S.w, 0.01, v => { S.w = v; }); LK.num(ctl, 'Cognitive c1', S.c1, 0.01, v => { S.c1 = v; }); LK.num(ctl, 'Social c2', S.c2, 0.01, v => { S.c2 = v; });
+LK.num(ctl, 'Random seed', S.seed, 1, v => { if (v >= 1) { S.seed = Math.round(v); reset(); } }, {min: 1});
+legend($('#w6d-leg', root), [['particles', 0], ['personal bests', 1], ['global best', 4], ['inertia', 'var(--steel)'], ['cognitive', 2], ['social', 3]]);
+const calc = LK.calc($('#w6d-calc', root));
+let rng, X, V, Pb, Pf, G, Gf, idx, it, last;
+const fn = x => FUN[S.fun].f(x);
+function reset() { rng = RNG(S.seed * 7907); const B = FUN[S.fun].B; X = []; V = []; Pb = []; Pf = []; G = null; Gf = Infinity; idx = 0; it = 0; last = null;
+  for (let i = 0; i < S.N; i++) { const x = [rng.uniform(-B, B), rng.uniform(-B, B)]; X.push(x); V.push([rng.uniform(-1, 1), rng.uniform(-1, 1)]); Pb.push(x.slice()); Pf.push(fn(x)); if (Pf[i] < Gf) { Gf = Pf[i]; G = x.slice(); } }
+  calc.set([['Start:', S.N + ' particles with random positions and velocities; press Next particle']]); cv.redraw(); }
+function move(verbose) {
+  const i = idx, x = X[i], v = V[i], p = Pb[i], B = FUN[S.fun].B, L = [], comp = [];
+  if (verbose) L.push(['Particle ' + (i + 1) + ':', 'x = (' + f(x[0]) + ', ' + f(x[1]) + '), v = (' + f(v[0]) + ', ' + f(v[1]) + '), p = (' + f(p[0]) + ', ' + f(p[1]) + '), g = (' + f(G[0]) + ', ' + f(G[1]) + ')']);
+  const old = x.slice();
+  for (let d = 0; d < 2; d++) { const r1 = rng(), r2 = rng(), a = S.w * v[d], b = S.c1 * r1 * (p[d] - x[d]), c = S.c2 * r2 * (G[d] - x[d]), nv = a + b + c;
+    comp.push([a, b, c]);
+    if (verbose) { L.push(['  dimension ' + (d + 1) + ':', 'r1 = ' + f(r1, 3) + ', r2 = ' + f(r2, 3)]);
+      L.push(['', '  v = ' + f(S.w) + ' × ' + LK.p(v[d]) + ' + ' + f(S.c1) + ' × ' + f(r1, 3) + ' × (' + f(p[d]) + ' − ' + LK.p(x[d]) + ') + ' + f(S.c2) + ' × ' + f(r2, 3) + ' × (' + f(G[d]) + ' − ' + LK.p(x[d]) + ')']);
+      L.push(['', '    = ' + f(a) + ' + ' + LK.p(b) + ' + ' + LK.p(c) + ' = ' + f(nv) + ', x = ' + f(x[d]) + ' + ' + LK.p(nv) + ' = ' + f(clamp(x[d] + nv, -B, B))]); }
+    v[d] = nv; x[d] = clamp(x[d] + nv, -B, B); }
+  const fx = fn(x);
+  if (verbose) L.push(['Evaluation:', 'f(x) = ' + f(fx) + (fx < Pf[i] ? ' < f(p) = ' + f(Pf[i]) + ', so p moves to x' : ' ≥ f(p) = ' + f(Pf[i]) + ', so p stays') + (fx < Gf ? '; also better than f(g) = ' + f(Gf) + ', so g moves to x' : '')]);
+  if (fx < Pf[i]) { Pf[i] = fx; Pb[i] = x.slice(); if (fx < Gf) { Gf = fx; G = x.slice(); } }
+  last = {i: i, old: old, comp: comp}; idx = (idx + 1) % S.N; if (idx === 0) it++;
+  return L;
+}
+const cv = stage($('#w6d-cv', root), 1, (c, w, hh) => {
+  c.clearRect(0, 0, w, hh); if (!X) return; const C = COL(), B = FUN[S.fun].B; const fr = frame(c, w, hh, {x0: -B, x1: B, y0: -B, y1: B, xlabel: 'x1', ylabel: 'x2', ticks: 4});
+  const n = 40, top = S.fun === 'sphere' ? 2 * B * B : 80, cw = (fr.X(B) - fr.X(-B)) / n;
+  for (let a = 0; a < n; a++) for (let b = 0; b < n; b++) { const x = -B + 2 * B * (a + 0.5) / n, y = -B + 2 * B * (b + 0.5) / n; const t = Math.min(1, fn([x, y]) / top);
+    c.fillStyle = 'rgba(31,95,139,' + (0.35 * (1 - t) + 0.03) + ')'; c.fillRect(fr.X(x) - cw / 2, fr.Y(y) - cw / 2, cw + 0.5, cw + 0.5); }
+  Pb.forEach(p => dot(c, fr.X(p[0]), fr.Y(p[1]), 3.5, C.c[1])); X.forEach(x => dot(c, fr.X(x[0]), fr.Y(x[1]), 5, C.c[0], C.ink)); dot(c, fr.X(G[0]), fr.Y(G[1]), 7, C.c[4], C.ink);
+  if (last) { const o = last.old, cp = last.comp; let s = o.slice();
+    [[0, C.steel], [1, C.c[2]], [2, C.c[3]]].forEach(([k, col]) => { const e = [s[0] + cp[0][k], s[1] + cp[1][k]]; polyline(c, [[fr.X(s[0]), fr.Y(s[1])], [fr.X(e[0]), fr.Y(e[1])]], col, 2.5); s = e; }); }
+});
+$('#w6d-one', root).onclick = () => { calc.set(move(true)); cv.redraw(); };
+$('#w6d-it', root).onclick = () => { let L; do { L = move(true); } while (idx !== 0); calc.set([['Iteration ' + it + ':', 'finished; the last particle is shown']].concat(L)); cv.redraw(); };
+$('#w6d-run', root).onclick = () => { for (let k = 0; k < 20 * S.N; k++) move(false); last = null; calc.set([['20 iterations:', 'f(g) = ' + f(Gf, 6) + ' after ' + it + ' completed iterations']]); cv.redraw(); };
+$('#w6d-reset', root).onclick = reset;
+const ch = $('#w6d-chi', root), chc = LK.calc($('#w6d-chic', root));
+function chi() { const phi = S.p1 + S.p2;
+  if (phi <= 4) { chc.set([['φ = ' + f(S.p1) + ' + ' + f(S.p2) + ' = ' + f(phi) + ':', 'the formula needs φ > 4']]); return; }
+  const d = phi * phi - 4 * phi, sq = Math.sqrt(d), den = Math.abs(2 - phi - sq), x = 2 / den;
+  chc.set([['φ:', f(S.p1) + ' + ' + f(S.p2) + ' = ' + f(phi)], ['Root:', '√(' + f(phi) + '² − 4 × ' + f(phi) + ') = √' + f(d) + ' = ' + f(sq, 6)],
+    ['χ:', '2/|2 − ' + f(phi) + ' − ' + f(sq, 6) + '| = 2/' + f(den, 6) + ' = ' + f(x, 6)], ['Equivalent:', 'w = ' + f(x, 6) + ', c1 = ' + f(x, 6) + ' × ' + f(S.p1) + ' = ' + f(x * S.p1, 5) + ', c2 = ' + f(x * S.p2, 5)]]); }
+LK.num(ch, 'φ1', S.p1, 0.05, v => { S.p1 = v; chi(); }); LK.num(ch, 'φ2', S.p2, 0.05, v => { S.p2 = v; chi(); });
+reset(); chi();
+
+})();
+(function(){
+const root=$('#w6e');
+
+const S = {txt: 'A 0 0; B 3 0; C 3 4; D 0 4', a: 1, b: 2, rho: 0.3, Q: 1, m: 2, from: 'A', seed: 1};
+const f = LK.f, ctl = $('#w6e-ctl', root), ctl2 = $('#w6e-ctl2', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'holes: name x y, separated by semicolons'});
+inp.addEventListener('input', () => { S.txt = inp.value; parse(); resetTau(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 360px'}, h('label', {}, 'Holes "name x y" in cm, separated by semicolons'), inp));
+LK.num(ctl2, 'α', S.a, 0.5, v => { S.a = v; show(); }); LK.num(ctl2, 'β', S.b, 0.5, v => { S.b = v; show(); });
+LK.num(ctl2, 'Evaporation ρ', S.rho, 0.05, v => { if (v >= 0 && v <= 1) S.rho = v; }, {min: 0, max: 1}); LK.num(ctl2, 'Deposit Q', S.Q, 0.5, v => { if (v > 0) S.Q = v; });
+LK.num(ctl2, 'Ants m', S.m, 1, v => { if (v >= 1 && v <= 20) S.m = Math.round(v); }, {min: 1, max: 20});
+let fromSel = null;
+let H = [], tau = {}, tours = [], rng = RNG(1);
+const key = (a, b) => a < b ? a + b : b + a, d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+function parse() { H = S.txt.split(';').map(t => t.trim().replace(/−/g, '-').split(/\s+/)).filter(p => p.length === 3 && isFinite(+p[1]) && isFinite(+p[2])).map(p => ({n: p[0], x: +p[1], y: +p[2]}));
+  const box = ctl2.querySelector('.fromsel'); if (box) box.remove(); const wrap = h('div', {class: 'fromsel', style: 'display:contents'}); ctl2.append(wrap);
+  if (H.length) { if (!H.some(p => p.n === S.from)) S.from = H[0].n; fromSel = LK.pick(wrap, 'Ant stands at', H.map(p => [p.n, p.n]), S.from, v => { S.from = v; show(); }); } }
+function resetTau() { tau = {}; H.forEach(a => H.forEach(b => { if (a.n < b.n) tau[key(a.n, b.n)] = 1; })); tours = []; rng = RNG(S.seed); calc.set([['Pheromone:', 'all edges start at τ = 1']]); show(); }
+function probs(from, allowed) { const A = H.find(p => p.n === from); const rows = allowed.map(b => { const dd = d(A, b), eta = 1 / dd, t = tau[key(from, b.n)], wv = Math.pow(t, S.a) * Math.pow(eta, S.b); return {n: b.n, d: dd, eta: eta, t: t, w: wv}; });
+  const s = rows.reduce((a, r) => a + r.w, 0); rows.forEach(r => r.p = s > 0 ? r.w / s : 1 / rows.length); return {rows: rows, s: s}; }
+function show() {
+  const tb = $('#w6e-tab', root); tb.innerHTML = ''; if (H.length < 2) { tb.append(h('p', {class: 'small'}, 'Enter at least two holes.')); cv.redraw(); return; }
+  const P = probs(S.from, H.filter(p => p.n !== S.from));
+  LK.table(tb, ['to', 'd', 'η^β = (1/d)^β', 'τ^α', 'τ^α η^β', 'p'], P.rows.map(r => [r.n, f(r.d), '(1/' + f(r.d) + ')^' + f(S.b) + ' = ' + f(Math.pow(r.eta, S.b), 5), f(Math.pow(r.t, S.a), 5), f(r.w, 6), f(r.p)]));
+  tb.append(h('p', {class: 'small'}, 'Sum of τ^α η^β = ' + f(P.s, 6) + '; each probability is its product divided by this sum. The first ant decision treats all holes as unvisited.'));
+  cv.redraw();
+}
+function build() { tours = []; const L = [];
+  for (let k = 0; k < S.m; k++) { let cur = S.from; const t = [cur], left = H.filter(p => p.n !== cur); let len = 0, txt = [];
+    while (left.length) { const P = probs(cur, left), r = rng(); let acc = 0, pick = P.rows[P.rows.length - 1]; for (const row of P.rows) { acc += row.p; if (r <= acc) { pick = row; break; } }
+      txt.push(cur + '→' + pick.n + ' (r = ' + f(r, 3) + ' among ' + P.rows.map(q => q.n + ' ' + f(q.p, 3)).join(', ') + ')');
+      len += pick.d; cur = pick.n; t.push(cur); left.splice(left.findIndex(p => p.n === cur), 1); }
+    len += d(H.find(p => p.n === cur), H.find(p => p.n === S.from)); t.push(S.from); tours.push({t: t, L: len});
+    L.push(['Ant ' + (k + 1) + ':', t.join(' ') + ', length ' + f(len)]); L.push(['', '  ' + txt.join('; ')]); }
+  calc.set(L); cv.redraw(); }
+function update() { if (!tours.length) { calc.set([['Update:', 'let the ants build tours first']]); return; }
+  const dep = {}; tours.forEach(tr => { for (let i = 0; i < tr.t.length - 1; i++) { const k = key(tr.t[i], tr.t[i + 1]); (dep[k] = dep[k] || []).push(S.Q / tr.L); } });
+  const L = [['Deposits:', tours.map((tr, k) => 'ant ' + (k + 1) + ': Q/L = ' + f(S.Q) + '/' + f(tr.L) + ' = ' + f(S.Q / tr.L, 6)).join('; ')]];
+  Object.keys(tau).forEach(k => { const add = dep[k] || [], nv = (1 - S.rho) * tau[k] + add.reduce((a, b) => a + b, 0);
+    L.push([k + ':', '(1 − ' + f(S.rho) + ') × ' + f(tau[k], 6) + (add.length ? ' + ' + add.map(x => f(x, 6)).join(' + ') : '') + ' = ' + f(nv, 6)]); tau[k] = nv; });
+  tours = []; calc.set(L); show(); }
+const cv = stage($('#w6e-cv', root), 0.9, (c, w, hh) => {
+  c.clearRect(0, 0, w, hh); if (H.length < 1) return; const C = COL(); const xs = H.map(p => p.x), ys = H.map(p => p.y);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), sc = Math.min((w - 60) / Math.max(1e-9, x1 - x0), (hh - 60) / Math.max(1e-9, y1 - y0));
+  const X = x => 30 + (x - x0) * sc, Y = y => hh - 30 - (y - y0) * sc; const tmax = Math.max(...Object.values(tau), 1e-9);
+  Object.keys(tau).forEach(k => { const a = H.find(p => p.n === k[0] || false), b = H.find(p => p.n === k.slice(1)); if (!a || !b) return;
+    polyline(c, [[X(a.x), Y(a.y)], [X(b.x), Y(b.y)]], C.c[1], 1 + 7 * tau[k] / tmax); });
+  tours.forEach((tr, k) => polyline(c, tr.t.map(n => { const p = H.find(q => q.n === n); return [X(p.x), Y(p.y)]; }), C.c[k % 2 ? 3 : 2], 1.5, [5, 4]));
+  H.forEach(p => { dot(c, X(p.x), Y(p.y), 11, p.n === S.from ? C.c[4] : C.panel, C.ink); c.fillStyle = p.n === S.from ? '#fff' : C.ink; c.font = 'bold 12px ' + cssv('--sans'); c.textAlign = 'center'; c.fillText(p.n, X(p.x), Y(p.y) + 4); });
+});
+const calc = LK.calc($('#w6e-calc', root));
+$('#w6e-ants', root).onclick = build; $('#w6e-upd', root).onclick = update; $('#w6e-reset', root).onclick = resetTau;
+parse(); resetTau();
+
+})();
+(function(){
+const root=$('#w6f');
+
+const M = {J: 0.01, b: 0.1, K: 0.01, R: 1, L: 0.5, vmax: 24}, dt = 0.002;
+const S = {Kp: 100, Ki: 200, Kd: 10};
+const f = LK.f, ctl = $('#w6f-ctl', root);
+LK.num(ctl, 'Kp', S.Kp, 1, v => { S.Kp = v; reset(); }); LK.num(ctl, 'Ki', S.Ki, 1, v => { S.Ki = v; reset(); }); LK.num(ctl, 'Kd', S.Kd, 0.5, v => { S.Kd = v; reset(); });
+legend($('#w6f-leg', root), [['speed ω (rad/s)', 0], ['set point', 4], ['voltage V / 24', 1]]);
+const calc = LK.calc($('#w6f-calc', root));
+let st, rows, hist;
+function reset() { st = {k: 0, w: 0, i: 0, I: 0, ep: 1, df: 0, itae: 0}; rows = []; hist = []; calc.set([['Start:', 'the motor is at rest; press Next sample']]); show(); }
+function sample(verbose) {
+  const s = st, t = s.k * dt, e = 1 - s.w, I = s.I + e * dt, d = (e - s.ep) / dt, df = s.df + (d - s.df) * dt / 0.01, u = S.Kp * e + S.Ki * I + S.Kd * df, V = clamp(u, -M.vmax, M.vmax);
+  const dw = (M.K * s.i - M.b * s.w) / M.J, di = (V - M.R * s.i - M.K * s.w) / M.L, wn = s.w + dw * dt, inn = s.i + di * dt, it = t * Math.abs(e) * dt;
+  const L = verbose ? [['Sample k = ' + s.k + ':', 't = ' + f(t, 3) + ' s, ω = ' + f(s.w, 6) + ' rad/s, i = ' + f(s.i, 6) + ' A'],
+    ['Error:', 'e = 1 − ' + f(s.w, 6) + ' = ' + f(e, 6)], ['Integral:', 'I = ' + f(s.I, 6) + ' + ' + f(e, 6) + ' × 0.002 = ' + f(I, 6)],
+    ['Derivative:', 'D = (' + f(e, 6) + ' − ' + f(s.ep, 6) + ')/0.002 = ' + f(d, 4) + ', filtered: ' + f(s.df, 4) + ' + 0.2 × (' + f(d, 4) + ' − ' + LK.p(s.df, 4) + ') = ' + f(df, 4)],
+    ['Controller:', 'u = ' + f(S.Kp) + ' × ' + f(e, 6) + ' + ' + f(S.Ki) + ' × ' + f(I, 6) + ' + ' + f(S.Kd) + ' × ' + LK.p(df, 4) + ' = ' + f(u, 4) + ' V' + (V !== u ? ', limited to ' + f(V) + ' V' : '')],
+    ['Motor:', 'dω/dt = (0.01 × ' + f(s.i, 6) + ' − 0.1 × ' + f(s.w, 6) + ')/0.01 = ' + f(dw, 4) + ', di/dt = (' + f(V, 4) + ' − ' + f(s.i, 6) + ' − 0.01 × ' + f(s.w, 6) + ')/0.5 = ' + f(di, 4)],
+    ['Euler step:', 'ω = ' + f(s.w, 6) + ' + ' + LK.p(dw, 4) + ' × 0.002 = ' + f(wn, 6) + ', i = ' + f(s.i, 6) + ' + ' + LK.p(di, 4) + ' × 0.002 = ' + f(inn, 6)],
+    ['ITAE:', f(s.itae, 8) + ' + ' + f(t, 3) + ' × ' + f(Math.abs(e), 6) + ' × 0.002 = ' + f(s.itae + it, 8)]] : null;
+  rows.push([s.k, f(t, 3), f(e, 5), f(I, 5), f(df, 3), f(u, 3), f(V, 3), f(wn, 5), f(inn, 4), f(s.itae + it, 7)]); if (rows.length > 8) rows.shift();
+  hist.push([t, s.w, V]);
+  st = {k: s.k + 1, w: wn, i: inn, I: I, ep: e, df: df, itae: s.itae + it};
+  return L;
+}
+function show() { const tb = $('#w6f-tab', root); tb.innerHTML = '';
+  if (rows.length) LK.table(tb, ['k', 't (s)', 'e', 'I', 'D filtered', 'u (V)', 'V (V)', 'ω next', 'i next', 'ITAE'], rows);
+  cv.redraw(); }
+const cv = stage($('#w6f-cv', root), 0.55, (c, w, hh) => { c.clearRect(0, 0, w, hh); const C = COL(); const fr = frame(c, w, hh, {x0: 0, x1: 2, y0: -1, y1: 1.5, xlabel: 'time (s)', ylabel: 'ω and V/24', ticks: 5});
+  polyline(c, [[fr.X(0), fr.Y(1)], [fr.X(2), fr.Y(1)]], C.c[4], 1, [5, 4]);
+  if (hist && hist.length > 1) { polyline(c, hist.map(p => [fr.X(p[0]), fr.Y(p[2] / 24)]), C.c[1], 1.3); polyline(c, hist.map(p => [fr.X(p[0]), fr.Y(p[1])]), C.c[0], 2.2); } });
+$('#w6f-one', root).onclick = () => { if (st.k < 1000) { calc.set(sample(true)); show(); } };
+$('#w6f-50', root).onclick = () => { let L = null; for (let n = 0; n < 50 && st.k < 1000; n++) L = sample(n === 49 || st.k === 999); if (L) calc.set(L); show(); };
+$('#w6f-end', root).onclick = () => { let L = null; while (st.k < 1000) L = sample(st.k === 999); if (L) calc.set([['After 2 s:', 'ITAE = ' + f(st.itae, 6) + ', final speed ' + f(st.w, 4) + ' rad/s; the last sample:']].concat(L)); show(); };
+$('#w6f-reset', root).onclick = reset;
+reset();
+
+})();
+(function(){
+const root=$('#w6g');
+
+const S = {SN: 4, limit: 5, seed: 2}, B = 4;
+const f = LK.f, ctl = $('#w6g-ctl', root);
+LK.num(ctl, 'Food sources SN', S.SN, 1, v => { if (v >= 2 && v <= 12) { S.SN = Math.round(v); reset(); } }, {min: 2, max: 12});
+LK.num(ctl, 'Trial limit', S.limit, 1, v => { if (v >= 1) S.limit = Math.round(v); }, {min: 1});
+LK.num(ctl, 'Random seed', S.seed, 1, v => { if (v >= 1) { S.seed = Math.round(v); reset(); } }, {min: 1});
+legend($('#w6g-leg', root), [['food sources', 0], ['last candidate', 3], ['best source', 4]]);
+const calc = LK.calc($('#w6g-calc', root), true);
+let rng, X, Fv, T, cand, cyc;
+const fn = x => x[0] * x[0] + x[1] * x[1], fit = v => v >= 0 ? 1 / (1 + v) : 1 + Math.abs(v);
+function reset() { rng = RNG(S.seed * 31337); X = []; Fv = []; T = []; cand = null; cyc = 0;
+  for (let i = 0; i < S.SN; i++) { const x = [rng.uniform(-B, B), rng.uniform(-B, B)]; X.push(x); Fv.push(fn(x)); T.push(0); }
+  calc.set([['Start:', S.SN + ' random food sources on f(x) = x1² + x2²']]); show(); }
+function tryAt(i, who) {
+  let k; do { k = rng.int(S.SN); } while (k === i); const j = rng.int(2), phi = rng.uniform(-1, 1), v = X[i].slice(); v[j] = clamp(X[i][j] + phi * (X[i][j] - X[k][j]), -B, B); const fv = fn(v);
+  const ok = fv < Fv[i];
+  const line = [who + ' at source ' + (i + 1) + ':', 'j = ' + (j + 1) + ', partner k = ' + (k + 1) + ', φ = ' + f(phi, 3) + ': v = ' + f(X[i][j]) + ' + ' + LK.p(phi, 3) + ' × (' + f(X[i][j]) + ' − ' + LK.p(X[k][j]) + ') = ' + f(v[j]) +
+    '; f = ' + f(fv) + (ok ? ' < ' + f(Fv[i]) + ', source replaced, trials 0' : ' ≥ ' + f(Fv[i]) + ', source kept, trials ' + (T[i] + 1))];
+  cand = v; if (ok) { X[i] = v; Fv[i] = fv; T[i] = 0; } else T[i]++;
+  return line;
+}
+function employed(verbose) { const L = []; for (let i = 0; i < S.SN; i++) L.push(tryAt(i, 'Employed bee')); return L; }
+function probs() { const ft = Fv.map(fit), s = ft.reduce((a, b) => a + b, 0); return {ft: ft, s: s, p: ft.map(x => x / s)}; }
+function onlookers() { const P = probs(), L = [['Probabilities:', 'p_i = fit_i/' + f(P.s, 6) + ': ' + P.p.map((x, i) => (i + 1) + ': ' + f(x)).join(', ')]];
+  for (let n = 0; n < S.SN; n++) { const r = rng(); let acc = 0, i = S.SN - 1; for (let q = 0; q < S.SN; q++) { acc += P.p[q]; if (r <= acc) { i = q; break; } }
+    L.push(['Onlooker ' + (n + 1) + ':', 'r = ' + f(r, 3) + ' selects source ' + (i + 1)]); L.push(tryAt(i, '  onlooker')); }
+  return L; }
+function scout() { let i = -1, mx = -1; T.forEach((t, q) => { if (t > mx) { mx = t; i = q; } });
+  if (mx <= S.limit) return [['Scout:', 'the largest trial counter is ' + mx + ' at source ' + (i + 1) + ', not above the limit ' + S.limit + ', so no source is abandoned']];
+  const x = [rng.uniform(-B, B), rng.uniform(-B, B)]; const old = X[i]; X[i] = x; Fv[i] = fn(x); T[i] = 0; cand = x;
+  return [['Scout:', 'source ' + (i + 1) + ' at (' + f(old[0]) + ', ' + f(old[1]) + ') failed ' + mx + ' times > ' + S.limit + ' and is replaced by the random source (' + f(x[0]) + ', ' + f(x[1]) + ') with f = ' + f(Fv[i])]]; }
+function show() { const tb = $('#w6g-tab', root); tb.innerHTML = ''; const P = probs();
+  LK.table(tb, ['source', 'x1', 'x2', 'f', 'fit = 1/(1 + f)', 'p', 'trials'], X.map((x, i) => [i + 1, f(x[0]), f(x[1]), f(Fv[i]), f(P.ft[i], 6), f(P.p[i]), T[i]]));
+  tb.append(h('p', {class: 'small'}, 'Cycles: ' + cyc + '; best f = ' + f(Math.min(...Fv), 6))); cv.redraw(); }
+const cv = stage($('#w6g-cv', root), 1, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!X) return; const C = COL(); const fr = frame(c, w, hh, {x0: -B, x1: B, y0: -B, y1: B, xlabel: 'x1', ylabel: 'x2', ticks: 4});
+  [1, 2, 3].forEach(r => { const pts = []; for (let a = 0; a <= 64; a++) pts.push([fr.X(r * Math.cos(a / 64 * 2 * Math.PI)), fr.Y(r * Math.sin(a / 64 * 2 * Math.PI))]); polyline(c, pts, C.line, 1); });
+  const bi = Fv.indexOf(Math.min(...Fv)); X.forEach((x, i) => dot(c, fr.X(x[0]), fr.Y(x[1]), i === bi ? 7 : 5, i === bi ? C.c[4] : C.c[0], C.ink)); if (cand) dot(c, fr.X(cand[0]), fr.Y(cand[1]), 4, C.c[3]); });
+$('#w6g-emp', root).onclick = () => { calc.set(employed()); show(); };
+$('#w6g-onl', root).onclick = () => { calc.set(onlookers()); show(); };
+$('#w6g-sct', root).onclick = () => { calc.set(scout()); cyc++; show(); };
+$('#w6g-cyc', root).onclick = () => { let L = []; for (let n = 0; n < 20; n++) { L = employed().concat(onlookers(), scout()); cyc++; } calc.set([['20 cycles:', 'the last cycle is shown']].concat(L)); show(); };
+$('#w6g-reset', root).onclick = reset;
+reset();
+
+})();</script></body></html>

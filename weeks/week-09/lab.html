@@ -1,0 +1,620 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unsupervised lab: Clusters and a vibration analyser | Artificial Intelligence Applications in Engineering</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>:root{
+  --ink:#1B2A38; --paper:#F3F5F0; --panel:#FFFFFF; --steel:#56656F; --line:#D2DAD0; --grid:#E4EAE2;
+  --accent:#0E7A78; --ok:#2E8B57; --bad:#B53F2E; --band:rgba(14,122,120,.09);
+  --c1:#1F5F8B; --c2:#C98510; --c3:#2E8B57; --c4:#8B3F82; --c5:#B53F2E;
+  --sans:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --head:'Barlow Semi Condensed','Arial Narrow','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E3EAEE; --paper:#0F171D; --panel:#16222A; --steel:#9DB0B9; --line:#2A3B45; --grid:#1B2A33;
+  --accent:#4FC2BE; --ok:#63C08E; --bad:#E58372; --band:rgba(79,194,190,.12);
+  --c1:#6FB0DA; --c2:#E6A83F; --c3:#63C08E; --c4:#CC8CC3; --c5:#E58372;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 var(--sans)}
+a{color:var(--c1);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 64px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:22px}
+header.top .course{margin:0;color:var(--steel);font-size:.93rem}
+header.top h1{font-family:var(--head);font-weight:600;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin:.3rem 0 .45rem;letter-spacing:.005em}
+header.top .who{margin:0;font-size:.9rem;color:var(--steel)}
+header.top nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
+header.top nav a{font-size:.95rem}
+h2{font-family:var(--head);font-weight:600;font-size:1.7rem;line-height:1.15;margin:2rem 0 .55rem}
+h3{font-family:var(--head);font-weight:600;font-size:1.28rem;margin:1.4rem 0 .4rem}
+p,li{max-width:72ch}
+.small{font-size:.87rem;color:var(--steel)}
+code,pre{font-family:var(--mono);font-size:.86em}
+code{background:var(--band);padding:.08em .3em;border-radius:3px}
+pre{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c1);padding:12px 14px;overflow-x:auto;border-radius:4px;line-height:1.45}
+pre code{background:none;padding:0}
+blockquote{margin:1.1rem 0;padding:.6rem 1rem;border-left:4px solid var(--c2);background:var(--panel);border-radius:0 4px 4px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--band)}
+.tablewrap{overflow-x:auto}
+img{max-width:100%;height:auto}
+figure{margin:1.3rem 0}
+figure img{border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:.87rem;color:var(--steel);margin-top:.35rem}
+button,select,input{font:inherit}
+select{padding:.3rem .45rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);max-width:100%}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:.42rem .9rem;cursor:pointer}
+.btn:hover{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1}
+.ctl label{font-size:.86rem;color:var(--steel)}
+.ctl output{font-family:var(--mono);font-size:.85rem;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0}
+.paper{background-color:var(--panel);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;border:1px solid var(--line);border-radius:4px;display:block;width:100%;touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 9px;font-size:.86rem}
+.readout b{display:block;font-family:var(--mono);font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--steel)}
+.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:.5rem .85rem;cursor:pointer;color:var(--steel)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tabpanel[hidden]{display:none}
+.kc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:1.2rem 0}
+.kc .q{font-weight:700;margin:0 0 6px}
+.kc label{display:block;padding:3px 0;cursor:pointer}
+.kc .fb{margin-top:6px;font-size:.93rem}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.conf{display:flex;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--steel);margin-top:4px}
+.anim{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:1.3rem 0}
+.anim h4{font-family:var(--head);font-size:1.12rem;margin:0 0 6px}
+.lec-tools{position:sticky;top:0;z-index:5;background:var(--paper);padding:6px 0;border-bottom:1px solid var(--line)}
+.lec-prog{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--steel)}
+.lec-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.lec-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cite{cursor:pointer;color:var(--c1);border-bottom:1px dotted var(--c1)}
+.pop{position:absolute;z-index:20;max-width:420px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.18);padding:10px 12px;border-radius:6px;font-size:.86rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{min-height:110px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;cursor:pointer;font-size:.93rem}
+.card .b{display:none;color:var(--steel)} .card.flip .f{display:none} .card.flip .b{display:block}
+.pycorner{background:var(--panel);border:1px dashed var(--c1);border-radius:6px;padding:4px 16px 8px;margin:1.3rem 0}
+.disc td:first-child{white-space:nowrap;font-weight:700}
+footer.sig{margin-top:48px;border-top:2px solid var(--ink);padding-top:14px;font-size:.84rem;color:var(--steel)}
+footer.sig p{max-width:none}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.wk{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c1);border-radius:4px;padding:10px 12px}
+.wk h3{margin:.1rem 0 .3rem;font-size:1.12rem}
+.wk .n{font-family:var(--head);color:var(--steel);font-size:.9rem}
+.wk .links{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem;margin-top:6px}
+.wk .done{font-size:.8rem;color:var(--ok)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.hero canvas{width:100%;height:auto}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.ctl{min-width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.lec-tools,.tabs,nav,.btn{display:none}}
+a.btn{display:inline-block;text-decoration:none}.next{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:6px;padding:2px 16px 12px;margin:2.2rem 0}.next h2,.pycorner h2{margin-top:.9rem}.next .btn,.pycorner .btn{margin:4px 6px 4px 0}.refs{margin-top:2rem}.calc{font-family:var(--mono);font-size:.84rem;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px 10px;margin:8px 0;white-space:pre-wrap;overflow-x:auto;line-height:1.55}.calc b{color:var(--accent)}.calc .hl{background:var(--band)}.calc.long{max-height:26rem;overflow-y:auto}.nin{display:flex;flex-direction:column;gap:2px;flex:0 1 190px;min-width:120px}.nin label{font-size:.86rem;color:var(--steel)}.nin input,.nin select{font:inherit;padding:.25rem .4rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);width:100%}.grid-in{display:grid;gap:4px}.grid-in input{width:100%;font:inherit;padding:.2rem;text-align:center;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--ink)}table.mini{width:auto;font-size:.86rem}table.mini td,table.mini th{padding:3px 8px;text-align:center}td.sel{background:var(--band);font-weight:700}</style></head><body><div class="wrap">
+<header class="top"><p class="course">Artificial Intelligence Applications in Engineering (MUH-920), week 9 of 14: interactive lab</p><h1>Unsupervised lab: Clusters and a vibration analyser</h1><p class="who">Prof. Dr. Utku Kose, Süleyman Demirel University</p><nav><a href="../../index.html">Course home</a><a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-09/README.md">Week overview</a><a href="lecture.html">Lecture page</a><a href="https://colab.research.google.com/github/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-09/NB09_unsupervised_signals_anomalies.ipynb">Colab notebook</a><a href="Week09_Lecture_Notes.pdf">PDF notes</a></nav></header>
+<p>Part A runs k-means one step at a time with the squared distances, k-means++ seeding and silhouettes <span class="cite" tabindex="0" data-refs="1,2">[1, 2]</span>, and Part B computes the principal components of two variables by hand <span class="cite" tabindex="0" data-refs="3">[3]</span>. Part C places points by clicking and compares k-means with DBSCAN on the same data, with controls for k, eps and the minimum number of neighbours <span class="cite" tabindex="0" data-refs="4">[4]</span>, and Part D clusters epicentres with DBSCAN and haversine distances. Part E computes the Fourier coefficients of a short signal term by term, and Part F bearing fault frequencies and condition indicators. Part G synthesises the vibration of a bearing with adjustable shaft speed, fault severity and noise, and shows the waveform, the spectrum and the envelope spectrum with the computed fault frequency, together with RMS, kurtosis and crest factor <span class="cite" tabindex="0" data-refs="5">[5]</span>. Part H computes isolation-forest scores from random splits <span class="cite" tabindex="0" data-refs="6">[6]</span>.</p><div class="tabs" role="tablist"><button aria-selected="true">Explore</button><button aria-selected="false">Check yourself</button><button aria-selected="false">Reflect and export</button></div><section class="tabpanel">
+<h2 id="part-a">Part A: k-means by the numbers</h2>
+<p>The six points of the worked example are clustered with k = 2. Each assignment step lists the squared distance of every point to every centre, each update step the means that become the new centres, and the objective W falls with every step; the silhouette of each point appears once all points are assigned. The second initialisation uses k-means++ and prints its seeding probabilities <span class="cite" tabindex="0" data-refs="1,2,7">[1, 2, 7]</span>.</p>
+<div class="bench" id="w9c"><div class="row" id="w9c-ctl"></div>
+<div class="row"><button class="btn" id="w9c-as" type="button">Assignment step</button><button class="btn ghost" id="w9c-up" type="button">Update step</button><button class="btn ghost" id="w9c-run" type="button">Run to convergence</button><button class="btn ghost" id="w9c-reset" type="button">Reset</button></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 300px;min-width:0;max-width:460px"><canvas class="paper" id="w9c-cv" aria-label="Points and centres"></canvas><div class="legend" id="w9c-leg"></div></div>
+<div style="flex:1 1 360px;min-width:0" id="w9c-calc"></div></div><div id="w9c-tab"></div></div>
+<h2 id="part-b">Part B: Principal components of two variables</h2>
+<p>The two porosity logs of the worked example are the default. The panel centres the data, builds the covariance matrix, solves the quadratic equation for the eigenvalues, normalises the first eigenvector and reconstructs a chosen sample from the first component; the chart draws both principal axes <span class="cite" tabindex="0" data-refs="3">[3]</span>.</p>
+<div class="bench" id="w9d"><div class="row" id="w9d-ctl"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 300px;min-width:0;max-width:460px"><canvas class="paper" id="w9d-cv" aria-label="Centred data and principal axes"></canvas><div class="legend" id="w9d-leg"></div></div>
+<div style="flex:1 1 360px;min-width:0" id="w9d-calc"></div></div></div>
+<h2 id="part-c">Part C: k-means and DBSCAN on the same points</h2>
+<div class="bench"><div class="row"><div class="ctl"><label for="c-pat">Pattern</label><select id="c-pat"><option value="blobs">Round blobs</option><option value="moons">Two moons</option><option value="band">Fault-like band with background</option></select></div></div>
+<div class="row" id="c-sl"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><b class="small">k-means</b><canvas class="paper" id="c-km"></canvas></div><div><b class="small">DBSCAN (grey = noise)</b><canvas class="paper" id="c-db"></canvas></div></div>
+<div id="c-ro"></div><p class="small">Click on either panel to add points.</p></div>
+<h2 id="part-d">Part D: Clustering epicentres with DBSCAN</h2>
+<p>Epicentres given by latitude and longitude are compared with haversine distances in kilometres. The table lists the neighbours of every event within ε, its type and its cluster; changing ε and the minimum number of points shows how the clusters grow, merge or dissolve into noise <span class="cite" tabindex="0" data-refs="4">[4]</span>.</p>
+<div class="bench" id="w9h"><div class="row" id="w9h-ctl"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 320px;min-width:0;max-width:480px"><canvas class="paper" id="w9h-cv" aria-label="Epicentres coloured by cluster"></canvas><div class="legend" id="w9h-leg"></div></div>
+<div style="flex:1 1 360px;min-width:0" id="w9h-calc"></div></div><div id="w9h-tab"></div></div>
+<h2 id="part-e">Part E: The discrete Fourier transform term by term</h2>
+<p>Any short signal, by default the four samples of the worked example, is transformed with the definition of the lecture. The panel writes out the sum for a chosen bin with every rotating factor, and the table gives all coefficients, their frequencies and the amplitudes; a generated cosine with a non-integer number of cycles shows how the energy leaks into neighbouring bins <span class="cite" tabindex="0" data-refs="8">[8]</span>.</p>
+<div class="bench" id="w9e"><div class="row" id="w9e-ctl"></div><div class="row" id="w9e-gen"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 320px;min-width:0"><canvas class="paper" id="w9e-cv" aria-label="Amplitude spectrum"></canvas></div>
+<div style="flex:1 1 360px;min-width:0" id="w9e-calc"></div></div><div id="w9e-tab"></div></div>
+<h2 id="part-f">Part F: Bearing frequencies and condition indicators</h2>
+<p>The default bearing has the geometry of the drive-end bearing of the Case Western Reserve data, nine balls of 7.94 mm on a pitch diameter of 39.04 mm, so that d/D = 0.2034. The first panel computes the four fault frequencies for any geometry and speed; the second computes RMS, crest factor and kurtosis of any record, by default the impulsive record of the worked example <span class="cite" tabindex="0" data-refs="5,9">[5, 9]</span>.</p>
+<div class="bench" id="w9f"><h3 style="margin-top:0">Bearing fault frequencies</h3><div class="row" id="w9f-b"></div><div id="w9f-bc"></div>
+<h3>Condition indicators of a record</h3><div class="row" id="w9f-s"></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 320px;min-width:0"><canvas class="paper" id="w9f-cv" aria-label="Samples of the record"></canvas></div><div style="flex:1 1 360px;min-width:0" id="w9f-sc"></div></div></div>
+<h2 id="part-g">Part G: Bearing vibration analyser</h2>
+<div class="bench"><div class="row" id="v-sl"></div>
+<div><b class="small">Waveform (first 0.1 s)</b><canvas class="paper" id="v-wave"></canvas></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><b class="small">Spectrum</b><canvas class="paper" id="v-spec"></canvas></div><div><b class="small">Envelope spectrum (dashed lines: BPFO harmonics)</b><canvas class="paper" id="v-env"></canvas></div></div>
+<div id="v-ro"></div></div>
+<h2 id="part-h">Part H: Isolation by random splits</h2>
+<p>Sixteen readings of one feature contain one unusual value. Each tree splits the range of the remaining values at a random point and keeps the side of the chosen point until it stands alone; the number of splits is its path length. Averaging over many trees and normalising with c(ψ) gives the isolation-forest score of the lecture <span class="cite" tabindex="0" data-refs="6">[6]</span>.</p>
+<div class="bench" id="w9g"><div class="row" id="w9g-ctl"></div>
+<div class="row"><button class="btn" id="w9g-one" type="button">Grow one tree</button><button class="btn ghost" id="w9g-100" type="button">Grow 100 trees</button></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start"><div style="flex:1 1 340px;min-width:0"><canvas class="paper" id="w9g-cv" aria-label="Data and the random splits of the last tree"></canvas><div class="legend" id="w9g-leg"></div></div>
+<div style="flex:1 1 340px;min-width:0" id="w9g-calc"></div></div></div>
+</section><section class="tabpanel" hidden><p>Six questions with instant feedback. Rate your confidence before checking each answer.</p><div id="quiz"></div></section><section class="tabpanel" hidden><p>Answers are saved in this browser only. The export creates a Markdown learning log for your portfolio.</p><div id="reflect"></div><p class="small">After the export, continue with the <a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-09/README.md#discipline-challenges">discipline challenge</a> and the <a href="https://github.com/utkukose/ai-applications-in-engineering-NB-lecture/blob/main/weeks/week-09/README.md#weekly-task">weekly task</a> in the week overview.</p></section>
+<section class="refs"><h2 id="references">References</h2><div class="small"><p>[1] Lloyd, S. (1982). Least squares quantization in PCM. <i>IEEE Transactions on Information Theory</i>, <i>28</i>(2), 129-137. <a href="https://doi.org/10.1109/TIT.1982.1056489">https://doi.org/10.1109/TIT.1982.1056489</a></p><p>[2] Arthur, D., &amp; Vassilvitskii, S. (2007). k-means++: The advantages of careful seeding. In <i>Proceedings of the Eighteenth Annual ACM-SIAM Symposium on Discrete Algorithms</i> (pp. 1027-1035). SIAM.</p><p>[3] Jolliffe, I. T., &amp; Cadima, J. (2016). Principal component analysis: A review and recent developments. <i>Philosophical Transactions of the Royal Society A</i>, <i>374</i>(2065), 20150202. <a href="https://doi.org/10.1098/rsta.2015.0202">https://doi.org/10.1098/rsta.2015.0202</a></p><p>[4] Ester, M., Kriegel, H.-P., Sander, J., &amp; Xu, X. (1996). A density-based algorithm for discovering clusters in large spatial databases with noise. In <i>Proceedings of the Second International Conference on Knowledge Discovery and Data Mining (KDD-96)</i> (pp. 226-231). AAAI Press.</p><p>[5] Randall, R. B., &amp; Antoni, J. (2011). Rolling element bearing diagnostics: A tutorial. <i>Mechanical Systems and Signal Processing</i>, <i>25</i>(2), 485-520. <a href="https://doi.org/10.1016/j.ymssp.2010.07.017">https://doi.org/10.1016/j.ymssp.2010.07.017</a></p><p>[6] Liu, F. T., Ting, K. M., &amp; Zhou, Z.-H. (2008). Isolation forest. In <i>2008 Eighth IEEE International Conference on Data Mining</i> (pp. 413-422). <a href="https://doi.org/10.1109/ICDM.2008.17">https://doi.org/10.1109/ICDM.2008.17</a></p><p>[7] Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i>, <i>20</i>, 53-65. <a href="https://doi.org/10.1016/0377-0427(87)90125-7">https://doi.org/10.1016/0377-0427(87)90125-7</a></p><p>[8] Cooley, J. W., &amp; Tukey, J. W. (1965). An algorithm for the machine calculation of complex Fourier series. <i>Mathematics of Computation</i>, <i>19</i>(90), 297-301. <a href="https://doi.org/10.1090/S0025-5718-1965-0178586-1">https://doi.org/10.1090/S0025-5718-1965-0178586-1</a></p><p>[9] Smith, W. A., &amp; Randall, R. B. (2015). Rolling element bearing diagnostics using the Case Western Reserve University data: A benchmark study. <i>Mechanical Systems and Signal Processing</i>, <i>64-65</i>, 100-131. <a href="https://doi.org/10.1016/j.ymssp.2015.04.021">https://doi.org/10.1016/j.ymssp.2015.04.021</a></p></div></section>
+<script type="application/json" id="refdata">{"1": "Lloyd, S. (1982). Least squares quantization in PCM. <i>IEEE Transactions on Information Theory</i>, <i>28</i>(2), 129-137. <a href=\"https://doi.org/10.1109/TIT.1982.1056489\">https://doi.org/10.1109/TIT.1982.1056489</a>", "2": "Arthur, D., &amp; Vassilvitskii, S. (2007). k-means++: The advantages of careful seeding. In <i>Proceedings of the Eighteenth Annual ACM-SIAM Symposium on Discrete Algorithms</i> (pp. 1027-1035). SIAM.", "3": "Jolliffe, I. T., &amp; Cadima, J. (2016). Principal component analysis: A review and recent developments. <i>Philosophical Transactions of the Royal Society A</i>, <i>374</i>(2065), 20150202. <a href=\"https://doi.org/10.1098/rsta.2015.0202\">https://doi.org/10.1098/rsta.2015.0202</a>", "4": "Ester, M., Kriegel, H.-P., Sander, J., &amp; Xu, X. (1996). A density-based algorithm for discovering clusters in large spatial databases with noise. In <i>Proceedings of the Second International Conference on Knowledge Discovery and Data Mining (KDD-96)</i> (pp. 226-231). AAAI Press.", "5": "Randall, R. B., &amp; Antoni, J. (2011). Rolling element bearing diagnostics: A tutorial. <i>Mechanical Systems and Signal Processing</i>, <i>25</i>(2), 485-520. <a href=\"https://doi.org/10.1016/j.ymssp.2010.07.017\">https://doi.org/10.1016/j.ymssp.2010.07.017</a>", "6": "Liu, F. T., Ting, K. M., &amp; Zhou, Z.-H. (2008). Isolation forest. In <i>2008 Eighth IEEE International Conference on Data Mining</i> (pp. 413-422). <a href=\"https://doi.org/10.1109/ICDM.2008.17\">https://doi.org/10.1109/ICDM.2008.17</a>", "7": "Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i>, <i>20</i>, 53-65. <a href=\"https://doi.org/10.1016/0377-0427(87)90125-7\">https://doi.org/10.1016/0377-0427(87)90125-7</a>", "8": "Cooley, J. W., &amp; Tukey, J. W. (1965). An algorithm for the machine calculation of complex Fourier series. <i>Mathematics of Computation</i>, <i>19</i>(90), 297-301. <a href=\"https://doi.org/10.1090/S0025-5718-1965-0178586-1\">https://doi.org/10.1090/S0025-5718-1965-0178586-1</a>", "9": "Smith, W. A., &amp; Randall, R. B. (2015). Rolling element bearing diagnostics using the Case Western Reserve University data: A benchmark study. <i>Mechanical Systems and Signal Processing</i>, <i>64-65</i>, 100-131. <a href=\"https://doi.org/10.1016/j.ymssp.2015.04.021\">https://doi.org/10.1016/j.ymssp.2015.04.021</a>"}</script>
+<footer class="sig"><p><strong>Prof. Dr. Utku Kose</strong><br>Full Professor, Department of Computer Engineering, Süleyman Demirel University, Isparta, Türkiye<br>Founding Director, AI Application and Research Center (YAZEM), Süleyman Demirel University<br>Head of the Computer Science Division, Department of Computer Engineering, Süleyman Demirel University<br>Additional affiliations: University of North Dakota (USA), Universidad Panamericana (Mexico City, Mexico), Vel Tech University (Chennai, India)<br>IEEE Senior Member, ACM Professional Member<br><a href="https://orcid.org/0000-0002-9652-6415">ORCID 0000-0002-9652-6415</a>, <a href="https://www.utkukose.com">utkukose.com</a>, <a href="https://github.com/utkukose">github.com/utkukose</a><br><a href="mailto:utkukose@sdu.edu.tr">utkukose@sdu.edu.tr</a>, <a href="mailto:utku.kose@und.edu">utku.kose@und.edu</a>, <a href="mailto:ukose@up.edu.mx">ukose@up.edu.mx</a>, <a href="mailto:utkukose@gmail.com">utkukose@gmail.com</a></p>
+<p>This course is updated in line with current developments in the field. Last update: October 2026. Course materials licensed under CC BY 4.0. Code licensed under MIT.</p></footer>
+</div><script>"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = () => ({ink: cssv("--ink"), steel: cssv("--steel"), line: cssv("--line"), grid: cssv("--grid"),
+  panel: cssv("--panel"), accent: cssv("--accent"), ok: cssv("--ok"), bad: cssv("--bad"),
+  c: [cssv("--c1"), cssv("--c2"), cssv("--c3"), cssv("--c4"), cssv("--c5")]});
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function RNG(seed) {
+  let s = seed >>> 0;
+  const r = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  r.normal = () => { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  r.int = n => Math.floor(r() * n);
+  r.uniform = (a, b) => a + (b - a) * r();
+  return r;
+}
+const store = {
+  key: k => "aiae:" + k,
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) {} }
+};
+/* Canvas with device-pixel scaling. draw(ctx, w, h) is called on setup and on resize. */
+function stage(cv, aspect, draw) {
+  const ctx = cv.getContext("2d");
+  const fit = () => {
+    const w = cv.clientWidth || 600, hgt = Math.round(w * aspect), d = window.devicePixelRatio || 1;
+    cv.style.height = hgt + "px"; cv.width = Math.round(w * d); cv.height = Math.round(hgt * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0); cv._w = w; cv._h = hgt; draw && draw(ctx, w, hgt);
+  };
+  new ResizeObserver(() => fit()).observe(cv);
+  fit();
+  return {ctx, redraw: () => draw && draw(ctx, cv._w, cv._h), size: () => [cv._w, cv._h]};
+}
+/* Axes frame: returns mapping helpers. */
+function frame(ctx, w, hgt, o) {
+  const C = COL(), p = Object.assign({l: 48, r: 12, t: 12, b: 34}, o.pad || {});
+  const X = x => p.l + (x - o.x0) / (o.x1 - o.x0) * (w - p.l - p.r);
+  const Y = y => hgt - p.b - (y - o.y0) / (o.y1 - o.y0) * (hgt - p.t - p.b);
+  ctx.save(); ctx.strokeStyle = C.line; ctx.fillStyle = C.steel; ctx.lineWidth = 1; ctx.font = "11px " + cssv("--sans");
+  const nt = o.ticks || 5;
+  for (let i = 0; i <= nt; i++) {
+    const xv = o.x0 + (o.x1 - o.x0) * i / nt, yv = o.y0 + (o.y1 - o.y0) * i / nt;
+    ctx.beginPath(); ctx.moveTo(X(xv), hgt - p.b); ctx.lineTo(X(xv), hgt - p.b + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.l - 4, Y(yv)); ctx.lineTo(p.l, Y(yv)); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(fmt(xv), X(xv), hgt - p.b + 16);
+    ctx.textAlign = "right"; ctx.fillText(fmt(yv), p.l - 7, Y(yv) + 4);
+  }
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, hgt - p.b); ctx.lineTo(w - p.r, hgt - p.b); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.textAlign = "center";
+  if (o.xlabel) ctx.fillText(o.xlabel, (p.l + w - p.r) / 2, hgt - 4);
+  if (o.ylabel) { ctx.save(); ctx.translate(12, (p.t + hgt - p.b) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(o.ylabel, 0, 0); ctx.restore(); }
+  ctx.restore();
+  return {X, Y, p};
+}
+function fmt(v) { if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v)); const a = Math.abs(v); if (a >= 1000) return v.toFixed(0); if (a >= 10) return v.toFixed(0); if (a >= 1) return v.toFixed(1); if (a === 0) return "0"; return v.toFixed(2); }
+function polyline(ctx, pts, color, width, dash) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 2; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+}
+function dot(ctx, x, y, r, color, stroke) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+/* Labelled slider bound to a value. */
+function slider(parent, o, on) {
+  const out = h("output", {}, o.fmt ? o.fmt(o.value) : o.value);
+  const inp = h("input", {type: "range", min: o.min, max: o.max, step: o.step || 1, value: o.value, "aria-label": o.label});
+  inp.addEventListener("input", () => { const v = parseFloat(inp.value); out.textContent = o.fmt ? o.fmt(v) : v; on && on(v); });
+  parent.append(h("div", {class: "ctl"}, h("label", {}, o.label, " ", out), inp));
+  return inp;
+}
+function readout(parent, names) {
+  const box = h("div", {class: "readout"}), cells = {};
+  names.forEach(n => { const b = h("b", {}, "-"); cells[n] = b; box.append(h("div", {}, n, b)); });
+  parent.append(box);
+  return (n, v) => { cells[n].textContent = v; };
+}
+function legend(parent, items) {
+  const C = COL();
+  parent.append(h("div", {class: "legend"}, items.map(([t, i]) => h("span", {}, h("i", {style: "background:" + (typeof i === "number" ? C.c[i] : i)}), t))));
+}
+/* Animation loop that pauses when off screen or when reduced motion is requested. */
+function loop(step, ms) {
+  let on = false, raf = 0, last = 0, acc = 0;
+  const f = t => { if (!on) return; const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; acc += dt * 1000; if (!ms || acc >= ms) { acc = 0; step(dt); } raf = requestAnimationFrame(f); };
+  return {start() { if (!on) { on = true; last = 0; raf = requestAnimationFrame(f); } }, stop() { on = false; cancelAnimationFrame(raf); }, get running() { return on; }};
+}
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Knowledge checks, citation popups, flashcards and reading progress on lecture pages. */
+function initLecture(week) {
+  const kcs = $$(".kc"), key = "w" + week + ":kc", st = store.get(key, {});
+  const bar = $(".lec-bar i"), txt = $(".lec-txt");
+  const upd = () => {
+    const n = kcs.length, d = Object.keys(st).filter(i => st[i] && +i < n).length;
+    if (bar) bar.style.width = (n ? 100 * d / n : 0) + "%";
+    if (txt) txt.textContent = n ? `Knowledge checks answered correctly: ${d} of ${n}` : "";
+    store.set(key, st); store.set("w" + week + ":progress", n ? d / n : 0);
+  };
+  kcs.forEach((k, i) => {
+    const ans = +k.dataset.answer, fb = $(".fb", k);
+    $(".btn", k).addEventListener("click", () => {
+      const sel = $("input:checked", k);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === ans;
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + k.dataset.why;
+      st[i] = ok || st[i] || false; upd();
+    });
+    if (st[i]) { const r = $$("input", k)[ans]; if (r) r.checked = true; }
+  });
+  upd();
+  const refs = JSON.parse(($("#refdata") || {textContent: "{}"}).textContent || "{}");
+  let pop = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".cite");
+    if (pop) { pop.remove(); pop = null; }
+    if (!c) return;
+    pop = h("div", {class: "pop", role: "note"});
+    c.dataset.refs.split(",").forEach(n => pop.append(h("p", {html: "[" + n + "] " + (refs[n] || "")})));
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 440)) + "px";
+    pop.style.top = (window.scrollY + r.bottom + 6) + "px";
+  });
+  $$(".card").forEach(c => { const t = () => c.classList.toggle("flip"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } }); });
+}
+
+/* Lab shell: tabs, self-assessment with confidence ratings, reflection and learning-log export. */
+function initLab(week, title, SELF, REFLECT) {
+  const tabs = $$(".tabs button"), panels = $$(".tabpanel");
+  tabs.forEach((b, i) => b.addEventListener("click", () => {
+    tabs.forEach((x, j) => { x.setAttribute("aria-selected", i === j); panels[j].hidden = i !== j; });
+    window.dispatchEvent(new Event("resize"));
+  }));
+  const qbox = $("#quiz"), res = store.get("w" + week + ":quiz", {});
+  SELF.forEach((q, i) => {
+    const fb = h("div", {class: "fb"}), name = "q" + i;
+    const opts = q.options.map((o, j) => h("label", {}, h("input", {type: "radio", name, value: j}), " ", o));
+    const conf = h("div", {class: "conf"}, "Confidence:", ["sure", "unsure", "guess"].map(c => h("label", {}, h("input", {type: "radio", name: name + "c", value: c}), " " + c)));
+    const btn = h("button", {class: "btn", type: "button"}, "Check answer");
+    const box = h("div", {class: "kc"}, h("p", {class: "q"}, (i + 1) + ". " + q.q), opts, conf, btn, fb);
+    btn.addEventListener("click", () => {
+      const sel = $(`input[name=${name}]:checked`, box), cf = $(`input[name=${name}c]:checked`, box);
+      if (!sel) { fb.className = "fb bad"; fb.textContent = "Select an option first."; return; }
+      const ok = +sel.value === q.answer, c = cf ? cf.value : "not rated";
+      res[i] = {ok, conf: c}; store.set("w" + week + ":quiz", res);
+      fb.className = "fb " + (ok ? "ok" : "bad");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + q.why + (!ok && c === "sure" ? " A confident error marks a topic to revisit first." : "");
+      summary();
+    });
+    qbox.append(box);
+  });
+  const sum = h("p", {class: "small"}); qbox.append(sum);
+  function summary() {
+    const v = Object.values(res), ok = v.filter(r => r.ok).length, conf = v.filter(r => !r.ok && r.conf === "sure").length;
+    sum.textContent = `Answered: ${v.length} of ${SELF.length}. Correct: ${ok}. Confident errors: ${conf}.`;
+  }
+  summary();
+  const rbox = $("#reflect"), refl = store.get("w" + week + ":reflect", {});
+  REFLECT.forEach((p, i) => {
+    const ta = h("textarea", {rows: 4, style: "width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)"});
+    ta.value = refl[i] || "";
+    ta.addEventListener("input", () => { refl[i] = ta.value; store.set("w" + week + ":reflect", refl); });
+    rbox.append(h("p", {}, h("b", {}, (i + 1) + ". "), p), ta);
+  });
+  const ex = h("button", {class: "btn", type: "button"}, "Export learning log");
+  ex.addEventListener("click", () => {
+    const lines = [`# Learning log, week ${week}: ${title}`, "", `Exported: ${new Date().toISOString()}`, "", "## Self-assessment", ""];
+    SELF.forEach((q, i) => { const r = res[i]; lines.push(`${i + 1}. ${q.q}`, `   Result: ${r ? (r.ok ? "correct" : "incorrect") + ", confidence " + r.conf : "not answered"}`); });
+    lines.push("", "## Reflection", "");
+    REFLECT.forEach((p, i) => lines.push(`**${i + 1}. ${p}**`, "", refl[i] || "(no answer)", ""));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], {type: "text/markdown"}));
+    const a = h("a", {href: url, download: `learning_log_week${String(week).padStart(2, "0")}.md`}); document.body.append(a); a.click(); a.remove();
+  });
+  rbox.append(h("p", {}, ex));
+}
+
+/* Course home: progress per week from local storage. */
+function initHome(n) {
+  for (let w = 1; w <= n; w++) {
+    const el = $("#wk" + w + " .done"); if (!el) continue;
+    const p = store.get("w" + w + ":progress", 0), q = Object.values(store.get("w" + w + ":quiz", {})).filter(r => r.ok).length;
+    el.textContent = (p > 0 || q > 0) ? `Reading checks ${Math.round(100 * p)}%, self-assessment ${q} of 6 correct` : "";
+  }
+}
+</script><script>initLab(9,"Patterns without Labels: Clustering, Signals and Anomaly Detection",[{"q": "What does the k-means assignment step do?", "options": ["Moves each centre to the mean of its points", "Assigns each point to its nearest centre", "Chooses k", "Removes noise points"], "answer": 1, "why": "k-means alternates between assigning points to the nearest centre and recomputing centres as means [1]."}, {"q": "The first two principal components explain 85 percent of the variance. What does this mean?", "options": ["85 percent of the samples are correct", "A two-dimensional projection keeps 85 percent of the total variance", "Two variables are irrelevant", "The data have two clusters"], "answer": 1, "why": "The explained variance ratio measures how much of the total variance each component captures [3]."}, {"q": "In DBSCAN, a point with fewer than the minimum number of neighbours within eps that is not reachable from a core point is", "options": ["a centre", "a core point", "noise", "a principal component"], "answer": 2, "why": "Points that are neither core points nor within reach of one are labelled noise [4]."}, {"q": "A signal is sampled at 10 kHz. What is the highest frequency it can represent without aliasing?", "options": ["10 kHz", "5 kHz", "20 kHz", "1 kHz"], "answer": 1, "why": "The Nyquist frequency is half the sampling rate."}, {"q": "Why does envelope analysis help to detect bearing faults?", "options": ["It removes the shaft frequency", "The fault impacts modulate a high-frequency resonance, and demodulation reveals their repetition rate", "It increases the sampling rate", "It replaces the FFT"], "answer": 1, "why": "Envelope demodulation recovers the rate of the impacts, the fault frequency, from the excited resonance [5]."}, {"q": "In NumPy, what does `np.fft.rfftfreq(n, 1/fs)` return?", "options": ["The amplitude spectrum", "The frequencies of the rfft bins for n samples at rate fs", "The sampling times", "The window function"], "answer": 1, "why": "It returns the frequency in hertz of every bin produced by np.fft.rfft for n samples."}],["Which unlabelled data in your field could reveal useful groups? Who would have to interpret the clusters?", "The k-means clusters of the well logs did not match the facies one to one. Is that a failure of the method or a finding about the data?", "What did working with signals in the frequency domain change in your idea of what a feature is?"]);</script><script>(function(){
+const P={k:3,eps:0.06,min:5}; let pts=[];
+slider($('#c-sl'),{label:'k (k-means)',min:2,max:8,step:1,value:P.k},v=>{P.k=v;run();});
+slider($('#c-sl'),{label:'eps (DBSCAN)',min:0.01,max:0.2,step:0.005,value:P.eps},v=>{P.eps=v;run();});
+slider($('#c-sl'),{label:'min neighbours (DBSCAN)',min:2,max:20,step:1,value:P.min},v=>{P.min=v;run();});
+const cro=readout($('#c-ro'),['points','k-means clusters','DBSCAN clusters','DBSCAN noise points']);
+function gen(){ const r=RNG(Math.floor(Math.random()*1e6)), kind=$('#c-pat').value; pts=[];
+  if(kind==='blobs'){ for(const [cx,cy] of [[0.25,0.3],[0.7,0.3],[0.5,0.72]]) for(let i=0;i<70;i++) pts.push([cx+0.06*r.normal(),cy+0.06*r.normal()]); }
+  else if(kind==='moons'){ for(let i=0;i<220;i++){ const a=r.uniform(0,Math.PI), y=i%2; pts.push(y?[0.55-0.3*Math.cos(a)+0.02*r.normal(),0.4+0.3*Math.sin(a)*-1+0.2+0.02*r.normal()]:[0.35+0.3*Math.cos(a)+0.02*r.normal(),0.45-0.3*Math.sin(a)+0.02*r.normal()]); } }
+  else { for(let i=0;i<200;i++){ const t=r(); pts.push([0.1+0.8*t+0.015*r.normal(),0.8-0.55*t+0.02*r.normal()]); } for(let i=0;i<70;i++) pts.push([r(),r()]); }
+  run(); }
+let km=[], db=[];
+function kmeans(){ const r=RNG(5); let c=[pts[r.int(pts.length)]]; while(c.length<P.k){ const d=pts.map(p=>Math.min(...c.map(q=>(p[0]-q[0])**2+(p[1]-q[1])**2))); let s=d.reduce((a,b)=>a+b,0)*r(), i=0; while((s-=d[i])>0&&i<pts.length-1) i++; c.push(pts[i]); }
+  let lab=pts.map(()=>0); for(let it=0;it<50;it++){ lab=pts.map(p=>{ let b=0,bd=1e9; c.forEach((q,j)=>{ const d=(p[0]-q[0])**2+(p[1]-q[1])**2; if(d<bd){bd=d;b=j;} }); return b; }); c=c.map((q,j)=>{ const m=pts.filter((_,i)=>lab[i]===j); return m.length?[m.reduce((s,p)=>s+p[0],0)/m.length,m.reduce((s,p)=>s+p[1],0)/m.length]:q; }); } return lab; }
+function dbscan(){ const n=pts.length, lab=Array(n).fill(-2); const nb=i=>{ const o=[]; for(let j=0;j<n;j++) if(Math.hypot(pts[i][0]-pts[j][0],pts[i][1]-pts[j][1])<=P.eps) o.push(j); return o; }; let C=0;
+  for(let i=0;i<n;i++){ if(lab[i]!==-2) continue; const N=nb(i); if(N.length<P.min){ lab[i]=-1; continue; } lab[i]=C; const q=[...N]; while(q.length){ const j=q.pop(); if(lab[j]===-1) lab[j]=C; if(lab[j]!==-2) continue; lab[j]=C; const M=nb(j); if(M.length>=P.min) q.push(...M); } C++; } return lab; }
+function run(){ km=kmeans(); db=dbscan(); cro('points',pts.length); cro('k-means clusters',P.k); cro('DBSCAN clusters',new Set(db.filter(v=>v>=0)).size); cro('DBSCAN noise points',db.filter(v=>v<0).length); s1.redraw(); s2.redraw(); }
+function panel(cv,get){ const s=stage(cv,0.9,(c,w,h)=>{ c.clearRect(0,0,w,h); const C=COL(), pal=[...C.c,C.ink,C.ok,'#6b8e23']; const L=get(); pts.forEach((p,i)=>dot(c,p[0]*w,p[1]*h,3.2,L[i]<0?C.steel+'77':pal[L[i]%pal.length],C.ink)); });
+  cv.addEventListener('click',e=>{ const r=cv.getBoundingClientRect(); pts.push([(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height]); run(); }); return s; }
+const s1=panel($('#c-km'),()=>km), s2=panel($('#c-db'),()=>db); $('#c-pat').onchange=gen; gen();
+// Part G
+const V={rpm:1797,sev:0.6,noise:0.5}; const fs=12000, N=8192;
+slider($('#v-sl'),{label:'Shaft speed',min:600,max:3600,step:1,value:V.rpm,fmt:v=>v+' rpm'},v=>{V.rpm=v;sig();});
+slider($('#v-sl'),{label:'Fault severity',min:0,max:1.5,step:0.05,value:V.sev},v=>{V.sev=v;sig();});
+slider($('#v-sl'),{label:'Noise level',min:0.05,max:1.5,step:0.05,value:V.noise},v=>{V.noise=v;sig();});
+const vro=readout($('#v-ro'),['BPFO','RMS','kurtosis','crest factor']);
+function fft(re,im){ const n=re.length; for(let i=1,j=0;i<n;i++){ let b=n>>1; for(;j&b;b>>=1) j^=b; j^=b; if(i<j){ [re[i],re[j]]=[re[j],re[i]]; [im[i],im[j]]=[im[j],im[i]]; } }
+  for(let len=2;len<=n;len<<=1){ const a=-2*Math.PI/len; for(let i=0;i<n;i+=len) for(let k=0;k<len/2;k++){ const wr=Math.cos(a*k), wi=Math.sin(a*k); const ur=re[i+k], ui=im[i+k]; const vr=re[i+k+len/2]*wr-im[i+k+len/2]*wi, vi=re[i+k+len/2]*wi+im[i+k+len/2]*wr; re[i+k]=ur+vr; im[i+k]=ui+vi; re[i+k+len/2]=ur-vr; im[i+k+len/2]=ui-vi; } } }
+function amp(x){ const re=Float64Array.from(x.map((v,i)=>v*(0.5-0.5*Math.cos(2*Math.PI*i/(x.length-1))))), im=new Float64Array(x.length); fft(re,im); const o=[]; for(let k=0;k<x.length/2;k++) o.push(2*Math.hypot(re[k],im[k])/x.length*2); return o; }
+let S=null;
+function sig(){ const r=RNG(77), fr=V.rpm/60, bpfo=4.5*fr*(1-0.2034), x=new Array(N).fill(0); let next=0.002;
+  for(let i=0;i<N;i++){ const t=i/fs; x[i]=0.3*Math.sin(2*Math.PI*fr*t)+V.noise*0.5*r.normal(); }
+  if(V.sev>0){ for(let tk=0.002;tk<N/fs;tk+=1/bpfo*(1+0.01*r.normal())){ const i0=Math.floor(tk*fs); for(let j=0;j<400&&i0+j<N;j++){ const tt=j/fs; x[i0+j]+=V.sev*Math.exp(-tt*900)*Math.sin(2*Math.PI*3000*tt); } } }
+  const env=x.map(v=>Math.abs(v)); let lp=0; const envf=env.map(v=>(lp+=0.1*(v-lp))); const m=envf.reduce((s,v)=>s+v,0)/N; const envc=envf.map(v=>v-m);
+  const rms=Math.sqrt(x.reduce((s,v)=>s+v*v,0)/N), mu=x.reduce((s,v)=>s+v,0)/N, sd=Math.sqrt(x.reduce((s,v)=>s+(v-mu)**2,0)/N); const kurt=x.reduce((s,v)=>s+((v-mu)/sd)**4,0)/N; const cf=Math.max(...x.map(Math.abs))/rms;
+  S={x,spec:amp(x),envs:amp(envc),bpfo}; vro('BPFO',bpfo.toFixed(1)+' Hz'); vro('RMS',rms.toFixed(3)); vro('kurtosis',kurt.toFixed(2)); vro('crest factor',cf.toFixed(2)); w1.redraw(); w2.redraw(); w3.redraw(); }
+const w1=stage($('#v-wave'),0.22,(c,w,h)=>{ c.clearRect(0,0,w,h); if(!S) return; const C=COL(); const n=Math.floor(0.1*fs); const mx=Math.max(...S.x.slice(0,n).map(Math.abs))||1; const f=frame(c,w,h,{x0:0,x1:0.1,y0:-mx,y1:mx,ticks:5,pad:[48,8,6,22]}); polyline(c,S.x.slice(0,n).map((v,i)=>[f.X(i/fs),f.Y(v)]),C.c[0],1); });
+const w2=stage($('#v-spec'),0.6,(c,w,h)=>{ c.clearRect(0,0,w,h); if(!S) return; const C=COL(); const df=fs/N; const mx=Math.max(...S.spec.slice(2)); const f=frame(c,w,h,{x0:0,x1:6000,y0:0,y1:mx,xlabel:'frequency (Hz)',ticks:4}); polyline(c,S.spec.map((v,k)=>[f.X(k*df),f.Y(v)]),C.c[0],1); });
+const w3=stage($('#v-env'),0.6,(c,w,h)=>{ c.clearRect(0,0,w,h); if(!S) return; const C=COL(); const df=fs/N, kmax=Math.floor(500/df); const seg=S.envs.slice(1,kmax); const mx=Math.max(...seg)||1; const f=frame(c,w,h,{x0:0,x1:500,y0:0,y1:mx,xlabel:'frequency (Hz)',ticks:5});
+  for(let m=1;m*S.bpfo<500;m++) polyline(c,[[f.X(m*S.bpfo),f.Y(0)],[f.X(m*S.bpfo),f.Y(mx)]],C.c[4],1,[4,4]); polyline(c,seg.map((v,k)=>[f.X((k+1)*df),f.Y(v)]),C.c[1],1.4); });
+sig();
+})();</script><script>(function(){
+var names=["explore","check","reflect"],tabs=document.querySelectorAll(".tabs button");
+tabs.forEach(function(b,i){b.addEventListener("click",function(){if(history.replaceState)history.replaceState(null,"","#"+names[i]);});});
+function go(){var i=names.indexOf(location.hash.slice(1));if(i<0||!tabs[i])return;tabs[i].click();document.querySelector(".tabs").scrollIntoView({block:"start"});}
+go();window.addEventListener("hashchange",go);
+var refs=JSON.parse((document.getElementById("refdata")||{textContent:"{}"}).textContent||"{}"),pop=null;
+document.addEventListener("click",function(e){var c=e.target.closest(".cite");if(pop){pop.remove();pop=null;}if(!c)return;
+pop=document.createElement("div");pop.className="pop";pop.setAttribute("role","note");
+c.dataset.refs.split(",").forEach(function(k){var p=document.createElement("p");p.innerHTML="["+k+"] "+(refs[k]||"");pop.append(p);});
+document.body.append(pop);var r=c.getBoundingClientRect();
+pop.style.left=Math.max(8,Math.min(window.scrollX+r.left,window.scrollX+document.documentElement.clientWidth-440))+"px";
+pop.style.top=(window.scrollY+r.bottom+6)+"px";});
+})();</script><script>/* Lab kit: number inputs, step-by-step calculation boxes and small tables. */
+const LK = {
+  f(x, d) { if (d === undefined) d = 4; if (!isFinite(x)) return String(x); let s = (Math.abs(x) < 0.5 * Math.pow(10, -d) ? 0 : x).toFixed(d);
+    if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, ''); if (s === '-0') s = '0'; return s.replace('-', '−'); },
+  p(x, d) { const s = LK.f(x, d); return s.charAt(0) === '−' ? '(' + s + ')' : s; },
+  num(parent, label, value, step, on, o) { o = o || {}; const inp = h('input', {type: 'number', value: value, step: step, 'aria-label': label});
+    if (o.min !== undefined) inp.min = o.min; if (o.max !== undefined) inp.max = o.max;
+    inp.addEventListener('input', () => { const v = parseFloat(inp.value); if (isFinite(v)) on(v); });
+    parent.append(h('div', {class: 'nin'}, h('label', {}, label), inp)); return inp; },
+  pick(parent, label, options, value, on) { const sel = h('select', {'aria-label': label}, options.map(([v, t]) => h('option', {value: v}, t)));
+    sel.value = value; sel.addEventListener('change', () => on(sel.value)); parent.append(h('div', {class: 'nin'}, h('label', {}, label), sel)); return sel; },
+  calc(parent, long) { const box = h('div', {class: long ? 'calc long' : 'calc', 'aria-live': 'polite'}); parent.append(box);
+    return {el: box, set(lines) { box.innerHTML = ''; lines.forEach(l => { const row = h('div', {}); if (Array.isArray(l)) { row.append(h('b', {}, l[0] + ' '), l[1]); } else row.append(l); box.append(row); });
+      if (long) box.scrollTop = box.scrollHeight; }}; },
+  table(parent, head, rows, cls) { const t = h('table', {class: 'mini ' + (cls || '')}, h('thead', {}, h('tr', {}, head.map(x => h('th', {}, x)))),
+    h('tbody', {}, rows.map(r => h('tr', {}, r.map(c => (c && c.nodeType) ? c : h('td', {}, c)))))); const wrap = h('div', {class: 'tablewrap'}, t);
+    parent.append(wrap); return wrap; }
+};
+
+(function(){
+const root=$('#w9c');
+
+const S = {txt: 'A 1 1; B 1.5 2; C 3 3.5; D 5 7; E 3.5 5; F 4.5 5', k: 2, init: 'first', seed: 1};
+const f = LK.f, ctl = $('#w9c-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'points name x y'}); inp.addEventListener('input', () => { S.txt = inp.value; reset(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 360px'}, h('label', {}, 'Points "name x y", separated by semicolons'), inp));
+LK.num(ctl, 'Clusters k', S.k, 1, v => { if (v >= 2 && v <= 5) { S.k = Math.round(v); reset(); } }, {min: 2, max: 5});
+LK.pick(ctl, 'Initial centres', [['first', 'first point, then point 4'], ['pp', 'k-means++ (random)']], S.init, v => { S.init = v; reset(); });
+LK.num(ctl, 'Random seed', S.seed, 1, v => { if (v >= 1) { S.seed = Math.round(v); reset(); } }, {min: 1});
+legend($('#w9c-leg', root), [['cluster 1', 0], ['cluster 2', 1], ['cluster 3', 2], ['centres', 4]]);
+const calc = LK.calc($('#w9c-calc', root));
+let P = [], M = [], A = [], log = [];
+const d2 = (p, q) => (p.x - q[0]) ** 2 + (p.y - q[1]) ** 2;
+function reset() {
+  P = S.txt.split(';').map(t => t.trim().split(/\s+/)).filter(p => p.length === 3 && isFinite(+p[1]) && isFinite(+p[2])).map(p => ({n: p[0], x: +p[1], y: +p[2]}));
+  A = P.map(() => -1); log = []; if (P.length < S.k) { M = []; calc.set([['Data:', 'at least k points are needed']]); show(); return; }
+  if (S.init === 'first') { M = [[P[0].x, P[0].y]]; const idx = [3, 1, 2, 4, 5].filter(i => i < P.length); for (let j = 1; j < S.k; j++) { const i = idx[j - 1]; M.push([P[i].x, P[i].y]); }
+    log.push(['Start:', 'centres ' + M.map(m => '(' + f(m[0]) + ', ' + f(m[1]) + ')').join(', ')]); }
+  else { const r = RNG(S.seed * 1789); const i0 = r.int(P.length); M = [[P[i0].x, P[i0].y]]; log.push(['k-means++:', 'first centre ' + P[i0].n + ' chosen at random']);
+    while (M.length < S.k) { const D = P.map(p => Math.min(...M.map(m => d2(p, m)))), s = D.reduce((a, b) => a + b, 0), u = r(); let acc = 0, pick = P.length - 1;
+      for (let i = 0; i < P.length; i++) { acc += D[i] / s; if (u <= acc) { pick = i; break; } }
+      log.push(['Next centre:', 'D² = ' + P.map((p, i) => p.n + ' ' + f(D[i])).join(', ') + '; sum ' + f(s) + '; u = ' + f(u, 3) + ' selects ' + P[pick].n + ' (P = ' + f(D[pick] / s) + ')']); M.push([P[pick].x, P[pick].y]); } }
+  calc.set(log); show(); }
+const W = () => P.reduce((s, p, i) => s + (A[i] >= 0 ? d2(p, M[A[i]]) : 0), 0);
+function assign() { let ch = 0; P.forEach((p, i) => { const ds = M.map(m => d2(p, m)); const j = ds.indexOf(Math.min(...ds)); if (j !== A[i]) ch++; A[i] = j; });
+  return [['Assignment:', ch + ' point' + (ch === 1 ? '' : 's') + ' changed cluster; W = ' + f(W(), 6)]]; }
+function update() { const L = []; M = M.map((m, j) => { const Q = P.filter((p, i) => A[i] === j); if (!Q.length) return m; const nm = [Q.reduce((s, p) => s + p.x, 0) / Q.length, Q.reduce((s, p) => s + p.y, 0) / Q.length];
+  L.push(['Centre ' + (j + 1) + ':', '((' + Q.map(p => f(p.x)).join(' + ') + ')/' + Q.length + ', (' + Q.map(p => f(p.y)).join(' + ') + ')/' + Q.length + ') = (' + f(nm[0]) + ', ' + f(nm[1]) + ')']); return nm; });
+  L.push(['Objective:', 'W = ' + f(W(), 6)]); return L; }
+function sil(i) { const own = P.filter((p, j) => j !== i && A[j] === A[i]); if (!own.length) return 0; const a = own.reduce((s, p) => s + Math.sqrt(d2(p, [P[i].x, P[i].y])), 0) / own.length;
+  let b = Infinity; for (let c = 0; c < M.length; c++) { if (c === A[i]) continue; const Q = P.filter((p, j) => A[j] === c); if (Q.length) b = Math.min(b, Q.reduce((s, p) => s + Math.sqrt(d2(p, [P[i].x, P[i].y])), 0) / Q.length); }
+  return isFinite(b) ? (b - a) / Math.max(a, b) : 0; }
+function show() { const tb = $('#w9c-tab', root); tb.innerHTML = '';
+  if (M.length) LK.table(tb, ['point', 'x', 'y'].concat(M.map((m, j) => 'd² to centre ' + (j + 1)), ['cluster', 'silhouette']), P.map((p, i) => [p.n, f(p.x), f(p.y)].concat(M.map(m => f(d2(p, m))), [A[i] >= 0 ? A[i] + 1 : '', A[i] >= 0 ? f(sil(i)) : ''])));
+  if (A.every(a => a >= 0) && P.length) tb.append(h('p', {class: 'small'}, 'Mean silhouette ' + f(P.reduce((s, p, i) => s + sil(i), 0) / P.length))); cv.redraw(); }
+const cv = stage($('#w9c-cv', root), 1, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!P.length) return; const C = COL(); const xs = P.map(p => p.x), ys = P.map(p => p.y);
+  const lo = Math.floor(Math.min(...xs, ...ys)) - 1, hi = Math.ceil(Math.max(...xs, ...ys)) + 1; const fr = frame(c, w, hh, {x0: lo, x1: hi, y0: lo, y1: hi, xlabel: 'x', ylabel: 'y', ticks: 4});
+  P.forEach((p, i) => { dot(c, fr.X(p.x), fr.Y(p.y), 6, A[i] >= 0 ? C.c[A[i] % 3] : C.panel, C.ink); c.fillStyle = C.ink; c.font = '11px ' + cssv('--sans'); c.fillText(p.n, fr.X(p.x) + 7, fr.Y(p.y) - 6); });
+  M.forEach((m, j) => { c.strokeStyle = C.c[4]; c.lineWidth = 2.5; const X = fr.X(m[0]), Y = fr.Y(m[1]); c.beginPath(); c.moveTo(X - 7, Y - 7); c.lineTo(X + 7, Y + 7); c.moveTo(X + 7, Y - 7); c.lineTo(X - 7, Y + 7); c.stroke(); }); });
+$('#w9c-as', root).onclick = () => { log = log.concat(assign()); calc.set(log.slice(-12)); show(); };
+$('#w9c-up', root).onclick = () => { if (A.some(a => a < 0)) { calc.set(log.concat([['Update:', 'run an assignment step first']])); return; } log = log.concat(update()); calc.set(log.slice(-12)); show(); };
+$('#w9c-run', root).onclick = () => { for (let it = 0; it < 50; it++) { const L = assign(); log = log.concat(L); if (it > 0 && L[0][1].startsWith('0 ')) break; log = log.concat(update()); } calc.set(log.slice(-12)); show(); };
+$('#w9c-reset', root).onclick = reset;
+reset();
+
+})();
+(function(){
+const root=$('#w9d');
+
+const S = {txt: '8 10.5; 9 11; 10 12; 11 12.5; 12 14', sel: 5};
+const f = LK.f, ctl = $('#w9d-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'pairs x1 x2'}); inp.addEventListener('input', () => { S.txt = inp.value; run(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 360px'}, h('label', {}, 'Pairs "x1 x2", separated by semicolons'), inp));
+LK.num(ctl, 'Sample to reconstruct', S.sel, 1, v => { if (v >= 1) { S.sel = Math.round(v); run(); } }, {min: 1});
+legend($('#w9d-leg', root), [['centred samples', 0], ['first component', 4], ['second component', 2], ['projection of the chosen sample', 1]]);
+const calc = LK.calc($('#w9d-calc', root));
+let st = null;
+function run() {
+  const D = S.txt.split(';').map(t => t.trim().split(/[\s,]+/).map(Number)).filter(p => p.length === 2 && p.every(isFinite)); const n = D.length;
+  if (n < 2) { calc.set([['Data:', 'enter at least two pairs']]); st = null; cv.redraw(); return; }
+  const m1 = D.reduce((s, p) => s + p[0], 0) / n, m2 = D.reduce((s, p) => s + p[1], 0) / n, Cc = D.map(p => [p[0] - m1, p[1] - m2]);
+  const s11 = Cc.reduce((s, p) => s + p[0] * p[0], 0) / (n - 1), s22 = Cc.reduce((s, p) => s + p[1] * p[1], 0) / (n - 1), s12 = Cc.reduce((s, p) => s + p[0] * p[1], 0) / (n - 1);
+  const tr = s11 + s22, det = s11 * s22 - s12 * s12, disc = Math.max(0, tr * tr - 4 * det), sq = Math.sqrt(disc), l1 = (tr + sq) / 2, l2 = (tr - sq) / 2;
+  let v = Math.abs(s12) > 1e-12 ? [1, (l1 - s11) / s12] : (s11 >= s22 ? [1, 0] : [0, 1]); const nv = Math.hypot(v[0], v[1]); v = [v[0] / nv, v[1] / nv];
+  const k = Math.min(Math.max(1, S.sel), n) - 1, x = Cc[k], z = x[0] * v[0] + x[1] * v[1], rec = [z * v[0], z * v[1]], err = (x[0] - rec[0]) ** 2 + (x[1] - rec[1]) ** 2;
+  st = {Cc: Cc, v: v, l1: l1, l2: l2, k: k, rec: rec};
+  calc.set([['Means:', 'x̄1 = ' + f(m1) + ', x̄2 = ' + f(m2) + '; centred samples ' + Cc.map(p => '(' + f(p[0]) + ', ' + f(p[1]) + ')').join(', ')],
+    ['Covariances:', 'S11 = ' + f(s11) + ', S22 = ' + f(s22) + ', S12 = ' + f(s12) + ' (divisor ' + (n - 1) + ')'],
+    ['Trace, determinant:', 'tr = ' + f(tr) + ', det = ' + f(s11) + ' × ' + f(s22) + ' − ' + f(s12) + '² = ' + f(det, 6)],
+    ['Eigenvalues:', '(' + f(tr) + ' ± √(' + f(tr) + '² − 4 × ' + f(det, 6) + '))/2 = (' + f(tr) + ' ± ' + f(sq, 6) + ')/2, so λ1 = ' + f(l1, 6) + ', λ2 = ' + f(l2, 6)],
+    ['First direction:', 'v1 = (' + f(v[0], 6) + ', ' + f(v[1], 6) + '); explained variance ' + f(l1, 6) + '/' + f(tr) + ' = ' + f(l1 / tr, 6)],
+    ['Sample ' + (k + 1) + ':', 'z = ' + f(x[0]) + ' × ' + f(v[0], 6) + ' + ' + f(x[1]) + ' × ' + f(v[1], 6) + ' = ' + f(z, 6) + ', x̂ = (' + f(rec[0], 6) + ', ' + f(rec[1], 6) + '), error ' + f(err, 6)]]);
+  cv.redraw();
+}
+const cv = stage($('#w9d-cv', root), 1, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!st) return; const C = COL(); const R0 = Math.max(1, ...st.Cc.map(p => Math.max(Math.abs(p[0]), Math.abs(p[1])))) * 1.3;
+  const fr = frame(c, w, hh, {x0: -R0, x1: R0, y0: -R0, y1: R0, xlabel: 'centred x1', ylabel: 'centred x2', ticks: 4});
+  const a1 = Math.sqrt(Math.max(st.l1, 0)) * 2, a2 = Math.sqrt(Math.max(st.l2, 0)) * 2, v = st.v;
+  polyline(c, [[fr.X(-a1 * v[0]), fr.Y(-a1 * v[1])], [fr.X(a1 * v[0]), fr.Y(a1 * v[1])]], C.c[4], 2.5); polyline(c, [[fr.X(a2 * v[1]), fr.Y(-a2 * v[0])], [fr.X(-a2 * v[1]), fr.Y(a2 * v[0])]], C.c[2], 2.5);
+  const x = st.Cc[st.k]; polyline(c, [[fr.X(x[0]), fr.Y(x[1])], [fr.X(st.rec[0]), fr.Y(st.rec[1])]], C.c[1], 1.5, [4, 3]); dot(c, fr.X(st.rec[0]), fr.Y(st.rec[1]), 4, C.c[1]);
+  st.Cc.forEach(p => dot(c, fr.X(p[0]), fr.Y(p[1]), 5, C.c[0], C.ink)); });
+run();
+
+})();
+(function(){
+const root=$('#w9h');
+
+const S = {txt: '37.20 37.00; 37.25 37.05; 37.30 36.95; 37.22 37.10; 38.00 37.20; 38.05 37.30; 38.02 37.10; 37.70 38.20; 36.60 36.20', eps: 15, m: 3};
+const f = LK.f, ctl = $('#w9h-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'epicentres latitude longitude'}); inp.addEventListener('input', () => { S.txt = inp.value; run(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 460px'}, h('label', {}, 'Epicentres "latitude longitude" in degrees, separated by semicolons'), inp));
+LK.num(ctl, 'Radius ε (km)', S.eps, 1, v => { if (v > 0) { S.eps = v; run(); } }, {min: 0.1}); LK.num(ctl, 'Minimum points m', S.m, 1, v => { if (v >= 1) { S.m = Math.round(v); run(); } }, {min: 1});
+legend($('#w9h-leg', root), [['cluster 1', 0], ['cluster 2', 1], ['cluster 3', 2], ['noise', 'var(--steel)'], ['ε around core points', 'rgba(31,95,139,0.25)']]);
+const calc = LK.calc($('#w9h-calc', root));
+let E = [], lab = [], type = [];
+const rad = d => d * Math.PI / 180;
+function hav(p, q) { const dphi = rad(q[0] - p[0]), dl = rad(q[1] - p[1]), a = Math.sin(dphi / 2) ** 2 + Math.cos(rad(p[0])) * Math.cos(rad(q[0])) * Math.sin(dl / 2) ** 2; return {a: a, d: 2 * 6371 * Math.asin(Math.sqrt(a))}; }
+function run() {
+  E = S.txt.split(';').map(t => t.trim().split(/[\s,]+/).map(Number)).filter(p => p.length === 2 && p.every(isFinite)); const n = E.length; const tb = $('#w9h-tab', root); tb.innerHTML = '';
+  if (!n) { calc.set([['Data:', 'enter epicentres']]); cv.redraw(); return; }
+  const D = E.map(p => E.map(q => hav(p, q).d)), N = E.map((p, i) => D[i].map((d, j) => d <= S.eps ? j : -1).filter(j => j >= 0));
+  type = N.map(nb => nb.length >= S.m ? 'core' : 'other'); lab = E.map(() => -1); let c = 0;
+  for (let i = 0; i < n; i++) { if (type[i] !== 'core' || lab[i] >= 0) continue; lab[i] = c; const queue = [i];
+    while (queue.length) { const j = queue.shift(); N[j].forEach(q => { if (lab[q] < 0) { lab[q] = c; if (type[q] === 'core') queue.push(q); } }); } c++; }
+  type = type.map((t, i) => t === 'core' ? 'core' : lab[i] >= 0 ? 'border' : 'noise');
+  const h01 = n > 1 ? hav(E[0], E[1]) : null;
+  calc.set([['Example distance:', h01 ? 'events 1 and 2: Δφ = ' + f(E[1][0] - E[0][0]) + '°, Δλ = ' + f(E[1][1] - E[0][1]) + '°, a = ' + f(h01.a, 9) + ', d = 2 × 6371 × arcsin √a = ' + f(h01.d, 3) + ' km' : 'one event only'],
+    ['Result:', c + ' cluster' + (c === 1 ? '' : 's') + ', ' + type.filter(t => t === 'core').length + ' core, ' + type.filter(t => t === 'border').length + ' border and ' + type.filter(t => t === 'noise').length + ' noise points']]);
+  LK.table(tb, ['event', 'latitude', 'longitude', 'neighbours within ε (km)', 'count', 'type', 'cluster'], E.map((p, i) => [i + 1, f(p[0]), f(p[1]), N[i].filter(j => j !== i).map(j => (j + 1) + ' (' + f(D[i][j], 1) + ')').join(', ') || 'none', N[i].length, type[i], lab[i] >= 0 ? lab[i] + 1 : '']));
+  cv.redraw();
+}
+const cv = stage($('#w9h-cv', root), 1, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!E.length) return; const C = COL(); const la = E.map(p => p[0]), lo = E.map(p => p[1]);
+  const cl = (Math.min(...la) + Math.max(...la)) / 2, sp = Math.max(Math.max(...la) - Math.min(...la), (Math.max(...lo) - Math.min(...lo)) * Math.cos(rad(cl)), 0.2) * 0.65, cx = (Math.min(...lo) + Math.max(...lo)) / 2;
+  const fr = frame(c, w, hh, {x0: cx - sp / Math.cos(rad(cl)), x1: cx + sp / Math.cos(rad(cl)), y0: cl - sp, y1: cl + sp, xlabel: 'longitude (°E)', ylabel: 'latitude (°N)', ticks: 4});
+  E.forEach((p, i) => { if (type[i] === 'core') { const ry = S.eps / 111.195, rx = ry / Math.cos(rad(p[0])); c.beginPath(); c.ellipse(fr.X(p[1]), fr.Y(p[0]), Math.abs(fr.X(p[1] + rx) - fr.X(p[1])), Math.abs(fr.Y(p[0] + ry) - fr.Y(p[0])), 0, 0, 2 * Math.PI); c.fillStyle = 'rgba(31,95,139,0.08)'; c.fill(); } });
+  E.forEach((p, i) => { dot(c, fr.X(p[1]), fr.Y(p[0]), type[i] === 'core' ? 6 : 4.5, lab[i] >= 0 ? C.c[lab[i] % 3] : C.steel, C.ink); c.fillStyle = C.ink; c.font = '11px ' + cssv('--sans'); c.fillText(String(i + 1), fr.X(p[1]) + 7, fr.Y(p[0]) - 5); }); });
+run();
+
+})();
+(function(){
+const root=$('#w9e');
+
+const S = {txt: '2 1 0 1', fs: 1000, k: 1, N: 8, cyc: 1, amp: 1, off: 0};
+const f = LK.f, ctl = $('#w9e-ctl', root), gen = $('#w9e-gen', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'samples separated by spaces'}); inp.addEventListener('input', () => { S.txt = inp.value; run(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 300px'}, h('label', {}, 'Samples x0 x1 ... (up to 32)'), inp));
+LK.num(ctl, 'Sampling rate fs (Hz)', S.fs, 100, v => { if (v > 0) { S.fs = v; run(); } }, {min: 1}); LK.num(ctl, 'Show the sum for bin k', S.k, 1, v => { if (v >= 0) { S.k = Math.round(v); run(); } }, {min: 0});
+LK.num(gen, 'Generate N samples', S.N, 1, v => { if (v >= 2 && v <= 32) S.N = Math.round(v); }, {min: 2, max: 32});
+LK.num(gen, 'cycles in the record', S.cyc, 0.25, v => { S.cyc = v; }); LK.num(gen, 'amplitude', S.amp, 0.5, v => { S.amp = v; }); LK.num(gen, 'mean', S.off, 0.5, v => { S.off = v; });
+const gb = h('button', {class: 'btn ghost', type: 'button'}, 'Generate a cosine'); gb.onclick = () => { const x = []; for (let n = 0; n < S.N; n++) x.push(Math.round((S.off + S.amp * Math.cos(2 * Math.PI * S.cyc * n / S.N)) * 1e4) / 1e4); S.txt = inp.value = x.join(' '); run(); }; gen.append(gb);
+const calc = LK.calc($('#w9e-calc', root));
+let X = [];
+function run() {
+  const x = S.txt.trim().split(/[\s,;]+/).map(Number).filter(isFinite).slice(0, 32), N = x.length, tb = $('#w9e-tab', root); tb.innerHTML = '';
+  if (N < 2) { calc.set([['Samples:', 'enter at least two']]); X = []; cv.redraw(); return; }
+  X = []; for (let k = 0; k < N; k++) { let re = 0, im = 0; for (let n = 0; n < N; n++) { const a = -2 * Math.PI * k * n / N; re += x[n] * Math.cos(a); im += x[n] * Math.sin(a); } X.push([Math.abs(re) < 1e-10 ? 0 : re, Math.abs(im) < 1e-10 ? 0 : im]); }
+  const k = Math.min(S.k, N - 1), terms = x.map((v, n) => { const a = -2 * Math.PI * k * n / N, c = Math.cos(a), s = Math.sin(a); return f(v) + ' × (' + f(Math.abs(c) < 1e-12 ? 0 : c) + (s < -1e-12 ? ' − ' + f(-s) : ' + ' + f(Math.abs(s) < 1e-12 ? 0 : s)) + 'i)'; });
+  const mag = X.map(z => Math.hypot(z[0], z[1]));
+  calc.set([['Resolution:', 'N = ' + N + ', Δf = ' + f(S.fs) + '/' + N + ' = ' + f(S.fs / N) + ' Hz, Nyquist ' + f(S.fs / 2) + ' Hz, duration ' + f(N / S.fs, 5) + ' s'],
+    ['X_' + k + ':', terms.join(' + ')], ['', '  = ' + f(X[k][0]) + (X[k][1] < 0 ? ' − ' + f(-X[k][1]) : ' + ' + f(X[k][1])) + 'i, |X_' + k + '| = ' + f(mag[k]) + (k > 0 && k < N / 2 ? ', amplitude 2|X|/N = ' + f(2 * mag[k] / N) : k === 0 ? ', mean X0/N = ' + f(X[0][0] / N) : '')]]);
+  LK.table(tb, ['k', 'f_k (Hz)', 'Re X_k', 'Im X_k', '|X_k|', 'amplitude'], X.map((z, i) => [i, f(i * S.fs / N), f(z[0]), f(z[1]), f(mag[i]), i === 0 ? f(mag[0] / N) + ' (mean)' : i < N / 2 ? f(2 * mag[i] / N) : i === N / 2 ? f(mag[i] / N) : 'mirror']));
+  cv.redraw();
+}
+const cv = stage($('#w9e-cv', root), 0.62, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!X.length) return; const C = COL(), N = X.length, half = Math.floor(N / 2), amp = X.slice(0, half + 1).map((z, i) => (i === 0 || i === N / 2 ? 1 : 2) * Math.hypot(z[0], z[1]) / N), top = Math.max(1, ...amp) * 1.15;
+  const fr = frame(c, w, hh, {x0: -0.5, x1: half + 0.5, y0: 0, y1: top, xlabel: 'bin k (frequency k fs/N)', ylabel: 'amplitude', ticks: Math.min(8, half + 1)});
+  amp.forEach((a, i) => { c.fillStyle = C.c[0]; const bw = (fr.X(1) - fr.X(0)) * 0.6; c.fillRect(fr.X(i) - bw / 2, fr.Y(a), bw, fr.Y(0) - fr.Y(a)); }); });
+run();
+
+})();
+(function(){
+const root=$('#w9f');
+
+const B = {n: 9, d: 7.94, D: 39.04, phi: 0, rpm: 1797}, S = {txt: '0.5 -0.4 0.3 3.0 -0.6 0.4 -0.5 0.3'};
+const f = LK.f, bb = $('#w9f-b', root), bc = LK.calc($('#w9f-bc', root));
+LK.num(bb, 'Rolling elements n', B.n, 1, v => { if (v >= 1) { B.n = Math.round(v); bear(); } }, {min: 1}); LK.num(bb, 'Element diameter d (mm)', B.d, 0.01, v => { if (v > 0) { B.d = v; bear(); } });
+LK.num(bb, 'Pitch diameter D (mm)', B.D, 0.01, v => { if (v > 0) { B.D = v; bear(); } }); LK.num(bb, 'Contact angle φ (degrees)', B.phi, 1, v => { B.phi = v; bear(); }); LK.num(bb, 'Shaft speed (rpm)', B.rpm, 1, v => { if (v > 0) { B.rpm = v; bear(); } });
+function bear() { const fr = B.rpm / 60, r = B.d / B.D * Math.cos(B.phi * Math.PI / 180);
+  bc.set([['Shaft frequency:', 'f_r = ' + f(B.rpm) + '/60 = ' + f(fr) + ' Hz; (d/D) cos φ = ' + f(B.d) + '/' + f(B.D) + ' × cos ' + f(B.phi) + '° = ' + f(r)],
+    ['BPFO:', '(' + B.n + '/2) × ' + f(fr) + ' × (1 − ' + f(r) + ') = ' + f(B.n / 2 * fr * (1 - r), 3) + ' Hz'], ['BPFI:', '(' + B.n + '/2) × ' + f(fr) + ' × (1 + ' + f(r) + ') = ' + f(B.n / 2 * fr * (1 + r), 3) + ' Hz'],
+    ['FTF:', '(' + f(fr) + '/2) × (1 − ' + f(r) + ') = ' + f(fr / 2 * (1 - r), 3) + ' Hz'], ['BSF:', '(' + f(B.D) + '/(2 × ' + f(B.d) + ')) × ' + f(fr) + ' × (1 − ' + f(r) + '²) = ' + f(B.D / (2 * B.d) * fr * (1 - r * r), 3) + ' Hz']]); }
+const sb = $('#w9f-s', root), sc = LK.calc($('#w9f-sc', root));
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'samples of the record'}); inp.addEventListener('input', () => { S.txt = inp.value; ind(); });
+sb.append(h('div', {class: 'nin', style: 'flex:1 1 420px'}, h('label', {}, 'Samples of the record, separated by spaces'), inp));
+let x = [];
+function ind() { x = S.txt.trim().split(/[\s,;]+/).map(v => Number(v.replace('−', '-'))).filter(isFinite); const N = x.length; if (N < 2) { sc.set([['Samples:', 'enter at least two']]); cv.redraw(); return; }
+  const sq = x.reduce((s, v) => s + v * v, 0), rms = Math.sqrt(sq / N), pk = Math.max(...x.map(Math.abs)), m = x.reduce((s, v) => s + v, 0) / N, d2 = x.reduce((s, v) => s + (v - m) ** 2, 0), d4 = x.reduce((s, v) => s + (v - m) ** 4, 0), vv = d2 / N, m4 = d4 / N;
+  sc.set([['RMS:', '√((' + x.map(v => f(v) + '²').join(' + ') + ')/' + N + ') = √(' + f(sq) + '/' + N + ') = ' + f(rms, 6)], ['Crest factor:', f(pk) + '/' + f(rms, 6) + ' = ' + f(pk / rms, 6)],
+    ['Mean:', f(m, 6)], ['Variance:', 'Σ(x − x̄)²/N = ' + f(d2, 6) + '/' + N + ' = ' + f(vv, 6)], ['Kurtosis:', '(' + f(d4, 6) + '/' + N + ')/' + f(vv, 6) + '² = ' + f(m4, 6) + '/' + f(vv * vv, 6) + ' = ' + f(vv > 0 ? m4 / (vv * vv) : NaN) + ' (3 for a Gaussian signal)']]); cv.redraw(); }
+const cv = stage($('#w9f-cv', root), 0.5, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (x.length < 2) return; const C = COL(), top = Math.max(1, ...x.map(Math.abs)) * 1.2;
+  const fr = frame(c, w, hh, {x0: 0, x1: x.length - 1, y0: -top, y1: top, xlabel: 'sample n', ylabel: 'x', ticks: Math.min(8, x.length - 1)});
+  polyline(c, [[fr.X(0), fr.Y(0)], [fr.X(x.length - 1), fr.Y(0)]], C.line, 1); x.forEach((v, i) => { polyline(c, [[fr.X(i), fr.Y(0)], [fr.X(i), fr.Y(v)]], C.c[0], 2); dot(c, fr.X(i), fr.Y(v), 3.5, C.c[0]); }); });
+bear(); ind();
+
+})();
+(function(){
+const root=$('#w9g');
+
+const S = {txt: '50.2 49.8 50.5 51.1 49.6 50.0 50.9 49.3 50.7 51.4 49.9 50.3 48.9 50.6 51.0 57.5', t: 16, seed: 1};
+const f = LK.f, ctl = $('#w9g-ctl', root);
+const inp = h('input', {type: 'text', value: S.txt, 'aria-label': 'values'}); inp.addEventListener('input', () => { S.txt = inp.value; reset(); });
+ctl.append(h('div', {class: 'nin', style: 'flex:1 1 440px'}, h('label', {}, 'Values of one feature, for example a temperature'), inp));
+LK.num(ctl, 'Point to isolate (position)', S.t, 1, v => { if (v >= 1) { S.t = Math.round(v); reset(); } }, {min: 1}); LK.num(ctl, 'Random seed', S.seed, 1, v => { if (v >= 1) { S.seed = Math.round(v); reset(); } }, {min: 1});
+legend($('#w9g-leg', root), [['values', 0], ['point to isolate', 4], ['splits of the last tree', 1]]);
+const calc = LK.calc($('#w9g-calc', root));
+let x = [], rng, paths = [], splits = [];
+const H = i => Math.log(i) + 0.5772156649, cpsi = n => n > 2 ? 2 * H(n - 1) - 2 * (n - 1) / n : n === 2 ? 1 : 0;
+function reset() { x = S.txt.trim().split(/[\s,;]+/).map(Number).filter(isFinite); rng = RNG(S.seed * 6151); paths = []; splits = []; calc.set([['Data:', x.length + ' values; the point to isolate is ' + (x[Math.min(S.t, x.length) - 1] !== undefined ? f(x[Math.min(S.t, x.length) - 1]) : '?')]]); cv.redraw(); }
+function tree(verbose) { const target = x[Math.min(S.t, x.length) - 1]; let cur = x.slice(), h = 0, L = []; splits = [];
+  while (cur.length > 1 && h < 50) { const lo = Math.min(...cur), hi = Math.max(...cur); if (lo === hi) break; const s = lo + (hi - lo) * rng(); splits.push(s);
+    const side = cur.filter(v => (v < s) === (target < s)); if (verbose) L.push(['Split ' + (h + 1) + ':', 'random value ' + f(s) + ' between ' + f(lo) + ' and ' + f(hi) + '; the target side keeps ' + side.length + ' of ' + cur.length + ' values']); cur = side; h++; }
+  paths.push(h); if (verbose) L.push(['Path length:', 'h = ' + h]); return L; }
+function score(L) { const n = x.length, c = cpsi(n), m = paths.reduce((a, b) => a + b, 0) / paths.length, sc = Math.pow(2, -m / c);
+  L.push(['Trees:', paths.length + ', mean path length E[h] = ' + f(m)]); L.push(['c(ψ):', 'ψ = ' + n + ': 2 × (ln ' + (n - 1) + ' + 0.5772) − 2 × ' + (n - 1) + '/' + n + ' = ' + f(c)]);
+  L.push(['Score:', '2^(−' + f(m) + '/' + f(c) + ') = ' + f(sc) + (sc > 0.6 ? ', an anomaly' : sc < 0.5 ? ', a normal point' : ', borderline')]); return L; }
+const cv = stage($('#w9g-cv', root), 0.45, (c, w, hh) => { c.clearRect(0, 0, w, hh); if (!x.length) return; const C = COL(), lo = Math.floor(Math.min(...x)) - 1, hi = Math.ceil(Math.max(...x)) + 1;
+  const fr = frame(c, w, hh, {x0: lo, x1: hi, y0: 0, y1: 1, xlabel: 'value', ticks: 5});
+  splits.forEach((s, i) => { polyline(c, [[fr.X(s), fr.Y(0)], [fr.X(s), fr.Y(1)]], C.c[1], 1.2, [4, 3]); c.fillStyle = C.c[1]; c.font = '10px ' + cssv('--sans'); c.fillText(String(i + 1), fr.X(s) + 2, fr.Y(0.92)); });
+  const t = Math.min(S.t, x.length) - 1; x.forEach((v, i) => dot(c, fr.X(v), fr.Y(0.4), i === t ? 7 : 5, i === t ? C.c[4] : C.c[0], C.ink)); });
+$('#w9g-one', root).onclick = () => { calc.set(score(tree(true))); cv.redraw(); };
+$('#w9g-100', root).onclick = () => { let L = []; for (let k = 0; k < 100; k++) L = tree(k === 99); calc.set(score([['100 trees:', 'the last tree is shown']].concat(L))); cv.redraw(); };
+reset();
+
+})();</script></body></html>
